@@ -17,22 +17,25 @@ export default function Header(props) {
                 <Collapse isOpen={menuOpen} navbar>
                     <Nav>
                         <NavItem>
-                            <NavLink href="/">Trang chủ</NavLink>
+                            <NavLink className="nav" href="/">Trang chủ</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink className="nav" href="/athletes">Danh sách Vận động viên</NavLink>
                         </NavItem>
                         <UncontrolledDropdown nav inNavbar>
-                            <DropdownToggle nav caret>Yếu tố</DropdownToggle>
+                            <DropdownToggle className="nav" nav caret>Yếu tố</DropdownToggle>
                             <DropdownMenu right>
-                                <DropdownItem href="/physical">Thể lực</DropdownItem>
-                                <DropdownItem href="/technical">Kỹ thuật</DropdownItem>
-                                <DropdownItem href="/psychophysiology">Tâm-sinh lý</DropdownItem>
-                                <DropdownItem href="/form">Hình thái</DropdownItem>
+                                <DropdownItem href="/physicalFactors">Thể lực</DropdownItem>
+                                <DropdownItem href="/technicalFactors">Kỹ thuật</DropdownItem>
+                                <DropdownItem href="/psychophysiologyFactors">Tâm-sinh lý</DropdownItem>
+                                <DropdownItem href="/formFactors">Hình thái</DropdownItem>
                             </DropdownMenu>
                         </UncontrolledDropdown>
                         <NavItem>
-                            <NavLink href="/athlete-classification">Phân loại trình độ tập luyện</NavLink>
+                            <NavLink className="nav" href="/athlete-classification">Phân loại trình độ tập luyện</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink href="/rankings">Bảng xếp hạng</NavLink>
+                            <NavLink className="nav" href="/rankingsList">Bảng xếp hạng</NavLink>
                         </NavItem>
                     </Nav>
                 </Collapse>

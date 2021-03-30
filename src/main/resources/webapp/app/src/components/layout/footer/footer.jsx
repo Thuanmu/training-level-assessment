@@ -1,9 +1,11 @@
 import React from "react";
-import { Col, Row } from "reactstrap";
+import { CardFooter, Col, Row } from "reactstrap";
+import "./footer.css";
 
 
 export default function Footer(props) {
     return(
+     
      <div className="footer">
         &nbsp;
         <Row>
@@ -16,7 +18,7 @@ export default function Footer(props) {
                     <a href={"https://www.facebook.com/thuanmu"}>ThuanPV</a>
                 </p>
             </Col>
-        </Row>
+        </Row> 
      </div>
     );
 }
