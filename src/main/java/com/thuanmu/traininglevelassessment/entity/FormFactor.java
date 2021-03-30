@@ -1,6 +1,6 @@
 package com.thuanmu.traininglevelassessment.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,11 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -25,22 +25,21 @@ public class FormFactor {
     @Column(name = "id", nullable = false)
 	private Long id;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "athlete_id", referencedColumnName = "id", nullable = false)
-	@JsonIgnoreProperties(value = {"form_factor", "hibernateLazyInitializer"})
-//	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Athlete athlete;
-	
+		
 	@Column(name = "quetelet_quotient")
 	private Double queteletQuotient;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at")
-	private Date createAt;
+	private LocalDateTime createAt;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "last_modified")
-	private Date lastModified;
+	private LocalDateTime lastModified;
 	
 	public Long getId() {
 		return id;
@@ -49,7 +48,7 @@ public class FormFactor {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	
 	public Athlete getAthlete() {
 		return athlete;
 	}
@@ -66,19 +65,19 @@ public class FormFactor {
 		this.queteletQuotient = queteletQuotient;
 	}
 
-	public Date getCreateAt() {
+	public LocalDateTime getCreateAt() {
 		return createAt;
 	}
 
-	public void setCreateAt(Date createAt) {
+	public void setCreateAt(LocalDateTime createAt) {
 		this.createAt = createAt;
 	}
 
-	public Date getLastModified() {
+	public LocalDateTime getLastModified() {
 		return lastModified;
 	}
 
-	public void setLastModified(Date lastModified) {
+	public void setLastModified(LocalDateTime lastModified) {
 		this.lastModified = lastModified;
 	}
 

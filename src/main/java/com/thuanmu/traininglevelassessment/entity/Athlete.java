@@ -1,6 +1,7 @@
 package com.thuanmu.traininglevelassessment.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 
@@ -26,15 +27,15 @@ public class Athlete {
 	@Column(name = "athlete_name", length = 255)
 	private String athleteName;
 	
-	@Temporal(TemporalType.DATE)
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "date_of_birth")
-	private Date dateOfBirth;
+	private LocalDate dateOfBirth;
 	
 	@Column(name = "hometown", length = 50)
 	private String hometown;
 	
 	@Column(name = "total_scores_of_criterias", length = 3)
-	private Long totalScoresOfCriterias;
+	private Double totalScoresOfCriterias;
 	
 	@Column(name = "grade", length = 50)
 	private String grade;
@@ -42,14 +43,14 @@ public class Athlete {
 	@Column(name = "athlete_rank", length = 50)
 	private String athleteRank;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "create_at")
-	private Date createAt;
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@Column(name = "create_at", columnDefinition = "datetime default current_timestamp")
+	private LocalDateTime createAt;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "last_modified")
-	private Date lastModified;
-		
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@Column(name = "last_modified", columnDefinition = "datetime default current_timestamp")
+	private LocalDateTime lastModified;
+
 	public Long getId() {
 		return id;
 	}
@@ -57,7 +58,7 @@ public class Athlete {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getAthleteName() {
 		return athleteName;
 	}
@@ -66,14 +67,14 @@ public class Athlete {
 		this.athleteName = athleteName;
 	}
 
-	public Date getDateOfBirth() {
+	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	
+
 	public String getHometown() {
 		return hometown;
 	}
@@ -82,11 +83,11 @@ public class Athlete {
 		this.hometown = hometown;
 	}
 
-	public Long getTotalScoresOfCriterias() {
+	public Double getTotalScoresOfCriterias() {
 		return totalScoresOfCriterias;
 	}
 
-	public void setTotalScoresOfCriterias(Long totalScoresOfCriterias) {
+	public void setTotalScoresOfCriterias(Double totalScoresOfCriterias) {
 		this.totalScoresOfCriterias = totalScoresOfCriterias;
 	}
 
@@ -106,22 +107,22 @@ public class Athlete {
 		this.athleteRank = athleteRank;
 	}
 
-	public Date getCreateAt() {
+	public LocalDateTime getCreateAt() {
 		return createAt;
 	}
 
-	public void setCreateAt(Date createAt) {
+	public void setCreateAt(LocalDateTime createAt) {
 		this.createAt = createAt;
 	}
 
-	public Date getLastModified() {
+	public LocalDateTime getLastModified() {
 		return lastModified;
 	}
 
-	public void setLastModified(Date lastModified) {
+	public void setLastModified(LocalDateTime lastModified) {
 		this.lastModified = lastModified;
 	}
-	
+		
 }
 
 	
