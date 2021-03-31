@@ -39,7 +39,7 @@ export default function PhysicalFactorUpdate(props) {
     const handleChangeLastModified = event => setLastModified(event.target.value);
 
     useEffect(() => {
-        if(id !== 'new')  {
+        if(id)  {
             PhysicalFactorService.getPhysicalFactorById(id).then( res => {
                 let physicalFactor = res.data;
                 setId(physicalFactor.id);
@@ -83,7 +83,7 @@ export default function PhysicalFactorUpdate(props) {
             lastModified: lastModified
         };
         
-        if(id === 'new') {
+        if(!id) {
             PhysicalFactorService.createPhysicalFactor(physicalFactor).then(res => {
                 props.history.push('/physicalFactors');
             });

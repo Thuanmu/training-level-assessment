@@ -22,7 +22,7 @@ export default class Form extends Component {
   }
 
   viewFormFactor(id) {
-      this.props.history.push(`/formFactors/${id}`);
+      this.props.history.push(`/formFactors/${id}/detail`);
   }
   
   editFormFactor(id) {
@@ -60,7 +60,7 @@ export default class Form extends Component {
             <tr>
               <th>ID</th>
               <th>ID Vận động viên</th>
-              <th>Tên vận động viên</th>
+              <th>Tên Vận động viên</th>
               <th>Chỉ số Quetelet (g/cm)</th>
               <th>Ngày tạo</th>
               <th>Cập nhật lần cuối</th>
@@ -75,7 +75,6 @@ export default class Form extends Component {
                 <td>{formFactor.athlete.athleteName}</td>
                 <td>{formFactor.queteletQuotient}</td>
                 <td>{formFactor.createAt}</td>
-                {/* <td>{formFactor.createAt ? <TextFormat type="date" value={asset.createAt} format={APP_DATE_FORMAT} /> : null}</td> */}
                 <td>{formFactor.lastModified}</td>
                 <td>
                   <ButtonGroup>

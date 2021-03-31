@@ -18,6 +18,10 @@ import Footer from "./components/layout/footer/footer";
 import Header from "./components/layout/header/header";
 import { Home } from "./components/layout/header/header-components";
 import Rankings from "./components/rankings/rankings";
+import FormFactorDetail from "./components/factors/form/form-detail";
+import PhysicalFactorDetail from "./components/factors/physical/physical-detail";
+import PsychophysiologyFactorDetail from "./components/factors/psychophysiology/psychophysiology-detail";
+import TechnicalFactorDetail from "./components/factors/technical/technical-detail";
 
 
 function App() {
@@ -32,6 +36,7 @@ function App() {
         
         {/*form*/}
         <Route path="/formFactors" component={Form} exact/>
+        <Route path="/formFactors/:id/detail" component={FormFactorDetail} exact />
         <Route path="/formFactors/new" component={FormFactorUpdate} exact/>
         <Route path="/formFactors/:id/edit" component={FormFactorUpdate} exact/>
         {/* athlete */}
@@ -41,17 +46,17 @@ function App() {
         <Route path="/athletes/:id/edit" component={AthleteUpdate} exact/>
         {/* technicalFactor */}
         <Route path="/technicalFactors" component={Technical} exact />
-        {/* <Route path="/technicalFactors/:id/detail" component={TechnicalFactorDetail} exact /> */}
+        <Route path="/technicalFactors/:id/detail" component={TechnicalFactorDetail} exact />
         <Route path="/technicalFactors/:new" component={TechnicalFactorUpdate} exact/>
         <Route path="/technicalFactors/:id/edit" component={TechnicalFactorUpdate} exact/>
         {/* physicalFactor */}
         <Route path="/physicalFactors" component={Physical} exact />
-        {/* <Route path="/physicalFactors/:id/detail" component={PhysicalFactorDetail} exact /> */}
+        <Route path="/physicalFactors/:id/detail" component={PhysicalFactorDetail} exact />
         <Route path="/physicalFactors/:new" component={PhysicalFactorUpdate} exact/>
         <Route path="/physicalFactors/:id/edit" component={PhysicalFactorUpdate} exact/>
         {/* psychophysiologyFactor */}
         <Route path="/psychophysiologyFactors" component={Psychophysiology} exact />
-        {/* <Route path="/psychophysiologyFactors/:id/detail" component={PhysicalFactorDetail} exact /> */}
+        <Route path="/psychophysiologyFactors/:id/detail" component={PsychophysiologyFactorDetail} exact />
         <Route path="/psychophysiologyFactors/:new" component={PsychophysiologyFactorUpdate} exact/>
         <Route path="/psychophysiologyFactors/:id/edit" component={PsychophysiologyFactorUpdate} exact/>
 

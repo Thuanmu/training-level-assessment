@@ -17,7 +17,7 @@ export default function TechnicalFactorUpdate(props) {
     const handleChangeLastModified = event => setLastModified(event.target.value);
 
     useEffect(() => {
-        if(id !== 'new')  {
+        if(id)  {
             TechnicalFactorService.getTechnicalFactorById(id).then( res => {
                 let technicalFactor = res.data;
                 setId(technicalFactor.id);
@@ -39,7 +39,7 @@ export default function TechnicalFactorUpdate(props) {
             lastModified: lastModified
         };
         
-        if(id === 'new') {
+        if(!id) {
             TechnicalFactorService.createTechnicalFactor(technicalFactor).then(res => {
                 props.history.push('/technicalFactors');
             });

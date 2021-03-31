@@ -44,11 +44,11 @@ public class Athlete {
 	private String athleteRank;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-	@Column(name = "create_at", columnDefinition = "datetime default current_timestamp")
+	@Column(name = "create_at")
 	private LocalDateTime createAt;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-	@Column(name = "last_modified", columnDefinition = "datetime default current_timestamp")
+	@Column(name = "last_modified")
 	private LocalDateTime lastModified;
 
 	public Long getId() {

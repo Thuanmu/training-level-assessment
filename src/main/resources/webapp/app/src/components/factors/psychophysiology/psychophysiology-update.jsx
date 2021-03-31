@@ -23,7 +23,7 @@ export default function PsychophysiologyFactorUpdate(props) {
     const handleChangeLastModified = event => setLastModified(event.target.value);
 
     useEffect(() => {
-        if(id !== 'new')  {
+        if(id)  {
             PsychophysiologyFactorService.getPsychophysiologyFactorById(id).then( res => {
                 let psychophysiologyFactor = res.data;
                 setId(psychophysiologyFactor.id);
@@ -51,7 +51,7 @@ export default function PsychophysiologyFactorUpdate(props) {
             lastModified: lastModified
         };
         
-        if(id === 'new') {
+        if(!id) {
             PsychophysiologyFactorService.createPsychophysiologyFactor(psychophysiologyFactor).then(res => {
                 props.history.push('/psychophysiologyFactors');
             });

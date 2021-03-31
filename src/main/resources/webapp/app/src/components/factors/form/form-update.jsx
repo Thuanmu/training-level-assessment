@@ -36,7 +36,7 @@ export default class FormFactorUpdate extends Component {
     }
 
     componentDidMount() {
-        if(this.state.id !== 'new') {
+        if(this.state.id) {
             FormFactorService.getFormFactorById(this.state.id).then( res => {
                 let formFactor = res.data;
                 this.setState({
@@ -60,7 +60,7 @@ export default class FormFactorUpdate extends Component {
             lastModified: this.state.lastModified
         };
         
-        if(this.state.id === 'new') {
+        if(!this.state.id) {
             FormFactorService.createFormFactor(formFactor).then(res => {
                 this.props.history.push('/formFactors');
             });
