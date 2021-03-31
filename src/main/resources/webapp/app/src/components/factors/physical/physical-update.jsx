@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import PhysicalFactorService from "./physical-service";
+import NowDateTime from "../../../utilities/now-date-time";
+import AthleteService from "../../athlete/athlete-service";
 
 export default function PhysicalFactorUpdate(props) {
 
+    const [athletes, setAthletes] = useState([]);
     const [id, setId] = useState(props.match.params.id);
     const [athleteId, setAthleteId] = useState('');
     const [timeOfReflectionStart, setTimeOfReflectionStart] = useState('');
@@ -35,8 +38,6 @@ export default function PhysicalFactorUpdate(props) {
     const handleChangeRunTimeOfLastTwentyMetersInOneHundredMetersRun = event => setRunTimeOfLastTwentyMetersInOneHundredMetersRun(event.target.value);
     const handleChangeStrengthCoefficient_K = event => setStrengthCoefficient_K(event.target.value);
     const handleChangeThighsRaiseInPlaceForTenSeconds = event => setThighsRaiseInPlaceForTenSeconds(event.target.value);
-    const handleChangeCreateAt = event => setCreateAt(event.target.value);
-    const handleChangeLastModified = event => setLastModified(event.target.value);
 
     useEffect(() => {
         if(id)  {
@@ -60,35 +61,60 @@ export default function PhysicalFactorUpdate(props) {
                 setLastModified(physicalFactor.lastModified);
             });
         }
+
+        AthleteService.getAthletes().then((res) => {
+            setAthletes(res.data);
+        });
     },[]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let physicalFactor = {
-            id: id,
-            athlete: {id: athleteId},
-            timeOfReflectionStart: timeOfReflectionStart,
-            thirtyMetersRunAtHighSpeed: thirtyMetersRunAtHighSpeed,
-            thirtyMetersRunWithLowStart: thirtyMetersRunWithLowStart,
-            sixtyMetersRunWithLowStart: sixtyMetersRunWithLowStart,
-            eightyMetersRunWithHighStart: eightyMetersRunWithHighStart,
-            oneHundredFiftyMetersRunWithHighStart: oneHundredFiftyMetersRunWithHighStart,
-            awayJumpInPlace: awayJumpInPlace,
-            threeStepsJumpInPlace: threeStepsJumpInPlace,
-            tenStepsJumpInPlace: tenStepsJumpInPlace,
-            runTimeOfLastTwentyMetersInOneHundredMetersRun: runTimeOfLastTwentyMetersInOneHundredMetersRun,
-            strengthCoefficient_K: strengthCoefficient_K,
-            thighsRaiseInPlaceForTenSeconds: thighsRaiseInPlaceForTenSeconds,
-            createAt: createAt,
-            lastModified: lastModified
-        };
+        let datetime = NowDateTime.getNowDateTime();
         
         if(!id) {
+            let physicalFactor = {
+                id: id,
+                athlete: {id: athleteId ? athleteId : athletes[0].id},
+                timeOfReflectionStart: timeOfReflectionStart,
+                thirtyMetersRunAtHighSpeed: thirtyMetersRunAtHighSpeed,
+                thirtyMetersRunWithLowStart: thirtyMetersRunWithLowStart,
+                sixtyMetersRunWithLowStart: sixtyMetersRunWithLowStart,
+                eightyMetersRunWithHighStart: eightyMetersRunWithHighStart,
+                oneHundredFiftyMetersRunWithHighStart: oneHundredFiftyMetersRunWithHighStart,
+                awayJumpInPlace: awayJumpInPlace,
+                threeStepsJumpInPlace: threeStepsJumpInPlace,
+                tenStepsJumpInPlace: tenStepsJumpInPlace,
+                runTimeOfLastTwentyMetersInOneHundredMetersRun: runTimeOfLastTwentyMetersInOneHundredMetersRun,
+                strengthCoefficient_K: strengthCoefficient_K,
+                thighsRaiseInPlaceForTenSeconds: thighsRaiseInPlaceForTenSeconds,
+                createAt: datetime,
+                lastModified: datetime
+            };
+
             PhysicalFactorService.createPhysicalFactor(physicalFactor).then(res => {
                 props.history.push('/physicalFactors');
             });
         } 
         else {
+            let physicalFactor = {
+                id: id,
+                athlete: {id: athleteId},
+                timeOfReflectionStart: timeOfReflectionStart,
+                thirtyMetersRunAtHighSpeed: thirtyMetersRunAtHighSpeed,
+                thirtyMetersRunWithLowStart: thirtyMetersRunWithLowStart,
+                sixtyMetersRunWithLowStart: sixtyMetersRunWithLowStart,
+                eightyMetersRunWithHighStart: eightyMetersRunWithHighStart,
+                oneHundredFiftyMetersRunWithHighStart: oneHundredFiftyMetersRunWithHighStart,
+                awayJumpInPlace: awayJumpInPlace,
+                threeStepsJumpInPlace: threeStepsJumpInPlace,
+                tenStepsJumpInPlace: tenStepsJumpInPlace,
+                runTimeOfLastTwentyMetersInOneHundredMetersRun: runTimeOfLastTwentyMetersInOneHundredMetersRun,
+                strengthCoefficient_K: strengthCoefficient_K,
+                thighsRaiseInPlaceForTenSeconds: thighsRaiseInPlaceForTenSeconds,
+                createAt: createAt,
+                lastModified: datetime
+            };
+
             PhysicalFactorService.updatePhysicalFactor(physicalFactor, id).then( res => {
                 props.history.push('/physicalFactors');
             });
@@ -104,7 +130,11 @@ export default function PhysicalFactorUpdate(props) {
                 <Form onSubmit={handleSubmit}>
                     <FormGroup>
                         <Label for="athlete-id">ID Vận động viên</Label>
-                        <Input type="text" name="athlete-id" id="athlete-id" value={athleteId} onChange={handleChangeAthleteId} />
+                        <Input type="select" name="athlete-id" id="athlete-id" value={athleteId} onChange={handleChangeAthleteId}>
+                            {athletes.map((athlete, i) => (
+                                <option>{athlete.id}</option>
+                            ))}
+                        </Input>
                     </FormGroup>
                     <FormGroup>
                         <Label for="criteria-time-of-reflection-start">1. Thời gian phản xạ xuất phát (s)</Label>
@@ -155,16 +185,8 @@ export default function PhysicalFactorUpdate(props) {
                         <Input type="text" id="thighs-raise-in-place-for-ten-seconds" name="criteria" value={thighsRaiseInPlaceForTenSeconds} onChange={handleChangeThighsRaiseInPlaceForTenSeconds} />
                     </FormGroup>
                     <FormGroup>
-                        <Label for="create-at">Ngày tạo</Label>
-                        <Input type="text" name="create-at" id="create-at" value={createAt} onChange={handleChangeCreateAt} />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="last-modified">Cập nhật lần cuối</Label>
-                        <Input type="text" name="last-modified" id="last-modified" value={lastModified} onChange={handleChangeLastModified} />
-                    </FormGroup>
-                    <FormGroup>
-                        <Button color="primary" type="submit">Save</Button>{' '}
-                        <Button color="secondary" tag={Link} to="/physicalFactors">Cancel</Button>
+                        <Button color="primary" type="submit">Lưu</Button>{' '}
+                        <Button color="secondary" tag={Link} to="/physicalFactors">Hủy</Button>
                     </FormGroup>
                 </Form>
             </Container>

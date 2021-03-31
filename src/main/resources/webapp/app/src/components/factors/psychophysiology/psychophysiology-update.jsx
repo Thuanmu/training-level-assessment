@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import PsychophysiologyFactorService from "./psychophysiology-service";
+import AthleteService from "../../athlete/athlete-service";
+import NowDateTime from "../../../utilities/now-date-time";
 
 export default function PsychophysiologyFactorUpdate(props) {
 
+    const [athletes, setAthletes] = useState([]);
     const [id, setId] = useState(props.match.params.id);
     const [athleteId, setAthleteId] = useState('');
     const [singleReflectionTime, setSingleReflectionTime] = useState('');
@@ -36,27 +39,44 @@ export default function PsychophysiologyFactorUpdate(props) {
                 setLastModified(psychophysiologyFactor.lastModified);
             });
         }
+
+        AthleteService.getAthletes().then((res) => {
+            setAthletes(res.data);
+        });
     },[]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let psychophysiologyFactor = {
-            id: id,
-            athlete: {id: athleteId},
-            singleReflectionTime: singleReflectionTime,
-            livingCapacityQuotient: livingCapacityQuotient,
-            restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
-            lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
-            createAt: createAt,
-            lastModified: lastModified
-        };
+        let datetime = NowDateTime.getNowDateTime();
         
         if(!id) {
+            let psychophysiologyFactor = {
+                id: id,
+                athlete: {id: athleteId ? athleteId : athletes[0].id},
+                singleReflectionTime: singleReflectionTime,
+                livingCapacityQuotient: livingCapacityQuotient,
+                restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
+                lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
+                createAt: datetime,
+                lastModified: datetime
+            };
+
             PsychophysiologyFactorService.createPsychophysiologyFactor(psychophysiologyFactor).then(res => {
                 props.history.push('/psychophysiologyFactors');
             });
         } 
         else {
+            let psychophysiologyFactor = {
+                id: id,
+                athlete: {id: athleteId},
+                singleReflectionTime: singleReflectionTime,
+                livingCapacityQuotient: livingCapacityQuotient,
+                restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
+                lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
+                createAt: createAt,
+                lastModified: datetime
+            };
+
             PsychophysiologyFactorService.updatePsychophysiologyFactor(psychophysiologyFactor, id).then( res => {
                 props.history.push('/psychophysiologyFactors');
             });
@@ -72,7 +92,11 @@ export default function PsychophysiologyFactorUpdate(props) {
                 <Form onSubmit={handleSubmit}>
                     <FormGroup>
                         <Label for="athlete-id">ID Vận động viên</Label>
-                        <Input type="text" name="athlete-id" id="athlete-id" value={athleteId} onChange={handleChangeAthleteId} />
+                        <Input type="select" name="athlete-id" id="athlete-id" value={athleteId} onChange={handleChangeAthleteId}>
+                            {athletes.map((athlete, i) => (
+                                <option>{athlete.id}</option>
+                            ))}
+                        </Input>
                     </FormGroup>
                     <FormGroup>
                         <Label for="criteria-single-reflection-time">14. Thời gian phản xạ đơn (s)</Label>
@@ -91,16 +115,8 @@ export default function PsychophysiologyFactorUpdate(props) {
                         <Input type="text" id="lactic-acid-content-after-one-hundred-meters-run" name="criteria" value={lacticAcidContentAfterOneHundredMetersRun} onChange={handleChangeLacticAcidContentAfterOneHundredMetersRun} />
                     </FormGroup>
                     <FormGroup>
-                        <Label for="create-at">Ngày tạo</Label>
-                        <Input type="text" name="create-at" id="create-at" value={createAt} onChange={handleChangeCreateAt} />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="last-modified">Cập nhật lần cuối</Label>
-                        <Input type="text" name="last-modified" id="last-modified" value={lastModified} onChange={handleChangeLastModified} />
-                    </FormGroup>
-                    <FormGroup>
-                        <Button color="primary" type="submit">Save</Button>{' '}
-                        <Button color="secondary" tag={Link} to="/psychophysiologyFactors">Cancel</Button>
+                        <Button color="primary" type="submit">Lưu</Button>{' '}
+                        <Button color="secondary" tag={Link} to="/psychophysiologyFactors">Hủy</Button>
                     </FormGroup>
                 </Form>
             </Container>

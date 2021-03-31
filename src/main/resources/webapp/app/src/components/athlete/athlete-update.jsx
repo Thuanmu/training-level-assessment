@@ -67,7 +67,7 @@ export default function AthleteUpdate(props) {
             let athlete = {
                 id: athleteId,
                 athleteName: athleteName,
-                dateOfBirth: moment(dateOfBirth).format("DD-MM-YYYY"),
+                dateOfBirth: dateOfBirth,
                 hometown: hometown,
                 totalScoresOfCriterias: totalScoresOfCriterias,
                 grade: grade,
@@ -97,11 +97,11 @@ export default function AthleteUpdate(props) {
                     </FormGroup> */}
                     <FormGroup>
                         <Label for="athlete-name">Tên Vận động viên</Label>
-                        <Input type="text" name="athlete-name" id="athlete-name" value={athleteName} onChange={handleAthleteName} required />
+                        <Input type="text"  name="athlete-name" id="athlete-name" value={athleteName} onChange={handleAthleteName} required />
                     </FormGroup>
                     <FormGroup>
                         <Label for="date-of-birth">Ngày sinh</Label>
-                        <Input type="date" name="date-of-birth" id="date-of-birth" value={dateOfBirth} onChange={handleDateOfBirth} required />
+                        <Input type={athleteId ? "text" : "date"} name="date-of-birth" id="date-of-birth" value={dateOfBirth} onChange={handleDateOfBirth} required/>
                     </FormGroup>
                     <FormGroup>
                         <Label for="home-town">Quê quán</Label>

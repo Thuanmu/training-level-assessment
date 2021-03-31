@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import {Button, ButtonGroup, Col, Container, Form, FormGroup, Input, Label, Row} from "reactstrap";
 import { Link } from 'react-router-dom';
 import FormFactorService from "./form-service";
+import NowDateTime from "../../../utilities/now-date-time";
+import AthleteService from "../../athlete/athlete-service";
 
 export default class FormFactorUpdate extends Component {
 
@@ -10,6 +12,7 @@ export default class FormFactorUpdate extends Component {
 
         this.state = {
             id: this.props.match.params.id,
+            athletes: [],
             athleteId: '',
             queteletQuotient: '',
             createAt: '',
@@ -48,24 +51,38 @@ export default class FormFactorUpdate extends Component {
                 });
             });
         }
+
+        AthleteService.getAthletes().then((res) => {
+            this.setState({athletes: res.data});
+        });
     }
 
     handleSubmit(e) {
         e.preventDefault();
-        let formFactor = {
-            id: this.state.id,
-            athlete: {id: this.state.athleteId},
-            queteletQuotient: this.state.queteletQuotient,
-            createAt: this.state.createAt,
-            lastModified: this.state.lastModified
-        };
+        let datetime = NowDateTime.getNowDateTime();
         
         if(!this.state.id) {
+            let formFactor = {
+                id: this.state.id,
+                athlete: {id: this.state.athleteId ? this.state.athleteId : this.state.athletes[0].id},
+                queteletQuotient: this.state.queteletQuotient,
+                createAt: datetime,
+                lastModified: datetime
+            };
+
             FormFactorService.createFormFactor(formFactor).then(res => {
                 this.props.history.push('/formFactors');
             });
         } 
         else {
+            let formFactor = {
+                id: this.state.id,
+                athlete: {id: this.state.athleteId},
+                queteletQuotient: this.state.queteletQuotient,
+                createAt: this.state.createAt,
+                lastModified: datetime
+            };
+
             FormFactorService.updateFormFactor(formFactor, this.state.id).then( res => {
                 this.props.history.push('/formFactors');
             });
@@ -80,25 +97,21 @@ export default class FormFactorUpdate extends Component {
                 <Container>
                     {title}
                     <Form onSubmit={this.handleSubmit}>
-                    <FormGroup>
-                        <Label for="athlete-id">ID Vận động viên</Label>
-                        <Input type="text" name="athlete-id" id="athlete-id" value={this.state.athleteId} onChange={this.handleChangeAthleteId} />
-                    </FormGroup>
+                        <FormGroup>
+                            <Label for="athlete-id">ID Vận động viên</Label>
+                            <Input type="select" name="athlete-id" id="athlete-id" value={this.state.athleteId} onChange={this.handleChangeAthleteId}>
+                                {this.state.athletes.map((athlete, i) => (
+                                    <option>{athlete.id}</option>
+                                ))}
+                            </Input>
+                        </FormGroup>
                         <FormGroup>
                             <Label for="quetelet-quotient">Chỉ số Quetelet (g/cm)</Label>
                             <Input type="text" name="queteletQuotient" id="quetelet-quotient" value={this.state.queteletQuotient} onChange={this.handleChangeQueteletQuotient} />
                         </FormGroup>
                         <FormGroup>
-                            <Label for="create-at">Ngày tạo</Label>
-                            <Input type="text" name="create-at" id="create-at" value={this.state.createAt} onChange={this.handleChangeCreateAt} />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="last-modified">Cập nhật lần cuối</Label>
-                            <Input type="text" name="last-modified" id="last-modified" value={this.state.lastModified} onChange={this.handleChangeLastModified} />
-                        </FormGroup>
-                        <FormGroup>
-                            <Button color="primary" type="submit">Save</Button>{' '}
-                            <Button color="secondary" tag={Link} to="/formFactors">Cancel</Button>
+                            <Button color="primary" type="submit">Lưu</Button>{' '}
+                            <Button color="secondary" tag={Link} to="/formFactors">Hủy</Button>
                         </FormGroup>
                     </Form>
                 </Container>
