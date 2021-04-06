@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import {Button, ButtonGroup, Col, Container, Form, FormGroup, Input, Label, Row} from "reactstrap";
+import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import FormFactorService from "./form-service";
-import NowDateTime from "../../../utilities/now-date-time";
 import AthleteService from "../../athlete/athlete-service";
 
 export default class FormFactorUpdate extends Component {
@@ -31,13 +30,7 @@ export default class FormFactorUpdate extends Component {
     handleChangeQueteletQuotient = event => {
         this.setState({queteletQuotient: event.target.value});
     }
-    handleChangeCreateAt = event => {
-        this.setState({createAt: event.target.value});
-    }
-    handleChangeLastModified = event => {
-        this.setState({lastModified: event.target.value});
-    }
-
+    
     componentDidMount() {
         if(this.state.id) {
             FormFactorService.getFormFactorById(this.state.id).then( res => {
@@ -59,30 +52,20 @@ export default class FormFactorUpdate extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        let datetime = NowDateTime.getNowDateTime();
+        let formFactor = {
+            id: this.state.id,
+            athlete: {id: this.state.athleteId ? this.state.athleteId : this.state.athletes[0].id},
+            queteletQuotient: this.state.queteletQuotient,
+            createAt: this.state.createAt,
+            lastModified: this.state.lastModified
+        };
         
         if(!this.state.id) {
-            let formFactor = {
-                id: this.state.id,
-                athlete: {id: this.state.athleteId ? this.state.athleteId : this.state.athletes[0].id},
-                queteletQuotient: this.state.queteletQuotient,
-                createAt: datetime,
-                lastModified: datetime
-            };
-
             FormFactorService.createFormFactor(formFactor).then(res => {
                 this.props.history.push('/formFactors');
             });
         } 
         else {
-            let formFactor = {
-                id: this.state.id,
-                athlete: {id: this.state.athleteId},
-                queteletQuotient: this.state.queteletQuotient,
-                createAt: this.state.createAt,
-                lastModified: datetime
-            };
-
             FormFactorService.updateFormFactor(formFactor, this.state.id).then( res => {
                 this.props.history.push('/formFactors');
             });

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {Button, Col, Container, Form, FormGroup, Input, Label, Row} from "reactstrap";
+import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 // import {syncHistoryWithStore, routerReducer} from 'react-router-redux';
 import AthleteService from "./athlete-service";
-import NowDateTime from "../../utilities/now-date-time";
 import moment from "moment";
 
 export default function AthleteUpdate(props) {
@@ -45,37 +44,24 @@ export default function AthleteUpdate(props) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let datetime = NowDateTime.getNowDateTime();
+        let athlete = {
+            id: athleteId,
+            athleteName: athleteName,
+            dateOfBirth: athleteId ? dateOfBirth : moment(dateOfBirth).format("DD-MM-YYYY"),
+            hometown: hometown,
+            totalScoresOfCriterias: totalScoresOfCriterias,
+            grade: grade,
+            athleteRank: athleteRank,
+            createAt: createAt,
+            lastModified: lastModified
+        };
     
         if(!athleteId) {
-            let athlete = {
-                athleteName: athleteName,
-                dateOfBirth: moment(dateOfBirth).format("DD-MM-YYYY"),
-                hometown: hometown,
-                totalScoresOfCriterias: totalScoresOfCriterias,
-                grade: grade,
-                athleteRank: athleteRank,
-                createAt: datetime,
-                lastModified: datetime
-            };
-
             AthleteService.createAthlete(athlete).then(res => {
                 props.history.push('/athletes');
             });
         } 
         else {
-            let athlete = {
-                id: athleteId,
-                athleteName: athleteName,
-                dateOfBirth: dateOfBirth,
-                hometown: hometown,
-                totalScoresOfCriterias: totalScoresOfCriterias,
-                grade: grade,
-                athleteRank: athleteRank,
-                createAt: createAt,
-                lastModified: datetime
-            };
-
             AthleteService.updateAthlete(athlete, athleteId).then( res => {
                 props.history.push('/athletes');
             });

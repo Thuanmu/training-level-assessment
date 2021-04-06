@@ -20,6 +20,10 @@ export default function AthleteDetail(props) {
                 <h2>Xem chi tiết Vận động viên</h2>
                 <dl>
                     <dt>
+                        <span>ID</span>
+                    </dt>
+                    <dd>{athlete.id}</dd>
+                    <dt>
                         <span>Tên Vận động viên</span>
                     </dt>
                     <dd>{athlete.athleteName}</dd>

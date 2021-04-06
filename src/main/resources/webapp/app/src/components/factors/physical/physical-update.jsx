@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import PhysicalFactorService from "./physical-service";
-import NowDateTime from "../../../utilities/now-date-time";
 import AthleteService from "../../athlete/athlete-service";
 
 export default function PhysicalFactorUpdate(props) {
@@ -69,52 +68,31 @@ export default function PhysicalFactorUpdate(props) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let datetime = NowDateTime.getNowDateTime();
-        
-        if(!id) {
-            let physicalFactor = {
-                id: id,
-                athlete: {id: athleteId ? athleteId : athletes[0].id},
-                timeOfReflectionStart: timeOfReflectionStart,
-                thirtyMetersRunAtHighSpeed: thirtyMetersRunAtHighSpeed,
-                thirtyMetersRunWithLowStart: thirtyMetersRunWithLowStart,
-                sixtyMetersRunWithLowStart: sixtyMetersRunWithLowStart,
-                eightyMetersRunWithHighStart: eightyMetersRunWithHighStart,
-                oneHundredFiftyMetersRunWithHighStart: oneHundredFiftyMetersRunWithHighStart,
-                awayJumpInPlace: awayJumpInPlace,
-                threeStepsJumpInPlace: threeStepsJumpInPlace,
-                tenStepsJumpInPlace: tenStepsJumpInPlace,
-                runTimeOfLastTwentyMetersInOneHundredMetersRun: runTimeOfLastTwentyMetersInOneHundredMetersRun,
-                strengthCoefficient_K: strengthCoefficient_K,
-                thighsRaiseInPlaceForTenSeconds: thighsRaiseInPlaceForTenSeconds,
-                createAt: datetime,
-                lastModified: datetime
-            };
+        let physicalFactor = {
+            id: id,
+            athlete: {id: athleteId ? athleteId : athletes[0].id},
+            timeOfReflectionStart: timeOfReflectionStart,
+            thirtyMetersRunAtHighSpeed: thirtyMetersRunAtHighSpeed,
+            thirtyMetersRunWithLowStart: thirtyMetersRunWithLowStart,
+            sixtyMetersRunWithLowStart: sixtyMetersRunWithLowStart,
+            eightyMetersRunWithHighStart: eightyMetersRunWithHighStart,
+            oneHundredFiftyMetersRunWithHighStart: oneHundredFiftyMetersRunWithHighStart,
+            awayJumpInPlace: awayJumpInPlace,
+            threeStepsJumpInPlace: threeStepsJumpInPlace,
+            tenStepsJumpInPlace: tenStepsJumpInPlace,
+            runTimeOfLastTwentyMetersInOneHundredMetersRun: runTimeOfLastTwentyMetersInOneHundredMetersRun,
+            strengthCoefficient_K: strengthCoefficient_K,
+            thighsRaiseInPlaceForTenSeconds: thighsRaiseInPlaceForTenSeconds,
+            createAt: createAt,
+            lastModified: lastModified
+        };
 
+        if(!id) { 
             PhysicalFactorService.createPhysicalFactor(physicalFactor).then(res => {
                 props.history.push('/physicalFactors');
             });
         } 
         else {
-            let physicalFactor = {
-                id: id,
-                athlete: {id: athleteId},
-                timeOfReflectionStart: timeOfReflectionStart,
-                thirtyMetersRunAtHighSpeed: thirtyMetersRunAtHighSpeed,
-                thirtyMetersRunWithLowStart: thirtyMetersRunWithLowStart,
-                sixtyMetersRunWithLowStart: sixtyMetersRunWithLowStart,
-                eightyMetersRunWithHighStart: eightyMetersRunWithHighStart,
-                oneHundredFiftyMetersRunWithHighStart: oneHundredFiftyMetersRunWithHighStart,
-                awayJumpInPlace: awayJumpInPlace,
-                threeStepsJumpInPlace: threeStepsJumpInPlace,
-                tenStepsJumpInPlace: tenStepsJumpInPlace,
-                runTimeOfLastTwentyMetersInOneHundredMetersRun: runTimeOfLastTwentyMetersInOneHundredMetersRun,
-                strengthCoefficient_K: strengthCoefficient_K,
-                thighsRaiseInPlaceForTenSeconds: thighsRaiseInPlaceForTenSeconds,
-                createAt: createAt,
-                lastModified: datetime
-            };
-
             PhysicalFactorService.updatePhysicalFactor(physicalFactor, id).then( res => {
                 props.history.push('/physicalFactors');
             });

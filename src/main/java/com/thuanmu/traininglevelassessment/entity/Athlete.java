@@ -10,6 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
@@ -43,12 +46,15 @@ public class Athlete {
 	@Column(name = "athlete_rank", length = 50)
 	private String athleteRank;
 	
+	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-	@Column(name = "create_at")
+	@Column(name = "create_at", updatable=false)
+	@CreationTimestamp
 	private LocalDateTime createAt;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "last_modified")
+	@UpdateTimestamp
 	private LocalDateTime lastModified;
 
 	public Long getId() {

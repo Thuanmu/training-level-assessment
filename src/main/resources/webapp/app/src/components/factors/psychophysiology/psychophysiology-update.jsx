@@ -3,7 +3,6 @@ import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import PsychophysiologyFactorService from "./psychophysiology-service";
 import AthleteService from "../../athlete/athlete-service";
-import NowDateTime from "../../../utilities/now-date-time";
 
 export default function PsychophysiologyFactorUpdate(props) {
 
@@ -22,8 +21,6 @@ export default function PsychophysiologyFactorUpdate(props) {
     const handleChangeLivingCapacityQuotient = event => setLivingCapacityQuotient(event.target.value);
     const handleChangeRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun = event => setRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun(event.target.value);
     const handleChangeLacticAcidContentAfterOneHundredMetersRun = event => setLacticAcidContentAfterOneHundredMetersRun(event.target.value);
-    const handleChangeCreateAt = event => setCreateAt(event.target.value);
-    const handleChangeLastModified = event => setLastModified(event.target.value);
 
     useEffect(() => {
         if(id)  {
@@ -47,36 +44,23 @@ export default function PsychophysiologyFactorUpdate(props) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let datetime = NowDateTime.getNowDateTime();
+        let psychophysiologyFactor = {
+            id: id,
+            athlete: {id: athleteId ? athleteId : athletes[0].id},
+            singleReflectionTime: singleReflectionTime,
+            livingCapacityQuotient: livingCapacityQuotient,
+            restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
+            lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
+            createAt: createAt,
+            lastModified: lastModified
+        };
         
         if(!id) {
-            let psychophysiologyFactor = {
-                id: id,
-                athlete: {id: athleteId ? athleteId : athletes[0].id},
-                singleReflectionTime: singleReflectionTime,
-                livingCapacityQuotient: livingCapacityQuotient,
-                restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
-                lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
-                createAt: datetime,
-                lastModified: datetime
-            };
-
             PsychophysiologyFactorService.createPsychophysiologyFactor(psychophysiologyFactor).then(res => {
                 props.history.push('/psychophysiologyFactors');
             });
         } 
         else {
-            let psychophysiologyFactor = {
-                id: id,
-                athlete: {id: athleteId},
-                singleReflectionTime: singleReflectionTime,
-                livingCapacityQuotient: livingCapacityQuotient,
-                restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
-                lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
-                createAt: createAt,
-                lastModified: datetime
-            };
-
             PsychophysiologyFactorService.updatePsychophysiologyFactor(psychophysiologyFactor, id).then( res => {
                 props.history.push('/psychophysiologyFactors');
             });

@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,11 +36,13 @@ public class FormFactor {
 	private Double queteletQuotient;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-	@Column(name = "create_at")
+	@Column(name = "create_at", updatable=false)
+	@CreationTimestamp
 	private LocalDateTime createAt;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "last_modified")
+	@UpdateTimestamp
 	private LocalDateTime lastModified;
 	
 	public Long getId() {

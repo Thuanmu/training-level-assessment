@@ -3,7 +3,6 @@ import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import TechnicalFactorService from "./technical-service";
 import AthleteService from "../../athlete/athlete-service";
-import NowDateTime from "../../../utilities/now-date-time";
 
 export default function TechnicalFactorUpdate(props) {
 
@@ -16,9 +15,7 @@ export default function TechnicalFactorUpdate(props) {
 
     const handleChangeAthleteId = event => setAthleteId(event.target.value);
     const handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed = event => setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(event.target.value);
-    const handleChangeCreateAt = event => setCreateAt(event.target.value);
-    const handleChangeLastModified = event => setLastModified(event.target.value);
-
+    
     useEffect(() => {
         if(id)  {
             TechnicalFactorService.getTechnicalFactorById(id).then( res => {
@@ -38,30 +35,20 @@ export default function TechnicalFactorUpdate(props) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let datetime = NowDateTime.getNowDateTime();
-        
-        if(!id) {
-            let technicalFactor = {
-                id: id,
-                athlete: {id: athleteId ? athleteId : athletes[0].id},
-                performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed: performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed,
-                createAt: datetime,
-                lastModified: datetime
-            };
+        let technicalFactor = {
+            id: id,
+            athlete: {id: athleteId ? athleteId : athletes[0].id},
+            performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed: performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed,
+            createAt: createAt,
+            lastModified: lastModified
+        };
 
+        if(!id) {
             TechnicalFactorService.createTechnicalFactor(technicalFactor).then(res => {
                 props.history.push('/technicalFactors');
             });
         } 
         else {
-            let technicalFactor = {
-                id: id,
-                athlete: {id: athleteId},
-                performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed: performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed,
-                createAt: createAt,
-                lastModified: datetime
-            };
-
             TechnicalFactorService.updateTechnicalFactor(technicalFactor, id).then( res => {
                 props.history.push('/technicalFactors');
             });
