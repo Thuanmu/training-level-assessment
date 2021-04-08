@@ -33,18 +33,24 @@ public class TechnicalFactorController {
 		this.technicalFactorRepository = technicalFactorRepository;
 	}
 
-	// get all technicalFactors
+	// get all technicalFactors order by createAt desc
     @GetMapping
     public List <TechnicalFactor> getAllTechnicalFactors() {
-        return technicalFactorRepository.findAll();
+        return technicalFactorRepository.findAllByOrderByCreateAtDesc();
     }
     
-    // get TechnicalFactor by id rest api
+    // get technicalFactor by id rest api
     @GetMapping("/{id}")
     ResponseEntity<?> getTechnicalFactor(@PathVariable Long id) {
         Optional<TechnicalFactor> technicalFactor = technicalFactorRepository.findById(id);
         return technicalFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    // get technicalFactors by status rest api
+    @GetMapping("/status")
+    public List<TechnicalFactor> getTechnicalFactorsByStatus() {
+        return technicalFactorRepository.findByStatus();
     }
     
     // create technicalFactor rest api

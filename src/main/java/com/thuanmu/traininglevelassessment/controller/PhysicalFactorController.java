@@ -33,10 +33,10 @@ public class PhysicalFactorController {
 		this.physicalFactorRepository = physicalFactorRepository;
 	}
 
-	// get all physicalFactors
+	// get all physicalFactors order by createAt desc
     @GetMapping
     public List <PhysicalFactor> getAllPhysicalFactors() {
-        return physicalFactorRepository.findAll();
+        return physicalFactorRepository.findAllByOrderByCreateAtDesc();
     }
     
     // get physicalFactor by id rest api
@@ -45,6 +45,12 @@ public class PhysicalFactorController {
         Optional<PhysicalFactor> physicalFactor = physicalFactorRepository.findById(id);
         return physicalFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    // get physicalFactors by status rest api
+    @GetMapping("/status")
+    public List<PhysicalFactor> getPhysicalFactorsByStatus() {
+        return physicalFactorRepository.findByStatus();
     }
     
     // create physicalFactor rest api

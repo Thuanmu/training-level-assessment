@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -66,7 +68,8 @@ public class AthleteClassification {
 	private Long athleteCount;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-	@Column(name = "create_at")
+	@Column(name = "create_at", updatable=false)
+	@CreationTimestamp
 	private LocalDateTime createAt;
 
 	public Long getId() {

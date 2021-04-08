@@ -44,6 +44,9 @@ public class PsychophysiologyFactor {
 	@Column(name = "lactic_acid_content_after_one_hundred_meters_run")
 	private Double lacticAcidContentAfterOneHundredMetersRun;
 	
+	@Column(name = "status")
+	private Character status;
+	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
@@ -103,6 +106,14 @@ public class PsychophysiologyFactor {
 		this.lacticAcidContentAfterOneHundredMetersRun = lacticAcidContentAfterOneHundredMetersRun;
 	}
 
+	public Character getStatus() {
+		return status;
+	}
+
+	public void setStatus(Character status) {
+		this.status = status;
+	}
+	
 	public LocalDateTime getCreateAt() {
 		return createAt;
 	}

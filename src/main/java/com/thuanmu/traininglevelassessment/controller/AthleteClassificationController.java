@@ -25,9 +25,7 @@ public class AthleteClassificationController {
 	
 	@Autowired
     private AthleteClassificationRepository athleteClassificationRepository;
-
-	
-	
+		
 	public AthleteClassificationController(AthleteClassificationRepository athleteClassificationRepository) {
 		super();
 		this.athleteClassificationRepository = athleteClassificationRepository;
@@ -39,11 +37,13 @@ public class AthleteClassificationController {
         return athleteClassificationRepository.findAll();
     }
     
+    // get athleteClassifications by month and year
     @GetMapping("/{month}/{year}")
     public List<AthleteClassification> getRankingsByMonthAndYear(@PathVariable int month, @PathVariable int year) {
     	return athleteClassificationRepository.getRankingsByMonthAndYear(month, year);
     }
     
+    // get athleteClassifications by last date of month
     @GetMapping("/lastDateOfMonth")
     public List<AthleteClassification> getLastDateOfMonth() {
     	return athleteClassificationRepository.getAthleteClassificationByLastDateOfMonth();

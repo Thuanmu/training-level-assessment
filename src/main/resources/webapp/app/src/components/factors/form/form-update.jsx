@@ -14,6 +14,7 @@ export default class FormFactorUpdate extends Component {
             athletes: [],
             athleteId: '',
             queteletQuotient: '',
+            status: '0',
             createAt: '',
             lastModified: ''
         };
@@ -39,6 +40,7 @@ export default class FormFactorUpdate extends Component {
                     id: formFactor.id,
                     athleteId: formFactor.athlete.id,
                     queteletQuotient: formFactor.queteletQuotient,
+                    status: formFactor.status,
                     createAt: formFactor.createAt,
                     lastModified: formFactor.lastModified
                 });
@@ -56,8 +58,7 @@ export default class FormFactorUpdate extends Component {
             id: this.state.id,
             athlete: {id: this.state.athleteId ? this.state.athleteId : this.state.athletes[0].id},
             queteletQuotient: this.state.queteletQuotient,
-            createAt: this.state.createAt,
-            lastModified: this.state.lastModified
+            status: this.state.status,
         };
         
         if(!this.state.id) {
@@ -91,6 +92,10 @@ export default class FormFactorUpdate extends Component {
                         <FormGroup>
                             <Label for="quetelet-quotient">Chỉ số Quetelet (g/cm)</Label>
                             <Input type="text" name="queteletQuotient" id="quetelet-quotient" value={this.state.queteletQuotient} onChange={this.handleChangeQueteletQuotient} />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="status">Trạng thái</Label>
+                            <Input type="text" name="status" id="status" value={this.state.status === '1' ? "Đã phân loại" : "Chưa phân loại"} readOnly/>
                         </FormGroup>
                         <FormGroup>
                             <Button color="primary" type="submit">Lưu</Button>{' '}

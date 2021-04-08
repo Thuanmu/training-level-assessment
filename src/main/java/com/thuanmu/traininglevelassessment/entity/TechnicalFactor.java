@@ -35,6 +35,9 @@ public class TechnicalFactor {
 	@Column(name = "performance_difference")
 	private Double performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed;
 	
+	@Column(name = "status")
+	private Character status;
+	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
@@ -68,6 +71,14 @@ public class TechnicalFactor {
 	public void setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(
 			Double performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed) {
 		this.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed = performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed;
+	}
+	
+	public Character getStatus() {
+		return status;
+	}
+
+	public void setStatus(Character status) {
+		this.status = status;
 	}
 
 	public LocalDateTime getCreateAt() {

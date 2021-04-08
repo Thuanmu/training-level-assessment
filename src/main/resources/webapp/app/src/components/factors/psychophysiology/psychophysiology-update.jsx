@@ -13,6 +13,7 @@ export default function PsychophysiologyFactorUpdate(props) {
     const [livingCapacityQuotient, setLivingCapacityQuotient] = useState('');
     const [restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun, setRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun] = useState('');
     const [lacticAcidContentAfterOneHundredMetersRun, setLacticAcidContentAfterOneHundredMetersRun] = useState('');
+    const [status, setStatus] = useState('0');
     const [createAt, setCreateAt] = useState('');
     const [lastModified, setLastModified] = useState('');
 
@@ -32,6 +33,7 @@ export default function PsychophysiologyFactorUpdate(props) {
                 setLivingCapacityQuotient(psychophysiologyFactor.livingCapacityQuotient);
                 setRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun(psychophysiologyFactor.restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun);
                 setLacticAcidContentAfterOneHundredMetersRun(psychophysiologyFactor.lacticAcidContentAfterOneHundredMetersRun);
+                setStatus(psychophysiologyFactor.status);
                 setCreateAt(psychophysiologyFactor.createAt);
                 setLastModified(psychophysiologyFactor.lastModified);
             });
@@ -51,8 +53,7 @@ export default function PsychophysiologyFactorUpdate(props) {
             livingCapacityQuotient: livingCapacityQuotient,
             restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
             lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
-            createAt: createAt,
-            lastModified: lastModified
+            status: status
         };
         
         if(!id) {
@@ -97,6 +98,10 @@ export default function PsychophysiologyFactorUpdate(props) {
                     <FormGroup>
                         <Label for="criteria-lactic-acid-content-after-one-hundred-meters-run">17. Hàm lượng axit lactic sau chạy 100m (mmol/lít)</Label>
                         <Input type="text" id="lactic-acid-content-after-one-hundred-meters-run" name="criteria" value={lacticAcidContentAfterOneHundredMetersRun} onChange={handleChangeLacticAcidContentAfterOneHundredMetersRun} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="status">Trạng thái</Label>
+                        <Input type="text" name="status" id="status" value={status === '1' ? "Đã phân loại" : "Chưa phân loại"} readOnly/>
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Lưu</Button>{' '}

@@ -35,6 +35,9 @@ public class FormFactor {
 	@Column(name = "quetelet_quotient")
 	private Double queteletQuotient;
 	
+	@Column(name = "status")
+	private Character status;
+	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
@@ -67,6 +70,14 @@ public class FormFactor {
 
 	public void setQueteletQuotient(Double queteletQuotient) {
 		this.queteletQuotient = queteletQuotient;
+	}
+	
+	public Character getStatus() {
+		return status;
+	}
+
+	public void setStatus(Character status) {
+		this.status = status;
 	}
 
 	public LocalDateTime getCreateAt() {

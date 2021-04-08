@@ -85,6 +85,10 @@ export default function PhysicalFactorDetail(props) {
                     </dt>
                     <dd>{physicalFactor.thighsRaiseInPlaceForTenSeconds}</dd>
                     <dt>
+                        <span>Trạng thái</span>
+                    </dt>
+                    <dd>{physicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</dd>
+                    <dt>
                         <span>Ngày tạo</span>
                     </dt>
                     <dd>{physicalFactor.createAt}</dd>

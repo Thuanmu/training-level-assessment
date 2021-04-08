@@ -41,6 +41,10 @@ export default function TechnicalFactorDetail(props) {
                     </dt>
                     <dd>{technicalFactor.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed}</dd>
                     <dt>
+                        <span>Trạng thái</span>
+                    </dt>
+                    <dd>{technicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</dd>
+                    <dt>
                         <span>Ngày tạo</span>
                     </dt>
                     <dd>{technicalFactor.createAt}</dd>

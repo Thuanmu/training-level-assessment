@@ -41,6 +41,10 @@ export default function FormFactorDetail(props) {
                     </dt>
                     <dd>{formFactor.queteletQuotient}</dd>
                     <dt>
+                        <span>Trạng thái</span>
+                    </dt>
+                    <dd>{formFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</dd>
+                    <dt>
                         <span>Ngày tạo</span>
                     </dt>
                     <dd>{formFactor.createAt}</dd>

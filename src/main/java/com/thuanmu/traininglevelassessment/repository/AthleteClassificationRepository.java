@@ -17,7 +17,4 @@ public interface AthleteClassificationRepository extends JpaRepository<AthleteCl
 	@Query(value = "select ac.* from athlete_classification ac where ac.create_at in (select max(ac.create_at) as lastDateOfMonth from athlete_classification ac group by month(ac.create_at)) group by ac.create_at order by ac.create_at desc", nativeQuery = true)
 	List<AthleteClassification> getAthleteClassificationByLastDateOfMonth();
 
-
-
-	
 }

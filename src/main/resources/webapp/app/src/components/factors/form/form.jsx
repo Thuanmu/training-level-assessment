@@ -37,7 +37,7 @@ export default class Form extends Component {
 
   componentDidMount() {
     FormFactorService.getFormFactors().then((res) => {
-      this.setState({formFactors: res.data.reverse()});
+      this.setState({formFactors: res.data});
     });
   }
 
@@ -62,6 +62,7 @@ export default class Form extends Component {
               <th>ID Vận động viên</th>
               <th>Tên Vận động viên</th>
               <th>Chỉ số Quetelet (g/cm)</th>
+              <th>Trạng thái</th>
               <th>Ngày tạo</th>
               <th>Cập nhật lần cuối</th>
               <th>Hành động</th>
@@ -74,6 +75,7 @@ export default class Form extends Component {
                 <td>{formFactor.athlete.id}</td>
                 <td>{formFactor.athlete.athleteName}</td>
                 <td>{formFactor.queteletQuotient}</td>
+                <td>{formFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
                 <td>{formFactor.createAt}</td>
                 <td>{formFactor.lastModified}</td>
                 <td>

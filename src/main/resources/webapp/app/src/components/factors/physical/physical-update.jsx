@@ -21,6 +21,7 @@ export default function PhysicalFactorUpdate(props) {
     const [runTimeOfLastTwentyMetersInOneHundredMetersRun, setRunTimeOfLastTwentyMetersInOneHundredMetersRun] = useState('');
     const [strengthCoefficient_K, setStrengthCoefficient_K] = useState('');
     const [thighsRaiseInPlaceForTenSeconds, setThighsRaiseInPlaceForTenSeconds] = useState('');
+    const [status, setStatus] = useState('0');
     const [createAt, setCreateAt] = useState('');
     const [lastModified, setLastModified] = useState('');
 
@@ -56,6 +57,7 @@ export default function PhysicalFactorUpdate(props) {
                 setRunTimeOfLastTwentyMetersInOneHundredMetersRun(physicalFactor.runTimeOfLastTwentyMetersInOneHundredMetersRun);
                 setStrengthCoefficient_K(physicalFactor.strengthCoefficient_K);
                 setThighsRaiseInPlaceForTenSeconds(physicalFactor.thighsRaiseInPlaceForTenSeconds);
+                setStatus(physicalFactor.status);
                 setCreateAt(physicalFactor.createAt);
                 setLastModified(physicalFactor.lastModified);
             });
@@ -83,8 +85,7 @@ export default function PhysicalFactorUpdate(props) {
             runTimeOfLastTwentyMetersInOneHundredMetersRun: runTimeOfLastTwentyMetersInOneHundredMetersRun,
             strengthCoefficient_K: strengthCoefficient_K,
             thighsRaiseInPlaceForTenSeconds: thighsRaiseInPlaceForTenSeconds,
-            createAt: createAt,
-            lastModified: lastModified
+            status: status
         };
 
         if(!id) { 
@@ -161,6 +162,10 @@ export default function PhysicalFactorUpdate(props) {
                     <FormGroup>
                         <Label for="criteria-thighs-raise-in-place-for-ten-seconds">12. Nâng cao đùi tại chỗ 10s (lần)</Label>
                         <Input type="text" id="thighs-raise-in-place-for-ten-seconds" name="criteria" value={thighsRaiseInPlaceForTenSeconds} onChange={handleChangeThighsRaiseInPlaceForTenSeconds} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="status">Trạng thái</Label>
+                        <Input type="text" name="status" id="status" value={status === '1' ? "Đã phân loại" : "Chưa phân loại"} readOnly/>
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Lưu</Button>{' '}

@@ -27,7 +27,7 @@ export default function Physical(props) {
 
     useEffect(() => {
       PhysicalFactorService.getPhysicalFactors().then((res) => {
-        setPhysicalFactors(res.data.reverse());
+        setPhysicalFactors(res.data);
       });
     }, []);
 
@@ -63,6 +63,7 @@ export default function Physical(props) {
                 <th>Thời gian chạy 20m cuối trong chạy 100m (s)</th>
                 <th>Hệ số sức bền K (s)</th>
                 <th>Nâng cao đùi tại chỗ 10s (lần)</th>
+                <th>Trạng thái</th>
                 <th>Ngày tạo</th>
                 <th>Cập nhật lần cuối</th>
                 <th>Hành động</th>
@@ -86,6 +87,7 @@ export default function Physical(props) {
                   <td>{physicalFactor.runTimeOfLastTwentyMetersInOneHundredMetersRun}</td>
                   <td>{physicalFactor.strengthCoefficient_K}</td>
                   <td>{physicalFactor.thighsRaiseInPlaceForTenSeconds}</td>
+                  <td>{physicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
                   <td>{physicalFactor.createAt}</td>
                   <td>{physicalFactor.lastModified}</td>
                   <td>

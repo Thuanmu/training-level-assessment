@@ -28,7 +28,7 @@ export default function Technical(props) {
 
   useEffect(() => {
     TechnicalFactorService.getTechnicalFactors().then((res) => {
-      setTechnicalFactors(res.data.reverse());
+      setTechnicalFactors(res.data);
     });
   }, []);
 
@@ -53,6 +53,7 @@ export default function Technical(props) {
                 <th>ID Vận động viên</th>
                 <th>Tên vận động viên</th>
                 <th>Hiệu số thành tích chạy 30m xuất phát thấp với chạy 30m tốc độ cao (s)</th>
+                <th>Trạng thái</th>
                 <th>Ngày tạo</th>
                 <th>Cập nhật lần cuối</th>
                 <th>Hành động</th>
@@ -65,6 +66,7 @@ export default function Technical(props) {
                   <td>{technicalFactor.athlete.id}</td>
                   <td>{technicalFactor.athlete.athleteName}</td>
                   <td>{technicalFactor.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed}</td>
+                  <td>{technicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
                   <td>{technicalFactor.createAt}</td>
                   <td>{technicalFactor.lastModified}</td>
                   <td>

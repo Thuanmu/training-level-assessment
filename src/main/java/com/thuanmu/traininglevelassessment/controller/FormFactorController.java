@@ -31,10 +31,10 @@ public class FormFactorController {
 		this.formFactorRepository = formFactorRepository;
 	}
 	
-	// get all formFactors
+	// get all formFactors order by createAt desc
     @GetMapping
     public List <FormFactor> getAllFormFactors() {
-        return formFactorRepository.findAll();
+        return formFactorRepository.findAllByOrderByCreateAtDesc();
     }
     
     // get formFactor by id rest api
@@ -43,6 +43,12 @@ public class FormFactorController {
         Optional<FormFactor> formFactor = formFactorRepository.findById(id);
         return formFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    // get formFactors by status rest api
+    @GetMapping("/status")
+    public List<FormFactor> getFormFactorsByStatus() {
+        return formFactorRepository.findByStatus();
     }
     
     // create formFactor rest api

@@ -69,6 +69,9 @@ public class PhysicalFactor {
 	@Column(name = "thighs_raise_in_place_for_ten_seconds")
 	private Double thighsRaiseInPlaceForTenSeconds;
 	
+	@Column(name = "status")
+	private Character status;
+	
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
@@ -189,6 +192,14 @@ public class PhysicalFactor {
 
 	public void setThighsRaiseInPlaceForTenSeconds(Double thighsRaiseInPlaceForTenSeconds) {
 		this.thighsRaiseInPlaceForTenSeconds = thighsRaiseInPlaceForTenSeconds;
+	}
+	
+	public Character getStatus() {
+		return status;
+	}
+
+	public void setStatus(Character status) {
+		this.status = status;
 	}
 
 	public LocalDateTime getCreateAt() {

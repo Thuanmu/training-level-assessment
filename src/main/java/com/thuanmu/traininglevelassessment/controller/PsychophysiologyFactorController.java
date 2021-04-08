@@ -33,10 +33,10 @@ public class PsychophysiologyFactorController {
 		this.psychophysiologyFactorRepository = psychophysiologyFactorRepository;
 	}
 
-	// get all psychophysiologyFactors
+	// get all psychophysiologyFactors order by createAt desc
     @GetMapping
     public List <PsychophysiologyFactor> getAllPsychophysiologyFactors() {
-        return psychophysiologyFactorRepository.findAll();
+        return psychophysiologyFactorRepository.findAllByOrderByCreateAtDesc();
     }
     
     // get psychophysiologyFactor by id rest api
@@ -45,6 +45,12 @@ public class PsychophysiologyFactorController {
         Optional<PsychophysiologyFactor> psychophysiologyFactor = psychophysiologyFactorRepository.findById(id);
         return psychophysiologyFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    // get psychophysiologyFactors by status rest api
+    @GetMapping("/status")
+    public List<PsychophysiologyFactor> getPsychophysiologyFactorsByStatus() {
+        return psychophysiologyFactorRepository.findByStatus();
     }
     
     // create psychophysiologyFactor rest api

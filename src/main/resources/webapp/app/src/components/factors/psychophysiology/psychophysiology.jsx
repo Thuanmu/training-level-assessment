@@ -27,7 +27,7 @@ export default function Psychophysiology(props) {
 
     useEffect(() => {
       PsychophysiologyFactorService.getPsychophysiologyFactors().then((res) => {
-        setPsychophysiologyFactors(res.data.reverse());
+        setPsychophysiologyFactors(res.data);
       });
     }, []);
 
@@ -54,6 +54,7 @@ export default function Psychophysiology(props) {
                 <th>Chỉ số dung tích sống (ml/kg)</th>
                 <th>Tần số tim hồi phục 30s sau chạy 100m (lần/ph)</th>
                 <th>Hàm lượng LA sau chạy 100m (mmol/lít)</th>
+                <th>Trạng thái</th>
                 <th>Ngày tạo</th>
                 <th>Cập nhật lần cuối</th>
                 <th>Hành động</th>
@@ -69,6 +70,7 @@ export default function Psychophysiology(props) {
                   <td>{psychophysiologyFactor.livingCapacityQuotient}</td>
                   <td>{psychophysiologyFactor.restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun}</td>
                   <td>{psychophysiologyFactor.lacticAcidContentAfterOneHundredMetersRun}</td>
+                  <td>{psychophysiologyFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
                   <td>{psychophysiologyFactor.createAt}</td>
                   <td>{psychophysiologyFactor.lastModified}</td>
                   <td>

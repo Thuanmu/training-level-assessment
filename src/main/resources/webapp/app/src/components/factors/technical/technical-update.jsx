@@ -10,6 +10,7 @@ export default function TechnicalFactorUpdate(props) {
     const [id, setId] = useState(props.match.params.id);
     const [athleteId, setAthleteId] = useState('');
     const [performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed, setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed] = useState('');
+    const [status, setStatus] = useState('0');
     const [createAt, setCreateAt] = useState('');
     const [lastModified, setLastModified] = useState('');
 
@@ -23,6 +24,7 @@ export default function TechnicalFactorUpdate(props) {
                 setId(technicalFactor.id);
                 setAthleteId(technicalFactor.athlete.id);
                 setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(technicalFactor.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed);
+                setStatus(technicalFactor.status);
                 setCreateAt(technicalFactor.createAt);
                 setLastModified(technicalFactor.lastModified);
             });
@@ -39,8 +41,7 @@ export default function TechnicalFactorUpdate(props) {
             id: id,
             athlete: {id: athleteId ? athleteId : athletes[0].id},
             performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed: performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed,
-            createAt: createAt,
-            lastModified: lastModified
+            status: status
         };
 
         if(!id) {
@@ -73,6 +74,10 @@ export default function TechnicalFactorUpdate(props) {
                     <FormGroup>
                         <Label for="performance-difference">Hiệu số thành tích chạy 30m xuất phát thấp với chạy 30m tốc độ cao (s)</Label>
                         <Input type="text" name="performance-difference" id="performance-difference" value={performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed} onChange={handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="status">Trạng thái</Label>
+                        <Input type="text" name="status" id="status" value={status === '1' ? "Đã phân loại" : "Chưa phân loại"} readOnly/>
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Lưu</Button>{' '}

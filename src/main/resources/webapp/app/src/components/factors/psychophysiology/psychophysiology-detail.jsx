@@ -53,6 +53,10 @@ export default function PsychophysiologyFactorDetail(props) {
                     </dt>
                     <dd>{psychophysiologyFactor.lacticAcidContentAfterOneHundredMetersRun}</dd>
                     <dt>
+                        <span>Trạng thái</span>
+                    </dt>
+                    <dd>{psychophysiologyFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</dd>
+                    <dt>
                         <span>Ngày tạo</span>
                     </dt>
                     <dd>{psychophysiologyFactor.createAt}</dd>
