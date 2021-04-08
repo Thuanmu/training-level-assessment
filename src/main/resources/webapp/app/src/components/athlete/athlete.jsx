@@ -18,10 +18,15 @@ export default function Athlete(props) {
         props.history.push(`/athletes/${id}/edit`);
     }
 
-    const deleteAthlete = id => {
-        AthleteService.deleteAthlete(id).then( (res) => {
-         setAthletes(athletes.filter(athlete => athlete.id !== id));
-        });
+    const deleteAthlete = (id, grade) => {
+        if (grade === '') {
+            AthleteService.deleteAthlete(id).then( (res) => {
+                setAthletes(athletes.filter(athlete => athlete.id !== id));
+            });
+        }
+        else {
+            alert("Bạn không thể xóa vận động viên đã phân loại");
+        }
     }
 
     useEffect(() => {
@@ -72,9 +77,9 @@ export default function Athlete(props) {
                                 <td>{athlete.lastModified}</td>
                                 <td>
                                     <ButtonGroup>
-                                        <Button size="sm" color="info" onClick={() => viewAthlete(athlete.id)}>Xem</Button>
+                                        <Button size="sm" color="info" onClick={() => viewAthlete(athlete.id)} >Xem</Button>
                                         <Button size="sm" color="primary" onClick={() => editAthlete(athlete.id)} >Sửa</Button>
-                                        <Button size="sm" color="danger" onClick={() => deleteAthlete(athlete.id)} >Xóa</Button>
+                                        <Button size="sm" color="danger" onClick={() => deleteAthlete(athlete.id, athlete.grade)} >Xóa</Button>
                                     </ButtonGroup>
                                 </td>
                             </tr>

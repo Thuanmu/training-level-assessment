@@ -137,10 +137,10 @@ export default function AthleteClassification(props) {
       }
     }
     else if (physicalFactors.length === 0 && technicalFactors.length === 0 && psychophysiologyFactors.length === 0 && formFactors.length === 0) {
-      alert("Các yếu tố của các vận động viên đã được phân loại. Vui lòng thêm các yếu tố mới để được phân loại.");
+      alert("Các yếu tố của các vận động viên đã được phân loại. Vui lòng thêm các yếu tố mới để phân loại.");
     }
     else {
-      alert("Vui lòng thêm các yếu tố cho các vận động viên.");
+      alert("Vui lòng thêm đầy đủ các yếu tố cho các vận động viên.");
     }
   }
   

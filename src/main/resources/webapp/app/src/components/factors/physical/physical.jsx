@@ -14,14 +14,24 @@ export default function Physical(props) {
       props.history.push(`/physicalFactors/${id}/detail`);
     }
   
-    const editPhysicalFactor = id => {
-      props.history.push(`/physicalFactors/${id}/edit`);
+    const editPhysicalFactor = (id, status) => {
+      if (status === '0') {
+        props.history.push(`/physicalFactors/${id}/edit`);
+      }
+      else {
+        alert("Bạn không thể sửa yếu tố thể lực đã phân loại");
+      }
     }
   
-    const deletePhysicalFactor = id => {
-      PhysicalFactorService.deletePhysicalFactor(id).then( (res) => {
-        setPhysicalFactors(physicalFactors.filter(physicalFactor => physicalFactor.id !== id));
-      });
+    const deletePhysicalFactor = (id, status) => {
+      if (status === '0') {
+        PhysicalFactorService.deletePhysicalFactor(id).then( (res) => {
+          setPhysicalFactors(physicalFactors.filter(physicalFactor => physicalFactor.id !== id));
+        });
+      }
+      else {
+        alert("Bạn không thể xóa yếu tố thể lực đã phân loại");
+      }
     }
   
 
@@ -93,8 +103,8 @@ export default function Physical(props) {
                   <td>
                     <ButtonGroup>
                       <Button size="sm" color="info" onClick={() => viewPhysicalFactor(physicalFactor.id)}>Xem</Button>
-                      <Button size="sm" color="primary" onClick={() => editPhysicalFactor(physicalFactor.id)} >Sửa</Button>
-                      <Button size="sm" color="danger" onClick={() => deletePhysicalFactor(physicalFactor.id)} >Xóa</Button>
+                      <Button size="sm" color="primary" onClick={() => editPhysicalFactor(physicalFactor.id, physicalFactor.status)} >Sửa</Button>
+                      <Button size="sm" color="danger" onClick={() => deletePhysicalFactor(physicalFactor.id, physicalFactor.status)} >Xóa</Button>
                     </ButtonGroup>
                   </td>
                 </tr>

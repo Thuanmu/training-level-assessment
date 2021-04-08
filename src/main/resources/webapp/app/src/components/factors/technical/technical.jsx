@@ -15,14 +15,24 @@ export default function Technical(props) {
     props.history.push(`/technicalFactors/${id}/detail`);
   }
 
-  const editTechnicalFactor = id => {
-    props.history.push(`/technicalFactors/${id}/edit`);
+  const editTechnicalFactor = (id, status) => {
+    if (status === '0') {
+      props.history.push(`/technicalFactors/${id}/edit`);
+    }
+    else {
+      alert("Bạn không thể sửa yếu tố kỹ thuật đã phân loại");
+    }
   }
 
-  const deleteTechnicalFactor = id => {
-    TechnicalFactorService.deleteTechnicalFactor(id).then( (res) => {
-      setTechnicalFactors(technicalFactors.filter(technicalFactor => technicalFactor.id !== id));
-    });
+  const deleteTechnicalFactor = (id, status) => {
+    if (status === '0') {
+      TechnicalFactorService.deleteTechnicalFactor(id).then( (res) => {
+        setTechnicalFactors(technicalFactors.filter(technicalFactor => technicalFactor.id !== id));
+      });
+    }
+    else {
+      alert("Bạn không thể xóa yếu tố kỹ thuật đã phân loại");
+    }
   }
 
 
@@ -72,8 +82,8 @@ export default function Technical(props) {
                   <td>
                     <ButtonGroup>
                       <Button size="sm" color="info" onClick={() => viewTechnicalFactor(technicalFactor.id)}>Xem</Button>
-                      <Button size="sm" color="primary" onClick={() => editTechnicalFactor(technicalFactor.id)} >Sửa</Button>
-                      <Button size="sm" color="danger" onClick={() => deleteTechnicalFactor(technicalFactor.id)} >Xóa</Button>
+                      <Button size="sm" color="primary" onClick={() => editTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Sửa</Button>
+                      <Button size="sm" color="danger" onClick={() => deleteTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Xóa</Button>
                     </ButtonGroup>
                   </td>
                 </tr>

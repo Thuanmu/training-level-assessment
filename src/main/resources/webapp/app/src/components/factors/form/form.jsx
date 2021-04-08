@@ -25,14 +25,24 @@ export default class Form extends Component {
       this.props.history.push(`/formFactors/${id}/detail`);
   }
   
-  editFormFactor(id) {
+  editFormFactor(id, status) {
+    if (status === '0') {
       this.props.history.push(`/formFactors/${id}/edit`);
+    }
+    else {
+      alert("Bạn không thể sửa yếu tố hình thái đã phân loại");
+    }
   }
 
-  deleteFormFactor(id) {
-    FormFactorService.deleteFormFactor(id).then( (res) => {
-      this.setState({formFactors: this.state.formFactors.filter(formFactor => formFactor.id !== id)});
-    });
+  deleteFormFactor(id, status) {
+    if (status === '0') {
+      FormFactorService.deleteFormFactor(id).then( (res) => {
+        this.setState({formFactors: this.state.formFactors.filter(formFactor => formFactor.id !== id)});
+      });
+    }
+    else {
+      alert("Bạn không thể xóa yếu tố hình thái đã phân loại");
+    }
   }
 
   componentDidMount() {
@@ -81,8 +91,8 @@ export default class Form extends Component {
                 <td>
                   <ButtonGroup>
                     <Button size="sm" color="info" onClick={() => this.viewFormFactor(formFactor.id)}>Xem</Button>
-                    <Button size="sm" color="primary" onClick={() => this.editFormFactor(formFactor.id)}>Sửa</Button>
-                    <Button size="sm" color="danger" onClick={() => this.deleteFormFactor(formFactor.id)}>Xóa</Button>
+                    <Button size="sm" color="primary" onClick={() => this.editFormFactor(formFactor.id, formFactor.status)}>Sửa</Button>
+                    <Button size="sm" color="danger" onClick={() => this.deleteFormFactor(formFactor.id, formFactor.status)}>Xóa</Button>
                   </ButtonGroup>
                 </td>
               </tr>

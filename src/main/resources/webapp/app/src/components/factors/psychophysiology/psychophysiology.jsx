@@ -15,14 +15,24 @@ export default function Psychophysiology(props) {
     props.history.push(`/psychophysiologyFactors/${id}/detail`);
   }
 
-  const editPsychophysiologyFactor = id => {
-    props.history.push(`/psychophysiologyFactors/${id}/edit`);
+  const editPsychophysiologyFactor = (id, status) => {
+    if (status === '0') {
+      props.history.push(`/psychophysiologyFactors/${id}/edit`);
+    }
+    else {
+      alert("Bạn không thể sửa yếu tố tâm-sinh lý đã phân loại");
+    }
   }
 
-  const deletePsychophysiologyFactor = id => {
-    PsychophysiologyFactorService.deletePsychophysiologyFactor(id).then( (res) => {
-      setPsychophysiologyFactors(psychophysiologyFactors.filter(psychophysiologyFactor => psychophysiologyFactor.id !== id));
-    });
+  const deletePsychophysiologyFactor = (id, status) => {
+    if (status === '0') {
+      PsychophysiologyFactorService.deletePsychophysiologyFactor(id).then( (res) => {
+        setPsychophysiologyFactors(psychophysiologyFactors.filter(psychophysiologyFactor => psychophysiologyFactor.id !== id));
+      });
+    }
+    else {
+      alert("Bạn không thể xóa yếu tố tâm-sinh lý đã phân loại");
+    }
   }
 
     useEffect(() => {
@@ -76,8 +86,8 @@ export default function Psychophysiology(props) {
                   <td>
                     <ButtonGroup>
                       <Button size="sm" color="info" onClick={() => viewPsychophysiologyFactor(psychophysiologyFactor.id)}>Xem</Button>
-                      <Button size="sm" color="primary" onClick={() => editPsychophysiologyFactor(psychophysiologyFactor.id)} >Sửa</Button>
-                      <Button size="sm" color="danger" onClick={() => deletePsychophysiologyFactor(psychophysiologyFactor.id)} >Xóa</Button>
+                      <Button size="sm" color="primary" onClick={() => editPsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Sửa</Button>
+                      <Button size="sm" color="danger" onClick={() => deletePsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Xóa</Button>
                     </ButtonGroup>
                   </td>
                 </tr>
