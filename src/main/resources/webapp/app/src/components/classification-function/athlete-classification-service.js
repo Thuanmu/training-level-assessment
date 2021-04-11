@@ -12,6 +12,10 @@ export default class AthleteClassificationService {
         return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/lastDateOfMonth');
     }
 
+    static getAthleteClassificationByAthleteIdAndLastDateOfMonth(athleteId) {
+        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/' + athleteId + '/lastDateOfMonth');
+    }
+
     static getRankingsByMonthAndYear(month, year){
         return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/' + month + '/' + year);
     }

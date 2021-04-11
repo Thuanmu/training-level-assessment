@@ -40,13 +40,19 @@ public class AthleteClassificationController {
     // get athleteClassifications by month and year
     @GetMapping("/{month}/{year}")
     public List<AthleteClassification> getRankingsByMonthAndYear(@PathVariable int month, @PathVariable int year) {
-    	return athleteClassificationRepository.getRankingsByMonthAndYear(month, year);
+    	return athleteClassificationRepository.findByMonthAndYear(month, year);
     }
     
     // get athleteClassifications by last date of month
     @GetMapping("/lastDateOfMonth")
-    public List<AthleteClassification> getLastDateOfMonth() {
-    	return athleteClassificationRepository.getAthleteClassificationByLastDateOfMonth();
+    public List<AthleteClassification> getAthleteClassificationByLastDateOfMonth() {
+    	return athleteClassificationRepository.findByLastDateOfMonth();
+    }
+    
+    // get athleteClassifications by athleteId and last date of month
+    @GetMapping("/{athleteId}/lastDateOfMonth")
+    public List<AthleteClassification> getAthleteClassificationByAthleteIdAndLastDateOfMonth(@PathVariable Long athleteId) {
+    	return athleteClassificationRepository.findByAthleteIdAndLastDateOfMonth(athleteId);
     }
     
     // get athleteClassification by id rest api

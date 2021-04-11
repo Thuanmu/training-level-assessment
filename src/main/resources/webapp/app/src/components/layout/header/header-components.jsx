@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Container, NavbarBrand, NavItem, NavLink, Row } from "reactstrap";
+import { Container, NavbarBrand, NavLink, Row } from "reactstrap";
 import { NavLink as Link } from 'react-router-dom';
 
 export const Brand = props => (

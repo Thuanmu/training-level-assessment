@@ -22,6 +22,10 @@ import FormFactorDetail from "./components/factors/form/form-detail";
 import PhysicalFactorDetail from "./components/factors/physical/physical-detail";
 import PsychophysiologyFactorDetail from "./components/factors/psychophysiology/psychophysiology-detail";
 import TechnicalFactorDetail from "./components/factors/technical/technical-detail";
+import PsychophysiologyFactorChart from "./components/charts/psychophysiologyFactorChart";
+import FormFactorChart from "./components/charts/formFactorChart";
+import TechnicalFactorChart from "./components/charts/technicalFactorChart";
+import PhysicalFactorChart from "./components/charts/physicalFactorChart";
 
 
 function App() {
@@ -32,7 +36,12 @@ function App() {
         <Route path="/" component={Home} exact />
         <Route path="/athlete-classification" component={AthleteClassification} exact />
         <Route path="/rankingsList" component={Rankings} exact />
-        
+
+        {/* charts */}
+        <Route path="/physicalFactorChart" component={PhysicalFactorChart} exact />
+        <Route path="/technicalFactorChart" component={TechnicalFactorChart} exact />
+        <Route path="/psychophysiologyFactorChart" component={PsychophysiologyFactorChart} exact />
+        <Route path="/formFactorChart" component={FormFactorChart} exact />
         
         {/*form*/}
         <Route path="/formFactors" component={Form} exact/>
