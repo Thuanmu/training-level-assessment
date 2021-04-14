@@ -6,7 +6,7 @@ import FormFactorService from "./form-service";
 export default function FormFactorDetail(props) {
 
     const [id, setId] = useState(props.match.params.id);
-    const [athleteId, setAthleteId] = useState('');
+    const [athleteCode, setAthleteCode] = useState('');
     const [athleteName, setAthleteName] = useState('');
     const [formFactor, setFormFactor] = useState({});
 
@@ -14,7 +14,7 @@ export default function FormFactorDetail(props) {
         FormFactorService.getFormFactorById(id).then( res => {
             var formFactor = res.data;
             setFormFactor(formFactor);
-            setAthleteId(formFactor.athlete.id);
+            setAthleteCode(formFactor.athlete.athleteCode);
             setAthleteName(formFactor.athlete.athleteName);
         });
     },[]);
@@ -25,15 +25,15 @@ export default function FormFactorDetail(props) {
                 <h2>Xem chi tiết Yếu tố hình thái</h2>
                 <dl>
                     <dt>
-                        <span>ID</span>
+                        <span>Mã yếu tố hình thái</span>
                     </dt>
-                    <dd>{formFactor.id}</dd>
+                    <dd>{formFactor.formFactorCode}</dd>
                     <dt>
-                        <span>ID Vận động viên</span>
+                        <span>Mã vận động viên</span>
                     </dt>
-                    <dd>{athleteId}</dd>
+                    <dd>{athleteCode}</dd>
                     <dt>
-                        <span>Tên Vận động viên</span>
+                        <span>Tên vận động viên</span>
                     </dt>
                     <dd>{athleteName}</dd>
                     <dt>
@@ -48,10 +48,6 @@ export default function FormFactorDetail(props) {
                         <span>Ngày tạo</span>
                     </dt>
                     <dd>{formFactor.createAt}</dd>
-                    <dt>
-                        <span>Cập nhật lần cuối</span>
-                    </dt>
-                    <dd>{formFactor.lastModified}</dd>
                 </dl>
                 <Button color="primary" tag={Link} to={`/formFactors/${formFactor.id}/edit`} >Sửa</Button>
                 &nbsp;

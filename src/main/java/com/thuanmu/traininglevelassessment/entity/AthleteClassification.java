@@ -51,10 +51,7 @@ public class AthleteClassification {
 	@JoinColumn(name = "form_factor_id", referencedColumnName = "id", nullable = false, unique = true)
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private FormFactor formFactor;
-	
-//	@Column(name = "rankings_ordinal_number", nullable = false)
-//	private Long rankingsOrdinalNumber;
-	
+		
 	@Column(name = "total_scores_of_criterias", length = 3)
 	private Double totalScoresOfCriterias;
 	
@@ -67,7 +64,7 @@ public class AthleteClassification {
 	@Column(name = "athlete_count", length = 50)
 	private Long athleteCount;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@JsonFormat(pattern = "MM-yyyy")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
 	private LocalDateTime createAt;
@@ -159,7 +156,4 @@ public class AthleteClassification {
 	public void setCreateAt(LocalDateTime createAt) {
 		this.createAt = createAt;
 	}
-
-	
-	
 }

@@ -16,6 +16,10 @@ export default class FormFactorService {
         return axios.get(FORM_FACTOR_API_BASE_URL + '/' + formFactorId);
     }
 
+    static getFormFactorByFormFactorCode(formFactorCode){
+        return axios.get(FORM_FACTOR_API_BASE_URL + '/' + formFactorCode + '/code');
+    }
+
     static getFormFactorsByStatus() {
         return axios.get(FORM_FACTOR_API_BASE_URL + '/status')
     }

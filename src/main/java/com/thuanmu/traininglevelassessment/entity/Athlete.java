@@ -26,6 +26,9 @@ public class Athlete {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
 	private Long id;
+	
+	@Column(name = "athlete_code", length = 255, nullable = false, unique = true)
+	private String athleteCode;
 		
 	@Column(name = "athlete_name", length = 255)
 	private String athleteName;
@@ -63,6 +66,14 @@ public class Athlete {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+		
+	public String getAthleteCode() {
+		return athleteCode;
+	}
+
+	public void setAthleteCode(String athleteCode) {
+		this.athleteCode = athleteCode;
 	}
 
 	public String getAthleteName() {
@@ -127,8 +138,7 @@ public class Athlete {
 
 	public void setLastModified(LocalDateTime lastModified) {
 		this.lastModified = lastModified;
-	}
-		
+	}	
 }
 
 	

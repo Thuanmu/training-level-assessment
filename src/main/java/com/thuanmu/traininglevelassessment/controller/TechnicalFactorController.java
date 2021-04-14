@@ -47,6 +47,14 @@ public class TechnicalFactorController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
+    // get technicalFactor by technicalFactorCode rest api
+    @GetMapping("/{technicalFactorCode}/code")
+    ResponseEntity<?> getTechnicalFactorByTechnicalFactorCode(@PathVariable String technicalFactorCode) {
+        Optional<TechnicalFactor> technicalFactor = technicalFactorRepository.findByTechnicalFactorCode(technicalFactorCode);
+        return technicalFactor.map(response -> ResponseEntity.ok().body(response))
+                .orElse(null);
+    }
+    
     // get technicalFactors by status rest api
     @GetMapping("/status")
     public List<TechnicalFactor> getTechnicalFactorsByStatus() {

@@ -6,7 +6,7 @@ import TechnicalFactorService from "./technical-service";
 export default function TechnicalFactorDetail(props) {
 
     const [id, setId] = useState(props.match.params.id);
-    const [athleteId, setAthleteId] = useState('');
+    const [athleteCode, setAthleteCode] = useState('');
     const [athleteName, setAthleteName] = useState('');
     const [technicalFactor, setTechnicalFactor] = useState({});
 
@@ -14,7 +14,7 @@ export default function TechnicalFactorDetail(props) {
         TechnicalFactorService.getTechnicalFactorById(id).then( res => {
             var technicalFactor = res.data;
             setTechnicalFactor(technicalFactor);
-            setAthleteId(technicalFactor.athlete.id);
+            setAthleteCode(technicalFactor.athlete.athleteCode);
             setAthleteName(technicalFactor.athlete.athleteName);
         });
     },[]);
@@ -22,18 +22,18 @@ export default function TechnicalFactorDetail(props) {
     return(
         <div>
             <Container>
-                <h2>Xem chi tiết Yếu tố kỹ thuật</h2>
+                <h2>Xem chi tiết yếu tố kỹ thuật</h2>
                 <dl>
                     <dt>
-                        <span>ID</span>
+                        <span>Mã yếu tố kỹ thuật</span>
                     </dt>
-                    <dd>{technicalFactor.id}</dd>
+                    <dd>{technicalFactor.technicalFactorCode}</dd>
                     <dt>
-                        <span>ID Vận động viên</span>
+                        <span>Mã vận động viên</span>
                     </dt>
-                    <dd>{athleteId}</dd>
+                    <dd>{athleteCode}</dd>
                     <dt>
-                        <span>Tên Vận động viên</span>
+                        <span>Tên vận động viên</span>
                     </dt>
                     <dd>{athleteName}</dd>
                     <dt>
@@ -48,10 +48,6 @@ export default function TechnicalFactorDetail(props) {
                         <span>Ngày tạo</span>
                     </dt>
                     <dd>{technicalFactor.createAt}</dd>
-                    <dt>
-                        <span>Cập nhật lần cuối</span>
-                    </dt>
-                    <dd>{technicalFactor.lastModified}</dd>
                 </dl>
                 <Button color="primary" tag={Link} to={`/technicalFactors/${technicalFactor.id}/edit`} >Sửa</Button>
                 &nbsp;

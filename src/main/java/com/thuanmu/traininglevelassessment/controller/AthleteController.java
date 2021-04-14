@@ -35,7 +35,7 @@ public class AthleteController {
 
 	// get all athletes
     @GetMapping
-    public List <Athlete> getAllAthletes() {
+    public List<Athlete> getAllAthletes() {
         return athleteRepository.findAll();
     }
     
@@ -43,6 +43,14 @@ public class AthleteController {
     @GetMapping("/{id}")
     ResponseEntity<?> getAthlete(@PathVariable Long id) {
         Optional<Athlete> athlete = athleteRepository.findById(id);
+        return athlete.map(response -> ResponseEntity.ok().body(response))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    // get athlete by athleteCode rest api
+    @GetMapping("/{athleteCode}/code")
+    ResponseEntity<?> getAthleteByAthleteCode(@PathVariable String athleteCode) {
+        Optional<Athlete> athlete = athleteRepository.findByAthleteCode(athleteCode);
         return athlete.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

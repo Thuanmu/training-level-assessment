@@ -28,6 +28,9 @@ public class PhysicalFactor {
     @Column(name = "id", nullable = false)
 	private Long id;
 	
+	@Column(name = "physical_factor_code", length = 255, nullable = false, unique = true)
+	private String physicalFactorCode;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "athlete_id", referencedColumnName = "id", nullable = false)
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -72,22 +75,25 @@ public class PhysicalFactor {
 	@Column(name = "status")
 	private Character status;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@JsonFormat(pattern = "MM-yyyy")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
 	private LocalDateTime createAt;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-	@Column(name = "last_modified")
-	@UpdateTimestamp
-	private LocalDateTime lastModified;
-
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getPhysicalFactorCode() {
+		return physicalFactorCode;
+	}
+
+	public void setPhysicalFactorCode(String physicalFactorCode) {
+		this.physicalFactorCode = physicalFactorCode;
 	}
 
 	public Athlete getAthlete() {
@@ -209,14 +215,4 @@ public class PhysicalFactor {
 	public void setCreateAt(LocalDateTime createAt) {
 		this.createAt = createAt;
 	}
-
-	public LocalDateTime getLastModified() {
-		return lastModified;
-	}
-
-	public void setLastModified(LocalDateTime lastModified) {
-		this.lastModified = lastModified;
-	}
-
-	
 }

@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,6 +26,9 @@ public class FormFactor {
     @Column(name = "id", nullable = false)
 	private Long id;
 	
+	@Column(name = "form_factor_code", length = 255, nullable = false, unique = true)
+	private String formFactorCode;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "athlete_id", referencedColumnName = "id", nullable = false)
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -38,15 +40,10 @@ public class FormFactor {
 	@Column(name = "status")
 	private Character status;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@JsonFormat(pattern = "MM-yyyy")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
 	private LocalDateTime createAt;
-	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-	@Column(name = "last_modified")
-	@UpdateTimestamp
-	private LocalDateTime lastModified;
 	
 	public Long getId() {
 		return id;
@@ -55,7 +52,15 @@ public class FormFactor {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+		
+	public String getFormFactorCode() {
+		return formFactorCode;
+	}
+
+	public void setFormFactorCode(String formFactorCode) {
+		this.formFactorCode = formFactorCode;
+	}
+
 	public Athlete getAthlete() {
 		return athlete;
 	}
@@ -87,14 +92,4 @@ public class FormFactor {
 	public void setCreateAt(LocalDateTime createAt) {
 		this.createAt = createAt;
 	}
-
-	public LocalDateTime getLastModified() {
-		return lastModified;
-	}
-
-	public void setLastModified(LocalDateTime lastModified) {
-		this.lastModified = lastModified;
-	}
-
-	
 }

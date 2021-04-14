@@ -10,32 +10,31 @@ export default function Rankings(props) {
   const [rankings, setRankings] = useState([]);
   const [monthYear, setMonthYear] = useState('');
 
-  
-
-  useEffect(() => {
-    AthleteClassificationService.getAthleteClassificationByLastDateOfMonth().then((res) => {
-      setAthleteClassifications(res.data);
-      let athleteClassifications = res.data;
-      AthleteClassificationService.getRankingsByMonthAndYear(athleteClassifications[0].createAt.substring(3,5), athleteClassifications[0].createAt.substring(6,10)).then((res) => {
-        setRankings(res.data);
-        setMonthYear(athleteClassifications[0].createAt.substring(3,10));
-      });
-    });
-  },[]);
-
   const handleOption = (month, year, monthYear) => {
     setMonthYear(monthYear);
     AthleteClassificationService.getRankingsByMonthAndYear(month, year).then((res) => {
       setRankings(res.data);
     });
   }
+  
+  useEffect(() => {
+    AthleteClassificationService.getAthleteClassificationByLastDateOfMonth().then((res) => {
+      setAthleteClassifications(res.data);
+      let athleteClassifications = res.data;
+      if (athleteClassifications.length > 0) {
+        handleOption(athleteClassifications[0].createAt.substring(3,5), athleteClassifications[0].createAt.substring(6,10), athleteClassifications[0].createAt.substring(3,10));
+      }
+    });
+  },[]);
 
     return(
-        <div>
+      <div>
         <Container>
           <h2>Bảng xếp hạng trình độ tập luyện</h2>
           &nbsp;
-          <UncontrolledDropdown inNavbar>
+         {athleteClassifications.length > 0 ? (  
+          <div>
+           <UncontrolledDropdown inNavbar>
             <Label md="5">Tháng</Label>
             <DropdownToggle nav caret>{monthYear}</DropdownToggle>
             <DropdownMenu>
@@ -43,9 +42,9 @@ export default function Rankings(props) {
                 <DropdownItem onClick = {() => handleOption(athleteClassification.createAt.substring(3,5), athleteClassification.createAt.substring(6,10), athleteClassification.createAt.substring(3,10))}>{athleteClassification.createAt.substring(3,10)}</DropdownItem>
               ))}
             </DropdownMenu>
-          </UncontrolledDropdown>
+           </UncontrolledDropdown>
           &nbsp;
-          <Table responsive hover>
+           <Table responsive hover>
             <thead>
               <tr>
                 <th>ID Vận động viên</th>
@@ -78,7 +77,11 @@ export default function Rankings(props) {
                 </tr>
               ))}
             </tbody>
-          </Table>
+           </Table>
+          </div>
+         ) : (
+           <div>Không tìm thấy bảng xếp hạng nào</div>
+         )}
         </Container>
       </div> 
     );

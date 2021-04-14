@@ -40,18 +40,20 @@ export default function Athlete(props) {
             <Container>
                 <h2>
                     <Row>
-                        <Col md="5">Danh sách Vận động viên</Col>
+                        <Col md="5">Danh sách vận động viên</Col>
                         <Col md="5"></Col>
                         <Col md="2">
-                            <Button size="sm" color="success" onClick={addAthlete}>Thêm Vận động viên</Button>
+                            <Button size="sm" color="success" onClick={addAthlete}>Thêm vận động viên</Button>
                         </Col>
                     </Row>
                 </h2>
                 &nbsp;
+              {athletes.length > 0 ? (
                 <Table responsive hover>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
+                            <th>Mã vận động viên</th>
                             <th>Tên vận động viên</th>
                             <th>Ngày sinh</th>
                             <th>Quê quán</th>
@@ -66,7 +68,8 @@ export default function Athlete(props) {
                     <tbody>
                         {athletes.map((athlete, i) => (
                             <tr key = {athlete.id}>
-                                <td>{athlete.id}</td>
+                                <td>{i + 1}</td>
+                                <td>{athlete.athleteCode}</td>
                                 <td>{athlete.athleteName}</td>
                                 <td>{athlete.dateOfBirth}</td>
                                 <td>{athlete.hometown}</td>
@@ -85,7 +88,10 @@ export default function Athlete(props) {
                             </tr>
                         ))}
                     </tbody>
-                </Table>
+                </Table> 
+              ) : (
+                <div>Không tìm thấy vận động viên nào</div>
+              )}
             </Container>
         </div>
 

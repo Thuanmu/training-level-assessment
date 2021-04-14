@@ -45,16 +45,20 @@ export default function PsychophysiologyFactorChart(props) {
         AthleteService.getAthletes().then((res) => {
             setAthletes(res.data);
             let athletes = res.data;
-            handleOption(athletes[0].id, athletes[0].athleteName);
+            if (athletes.length > 0) {
+                handleOption(athletes[0].id, athletes[0].athleteName);
+            }
         });
 
         AthleteClassificationService.getAthleteClassificationByLastDateOfMonth().then((res) => {
             let athleteClassifications = res.data;
-            let monthYears = [];
-            for (let i = 0; i < athleteClassifications.length; i++) {
-                monthYears[i] = athleteClassifications[i].createAt.substring(3,10);
+            if (athleteClassifications.length > 0) {
+                let monthYears = [];
+                for (let i = 0; i < athleteClassifications.length; i++) {
+                    monthYears[i] = athleteClassifications[i].createAt.substring(3,10);
+                }
+                setLabels(monthYears.reverse());
             }
-            setLabels(monthYears.reverse());
         });
     },[]);
 
@@ -62,8 +66,10 @@ export default function PsychophysiologyFactorChart(props) {
         <div>
             <Container>
                 <h2>Biểu đồ yếu tố tâm-sinh lý</h2>
-                {/* &nbsp; */}
-                <UncontrolledDropdown inNavbar>
+                &nbsp;
+              {athletes.length > 0 && labels.length > 0 ? (
+                <div>
+                 <UncontrolledDropdown inNavbar>
                     <Label md="5">ID Vận động viên</Label>
                     <DropdownToggle nav caret>{athleteId}</DropdownToggle>
                     <DropdownMenu>
@@ -71,9 +77,8 @@ export default function PsychophysiologyFactorChart(props) {
                             <DropdownItem onClick = {() => handleOption(athlete.id, athlete.athleteName)}>{athlete.id}</DropdownItem>
                         ))}
                     </DropdownMenu>
-                </UncontrolledDropdown>
-                {/* &nbsp; */}
-                <Line
+                 </UncontrolledDropdown>
+                 <Line
                     data={{
                         labels: labels, 
                         datasets: [
@@ -113,7 +118,11 @@ export default function PsychophysiologyFactorChart(props) {
                           position: "bottom"
                         }
                     }}
-                />
+                 />
+                </div>
+              ) : (
+                 <div>Không tìm thấy biểu đồ yếu tố tâm-sinh lý nào</div>
+              )}
             </Container>
         </div>
     );

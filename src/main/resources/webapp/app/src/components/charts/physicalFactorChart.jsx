@@ -77,16 +77,20 @@ export default function PhysicalFactorChart(props) {
         AthleteService.getAthletes().then((res) => {
             setAthletes(res.data);
             let athletes = res.data;
-            handleOption(athletes[0].id, athletes[0].athleteName);
+            if (athletes.length > 0) {
+                handleOption(athletes[0].id, athletes[0].athleteName);
+            }
         });
 
         AthleteClassificationService.getAthleteClassificationByLastDateOfMonth().then((res) => {
             let athleteClassifications = res.data;
-            let monthYears = [];
-            for (let i = 0; i < athleteClassifications.length; i++) {
-                monthYears[i] = athleteClassifications[i].createAt.substring(3,10);
+            if (athleteClassifications.length > 0) {
+                let monthYears = [];
+                for (let i = 0; i < athleteClassifications.length; i++) {
+                    monthYears[i] = athleteClassifications[i].createAt.substring(3,10);
+                }
+                setLabels(monthYears.reverse());
             }
-            setLabels(monthYears.reverse());
         });
     },[]);
 
@@ -94,7 +98,10 @@ export default function PhysicalFactorChart(props) {
         <div>
             <Container>
                 <h2>Biểu đồ yếu tố thể lực</h2>
-                <UncontrolledDropdown inNavbar>
+                &nbsp;
+              {athletes.length > 0 && labels.length > 0 ? (
+                <div>
+                 <UncontrolledDropdown inNavbar>
                     <Label md="5">ID Vận động viên</Label>
                     <DropdownToggle nav caret>{athleteId}</DropdownToggle>
                     <DropdownMenu>
@@ -102,8 +109,8 @@ export default function PhysicalFactorChart(props) {
                             <DropdownItem onClick = {() => handleOption(athlete.id, athlete.athleteName)}>{athlete.id}</DropdownItem>
                         ))}
                     </DropdownMenu>
-                </UncontrolledDropdown>
-                <Line
+                 </UncontrolledDropdown>
+                 <Line
                     data={{
                         labels: labels, 
                         datasets: [
@@ -191,7 +198,11 @@ export default function PhysicalFactorChart(props) {
                           position: "bottom"
                         }
                     }}
-                />
+                 />
+                </div>
+              ) : (
+                 <div>Không tìm thấy biểu đồ yếu tố thể lực nào</div>
+              )}
             </Container>
         </div>
     );

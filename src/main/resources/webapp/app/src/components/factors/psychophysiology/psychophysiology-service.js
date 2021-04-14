@@ -16,6 +16,10 @@ export default class PsychophysiologyFactorService {
         return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/' + psychophysiologyFactorId);
     }
 
+    static getPsychophysiologyFactorByPsychophysiologyFactorCode(psychophysiologyFactorCode){
+        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/' + psychophysiologyFactorCode + '/code');
+    }
+
     static getPsychophysiologyFactorsByStatus() {
         return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/status')
     }

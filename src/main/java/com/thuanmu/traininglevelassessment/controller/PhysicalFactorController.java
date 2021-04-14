@@ -47,6 +47,14 @@ public class PhysicalFactorController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
+    // get physicalFactor by physicalFactorCode rest api
+    @GetMapping("/{physicalFactorCode}/code")
+    ResponseEntity<?> getPhysicalFactorByPhysicalFactorCode(@PathVariable String physicalFactorCode) {
+        Optional<PhysicalFactor> physicalFactor = physicalFactorRepository.findByPhysicalFactorCode(physicalFactorCode);
+        return physicalFactor.map(response -> ResponseEntity.ok().body(response))
+                .orElse(null);
+    }
+    
     // get physicalFactors by status rest api
     @GetMapping("/status")
     public List<PhysicalFactor> getPhysicalFactorsByStatus() {

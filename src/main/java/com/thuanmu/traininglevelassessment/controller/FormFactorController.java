@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.thuanmu.traininglevelassessment.entity.Athlete;
 import com.thuanmu.traininglevelassessment.entity.FormFactor;
 import com.thuanmu.traininglevelassessment.repository.FormFactorRepository;
 
@@ -43,6 +44,14 @@ public class FormFactorController {
         Optional<FormFactor> formFactor = formFactorRepository.findById(id);
         return formFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    // get formFactor by formFactorCode rest api
+    @GetMapping("/{formFactorCode}/code")
+    ResponseEntity<?> getFormFactorByFormFactorCode(@PathVariable String formFactorCode) {
+        Optional<FormFactor> formFactor = formFactorRepository.findByFormFactorCode(formFactorCode);
+        return formFactor.map(response -> ResponseEntity.ok().body(response))
+                .orElse(null);
     }
     
     // get formFactors by status rest api

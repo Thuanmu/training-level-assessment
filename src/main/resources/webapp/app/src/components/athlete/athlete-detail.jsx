@@ -17,14 +17,14 @@ export default function AthleteDetail(props) {
     return(
         <div>
             <Container>
-                <h2>Xem chi tiết Vận động viên</h2>
+                <h2>Xem chi tiết vận động viên</h2>
                 <dl>
                     <dt>
-                        <span>ID</span>
+                        <span>Mã vận động viên</span>
                     </dt>
-                    <dd>{athlete.id}</dd>
+                    <dd>{athlete.athleteCode}</dd>
                     <dt>
-                        <span>Tên Vận động viên</span>
+                        <span>Tên vận động viên</span>
                     </dt>
                     <dd>{athlete.athleteName}</dd>
                     <dt>

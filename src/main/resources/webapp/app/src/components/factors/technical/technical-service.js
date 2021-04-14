@@ -16,6 +16,10 @@ export default class TechnicalFactorService {
         return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/' + technicalFactorId);
     }
 
+    static getTechnicalFactorByTechnicalFactorCode(technicalFactorCode){
+        return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/' + technicalFactorCode + '/code');
+    }
+
     static getTechnicalFactorsByStatus() {
         return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/status')
     }

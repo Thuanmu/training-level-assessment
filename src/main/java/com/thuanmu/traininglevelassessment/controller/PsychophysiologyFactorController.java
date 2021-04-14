@@ -47,6 +47,14 @@ public class PsychophysiologyFactorController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
+    // get psychophysiologyFactor by psychophysiologyFactorCode rest api
+    @GetMapping("/{psychophysiologyFactorCode}/code")
+    ResponseEntity<?> getPsychophysiologyFactorByPsychophysiologyFactorCode(@PathVariable String psychophysiologyFactorCode) {
+        Optional<PsychophysiologyFactor> psychophysiologyFactor = psychophysiologyFactorRepository.findByPsychophysiologyFactorCode(psychophysiologyFactorCode);
+        return psychophysiologyFactor.map(response -> ResponseEntity.ok().body(response))
+                .orElse(null);
+    }
+    
     // get psychophysiologyFactors by status rest api
     @GetMapping("/status")
     public List<PsychophysiologyFactor> getPsychophysiologyFactorsByStatus() {

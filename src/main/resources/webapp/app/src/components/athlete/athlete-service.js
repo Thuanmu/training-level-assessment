@@ -7,13 +7,17 @@ export default class AthleteService {
     static getAthletes(){
         return axios.get(ATHLETE_API_BASE_URL);
     }
-
+    
     static createAthlete(athlete){
         return axios.post(ATHLETE_API_BASE_URL, athlete);
     }
 
     static getAthleteById(athleteId){
         return axios.get(ATHLETE_API_BASE_URL + '/' + athleteId);
+    }
+
+    static getAthleteByAthleteCode(athleteCode) {
+        return axios.get(ATHLETE_API_BASE_URL + '/' + athleteCode + '/code');
     }
 
     static updateAthlete(athlete, athleteId){

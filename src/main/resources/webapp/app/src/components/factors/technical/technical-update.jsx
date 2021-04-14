@@ -3,18 +3,19 @@ import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import TechnicalFactorService from "./technical-service";
 import AthleteService from "../../athlete/athlete-service";
+import CodeGeneration from "../../../utilities/code-generation";
 
 export default function TechnicalFactorUpdate(props) {
 
     const [athletes, setAthletes] = useState([]);
     const [id, setId] = useState(props.match.params.id);
-    const [athleteId, setAthleteId] = useState('');
+    const [technicalFactorCode, setTechnicalFactorCode] = useState('');
+    const [athleteCode, setAthleteCode] = useState('');
     const [performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed, setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed] = useState('');
     const [status, setStatus] = useState('0');
     const [createAt, setCreateAt] = useState('');
-    const [lastModified, setLastModified] = useState('');
 
-    const handleChangeAthleteId = event => setAthleteId(event.target.value);
+    const handleChangeAthleteCode = event => setAthleteCode(event.target.value);
     const handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed = event => setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(event.target.value);
     
     useEffect(() => {
@@ -22,11 +23,11 @@ export default function TechnicalFactorUpdate(props) {
             TechnicalFactorService.getTechnicalFactorById(id).then( res => {
                 let technicalFactor = res.data;
                 setId(technicalFactor.id);
-                setAthleteId(technicalFactor.athlete.id);
+                setTechnicalFactorCode(technicalFactor.technicalFactorCode);
+                setAthleteCode(technicalFactor.athlete.athleteCode);
                 setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(technicalFactor.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed);
                 setStatus(technicalFactor.status);
                 setCreateAt(technicalFactor.createAt);
-                setLastModified(technicalFactor.lastModified);
             });
         }
 
@@ -37,37 +38,65 @@ export default function TechnicalFactorUpdate(props) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let technicalFactor = {
-            id: id,
-            athlete: {id: athleteId ? athleteId : athletes[0].id},
-            performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed: performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed,
-            status: status
-        };
 
-        if(!id) {
-            TechnicalFactorService.createTechnicalFactor(technicalFactor).then(res => {
-                props.history.push('/technicalFactors');
-            });
-        } 
-        else {
-            TechnicalFactorService.updateTechnicalFactor(technicalFactor, id).then( res => {
-                props.history.push('/technicalFactors');
-            });
-        }
+        let notNullAthleteCode = athleteCode ? athleteCode : athletes[0].athleteCode;
+        AthleteService.getAthleteByAthleteCode(notNullAthleteCode).then((res) => {
+            let athlete = res.data;
+            let code = CodeGeneration.generateCode('TE', notNullAthleteCode.substring(2), true);
+            let technicalFactor = {
+                id: id,
+                technicalFactorCode: id ? technicalFactorCode : code,
+                athlete: athlete,
+                performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed: performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed,
+                status: status
+            };
+
+            if(!id) {
+                TechnicalFactorService.getTechnicalFactorByTechnicalFactorCode(code).then(res => {
+                    let uniqueTechnicalFactor = res.data;
+                    if (uniqueTechnicalFactor.technicalFactorCode === technicalFactor.technicalFactorCode) {
+                        if (uniqueTechnicalFactor.status === '1') {
+                            alert(`Vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueTechnicalFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniqueTechnicalFactor.createAt} trước khi thêm để phân loại lại.`);
+                            props.history.push('/technicalFactors');
+                        }
+                        else {
+                            alert(`Yếu tố kỹ thuật của vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} trong tháng ${uniqueTechnicalFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố kỹ thuật mã ${uniqueTechnicalFactor.technicalFactorCode} trước khi thêm.`);
+                            props.history.push('/technicalFactors');
+                        }
+                    }
+                    else {
+                        TechnicalFactorService.createTechnicalFactor(technicalFactor).then(res => {
+                            props.history.push('/technicalFactors');
+                        });
+                    }
+                });
+            } 
+            else {
+                TechnicalFactorService.updateTechnicalFactor(technicalFactor, id).then( res => {
+                    props.history.push('/technicalFactors');
+                });
+            }
+        });
     }
 
-    const title = <h2>{ id ? "Sửa Yếu tố kỹ thuật" : "Thêm Yếu tố kỹ thuật" }</h2>;
+    const title = <h2>{ id ? "Sửa yếu tố kỹ thuật" : "Thêm yếu tố kỹ thuật" }</h2>;
 
     return(
         <div>
             <Container>
                 {title}
                 <Form onSubmit={handleSubmit}>
+                    {id ? (
+                        <FormGroup>
+                            <Label for="code">Mã yếu tố kỹ thuật</Label>
+                            <Input type="text" name="code" id="code" value={technicalFactorCode} readOnly={id ? true : false}/>
+                        </FormGroup>
+                        ) : ''}
                     <FormGroup>
-                        <Label for="athlete-id">ID Vận động viên</Label>
-                        <Input type="select" name="athlete-id" id="athlete-id" value={athleteId} onChange={handleChangeAthleteId}>
+                        <Label for="athlete-code">Mã vận động viên</Label>
+                        <Input type={id ? "text" : "select"} name="athlete-code" id="athlete-code" value={athleteCode} onChange={handleChangeAthleteCode} readOnly={id ? true : false}>
                             {athletes.map((athlete, i) => (
-                                <option>{athlete.id}</option>
+                                <option>{athlete.athleteCode}</option>
                             ))}
                         </Input>
                     </FormGroup>
@@ -79,6 +108,12 @@ export default function TechnicalFactorUpdate(props) {
                         <Label for="status">Trạng thái</Label>
                         <Input type="text" name="status" id="status" value={status === '1' ? "Đã phân loại" : "Chưa phân loại"} readOnly/>
                     </FormGroup>
+                    {id ? (
+                        <FormGroup>
+                            <Label for="create-at">Ngày tạo</Label>
+                            <Input type="text" name="create-at" id="create-at" value={createAt} readOnly/>
+                        </FormGroup>
+                    ) : ''}
                     <FormGroup>
                         <Button color="primary" type="submit">Lưu</Button>{' '}
                         <Button color="secondary" tag={Link} to="/technicalFactors">Hủy</Button>

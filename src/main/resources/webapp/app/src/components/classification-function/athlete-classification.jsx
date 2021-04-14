@@ -16,6 +16,7 @@ export default function AthleteClassification(props) {
   const [technicalFactors, setTechnicalFactors] = useState([]);
   const [psychophysiologyFactors, setPsychophysiologyFactors] = useState([]);
   const [formFactors, setFormFactors] = useState([]);
+  const [athleteClassifications, setAthleteClassifications] = useState([]);
 
   useEffect(() => {
     AthleteService.getAthletes().then((res) => {
@@ -38,10 +39,14 @@ export default function AthleteClassification(props) {
       setFormFactors(res.data);
     });
 
+    AthleteClassificationService.getAthleteClassificationByLastDateOfMonth().then((res) => {
+      setAthleteClassifications(res.data);
+    });
+
   }, []);
 
   const handleClassify = () => {
-    if (physicalFactors.length === athletes.length && technicalFactors.length === athletes.length && psychophysiologyFactors.length === athletes.length && formFactors.length === athletes.length) {
+    if (athletes.length > 0 && physicalFactors.length === athletes.length && technicalFactors.length === athletes.length && psychophysiologyFactors.length === athletes.length && formFactors.length === athletes.length) {
       let athletesList = [];
       const NUMBER_OF_SELECTED_CRITERIA = 18;
       let isContainEmptyElement = false; 
@@ -136,11 +141,19 @@ export default function AthleteClassification(props) {
         alert("Vui lòng nhập đầy đủ các chỉ tiêu cho các yếu tố của các vận động viên.");
       }
     }
-    else if (physicalFactors.length === 0 && technicalFactors.length === 0 && psychophysiologyFactors.length === 0 && formFactors.length === 0) {
+    else if (athleteClassifications.length > 0 && physicalFactors.length === 0 && technicalFactors.length === 0 && psychophysiologyFactors.length === 0 && formFactors.length === 0) {
       alert("Các yếu tố của các vận động viên đã được phân loại. Vui lòng thêm các yếu tố mới để phân loại.");
     }
+    else if (athleteClassifications.length === 0 && physicalFactors.length === 0 && technicalFactors.length === 0 && psychophysiologyFactors.length === 0 && formFactors.length === 0) {
+      if (athletes.length === 0) {
+        alert("Không tìm thấy vận động viên nào. Vui lòng thêm các vận động viên để phân loại.");
+      }
+      else {
+        alert("Các vận động viên chưa từng phân loại. Vui lòng thêm tất cả các yếu tố cho các vận động viên.");
+      }
+    }
     else {
-      alert("Vui lòng thêm đầy đủ các yếu tố cho các vận động viên.");
+      alert("Vẫn còn vận động viên chưa được thêm các yếu tố. Vui lòng thêm đầy đủ các yếu tố cho các vận động viên.");
     }
   }
   

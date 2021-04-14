@@ -1,9 +1,9 @@
 import moment from 'moment';
 
-export default class NowDateTime {
+export default class NowMonthYear {
 
-    static getNowDateTime() {
-        return moment().format("DD-MM-YYYY HH:mm:ss");
+    static getNowMonthYear() {
+        return moment().format("MM-YYYY");
     }
 
 }

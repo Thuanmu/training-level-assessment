@@ -50,16 +50,18 @@ export default function Physical(props) {
               <Col md="5">Yếu tố thể lực</Col>
               <Col md="5"></Col>
               <Col md="2">
-                <Button size="sm" color="success" onClick={addPhysicalFactor}>Thêm Yếu tố thể lực</Button>
+                <Button size="sm" color="success" onClick={addPhysicalFactor}>Thêm yếu tố thể lực</Button>
               </Col>
             </Row>
           </h2>
           &nbsp;
+         {physicalFactors.length > 0 ? (
           <Table responsive hover>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>ID Vận động viên</th>
+                <th>#</th>
+                <th>Mã yếu tố thể lực</th>
+                <th>Mã vận động viên</th>
                 <th>Tên vận động viên</th>
                 <th>Thời gian phản xạ xuất phát (s)</th>
                 <th>Chạy 30m tốc độ cao (s)</th>
@@ -75,15 +77,15 @@ export default function Physical(props) {
                 <th>Nâng cao đùi tại chỗ 10s (lần)</th>
                 <th>Trạng thái</th>
                 <th>Ngày tạo</th>
-                <th>Cập nhật lần cuối</th>
                 <th>Hành động</th>
               </tr>
             </thead>
             <tbody>
               {physicalFactors.map((physicalFactor, i) => (
                 <tr>
-                  <td>{physicalFactor.id}</td>
-                  <td>{physicalFactor.athlete.id}</td>
+                  <td>{i + 1}</td>
+                  <td>{physicalFactor.physicalFactorCode}</td>
+                  <td>{physicalFactor.athlete.athleteCode}</td>
                   <td>{physicalFactor.athlete.athleteName}</td>
                   <td>{physicalFactor.timeOfReflectionStart}</td>
                   <td>{physicalFactor.thirtyMetersRunAtHighSpeed}</td>
@@ -99,7 +101,6 @@ export default function Physical(props) {
                   <td>{physicalFactor.thighsRaiseInPlaceForTenSeconds}</td>
                   <td>{physicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
                   <td>{physicalFactor.createAt}</td>
-                  <td>{physicalFactor.lastModified}</td>
                   <td>
                     <ButtonGroup>
                       <Button size="sm" color="info" onClick={() => viewPhysicalFactor(physicalFactor.id)}>Xem</Button>
@@ -111,6 +112,9 @@ export default function Physical(props) {
               ))}
             </tbody>
           </Table>
+         ) : (
+          <div>Không tìm thấy yếu tố thể lực nào</div>
+         )}
         </Container>
       </div> 
     );

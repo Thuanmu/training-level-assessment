@@ -60,34 +60,35 @@ export default class Form extends Component {
             <Col md="5">Yếu tố hình thái</Col>
             <Col md="5"></Col>
             <Col md="2">
-              <Button size="sm" color="success" onClick={this.addFormFactor}>Thêm Yếu tố hình thái</Button>
+              <Button size="sm" color="success" onClick={this.addFormFactor}>Thêm yếu tố hình thái</Button>
             </Col>
           </Row>
         </h2>
         &nbsp;
+       {this.state.formFactors.length > 0 ? (
         <Table responsive hover>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>ID Vận động viên</th>
-              <th>Tên Vận động viên</th>
+              <th>#</th>
+              <th>Mã yếu tố hình thái</th>
+              <th>Mã vận động viên</th>
+              <th>Tên vận động viên</th>
               <th>Chỉ số Quetelet (g/cm)</th>
               <th>Trạng thái</th>
               <th>Ngày tạo</th>
-              <th>Cập nhật lần cuối</th>
               <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
             {this.state.formFactors.map((formFactor, i) => (
               <tr>
-                <td>{formFactor.id}</td>
-                <td>{formFactor.athlete.id}</td>
+                <td>{i + 1}</td>
+                <td>{formFactor.formFactorCode}</td>
+                <td>{formFactor.athlete.athleteCode}</td>
                 <td>{formFactor.athlete.athleteName}</td>
                 <td>{formFactor.queteletQuotient}</td>
                 <td>{formFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
                 <td>{formFactor.createAt}</td>
-                <td>{formFactor.lastModified}</td>
                 <td>
                   <ButtonGroup>
                     <Button size="sm" color="info" onClick={() => this.viewFormFactor(formFactor.id)}>Xem</Button>
@@ -99,6 +100,9 @@ export default class Form extends Component {
             ))}
           </tbody>
         </Table>
+       ) : (
+        <div>Không tìm thấy yếu tố hình thái nào</div>
+       )}
       </Container>
     </div> 
     );

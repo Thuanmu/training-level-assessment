@@ -16,6 +16,10 @@ export default class PhysicalFactorService {
         return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/' + physicalFactorId);
     }
 
+    static getPhysicalFactorByPhysicalFactorCode(physicalFactorCode){
+        return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/' + physicalFactorCode + '/code');
+    }
+
     static getPhysicalFactorsByStatus() {
         return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/status')
     }
