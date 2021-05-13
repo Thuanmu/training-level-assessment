@@ -23,7 +23,7 @@ public class FormFactor {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", length = 11, nullable = false)
 	private Long id;
 	
 	@Column(name = "form_factor_code", length = 255, nullable = false, unique = true)
@@ -37,8 +37,8 @@ public class FormFactor {
 	@Column(name = "quetelet_quotient")
 	private Double queteletQuotient;
 	
-	@Column(name = "status")
-	private Character status;
+	@Column(name = "status", length = 1)
+	private Integer status;
 	
 	@JsonFormat(pattern = "MM-yyyy")
 	@Column(name = "create_at", updatable=false)
@@ -77,11 +77,11 @@ public class FormFactor {
 		this.queteletQuotient = queteletQuotient;
 	}
 	
-	public Character getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(Character status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

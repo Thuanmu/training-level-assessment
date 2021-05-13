@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.thuanmu.traininglevelassessment.entity.Athlete;
 import com.thuanmu.traininglevelassessment.entity.FormFactor;
 import com.thuanmu.traininglevelassessment.repository.FormFactorRepository;
 
@@ -32,18 +31,28 @@ public class FormFactorController {
 		this.formFactorRepository = formFactorRepository;
 	}
 	
-	// get all formFactors order by createAt desc
-    @GetMapping
-    public List <FormFactor> getAllFormFactors() {
-        return formFactorRepository.findAllByOrderByCreateAtDesc();
+	// get all formFactors by coachId order by createAt desc (for coach user)
+    @GetMapping("/coachUser/{coachId}")
+    public List <FormFactor> getAllFormFactorsByCoachId(@PathVariable Long coachId) {
+        return formFactorRepository.findAllByCoachId(coachId);
     }
     
-    // get formFactor by id rest api
-    @GetMapping("/{id}")
-    ResponseEntity<?> getFormFactor(@PathVariable Long id) {
-        Optional<FormFactor> formFactor = formFactorRepository.findById(id);
-        return formFactor.map(response -> ResponseEntity.ok().body(response))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    // get all formFactors by athleteCodeUsed order by createAt desc (for athlete user)
+    @GetMapping("/athleteUser/{athleteCodeUsed}")
+    public List <FormFactor> getAllFormFactorsByAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return formFactorRepository.findAllByAthleteCodeUsed(athleteCodeUsed);
+    }
+    
+    // get formFactors by status and coachId (for coach user)
+    @GetMapping("/status/{coachId}")
+    public List<FormFactor> getFormFactorsByStatusAndCoachId(@PathVariable Long coachId) {
+        return formFactorRepository.findByStatusAndCoachId(coachId);
+    }
+    
+    // get formFactors by status and athleteCodeUsed (for athlete user)
+    @GetMapping("/status/{athleteCodeUsed}")
+    public List<FormFactor> getFormFactorsByStatusAndAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return formFactorRepository.findByStatusAndAthleteCodeUsed(athleteCodeUsed);
     }
     
     // get formFactor by formFactorCode rest api
@@ -54,12 +63,14 @@ public class FormFactorController {
                 .orElse(null);
     }
     
-    // get formFactors by status rest api
-    @GetMapping("/status")
-    public List<FormFactor> getFormFactorsByStatus() {
-        return formFactorRepository.findByStatus();
+    // get formFactor by id rest api
+    @GetMapping("/{id}")
+    ResponseEntity<?> getFormFactor(@PathVariable Long id) {
+        Optional<FormFactor> formFactor = formFactorRepository.findById(id);
+        return formFactor.map(response -> ResponseEntity.ok().body(response))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    
+        
     // create formFactor rest api
     @PostMapping
     ResponseEntity<FormFactor> createFormFactor(@Valid @RequestBody FormFactor formFactor) throws URISyntaxException {

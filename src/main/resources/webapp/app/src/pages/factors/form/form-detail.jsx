@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container } from "reactstrap";
-import FormFactorService from "./form-service";
+import AuthenticationService from "../../../services/authentication-service";
+import FormFactorService from "../../../services/form-factor-service";
 
 export default function FormFactorDetail(props) {
 
@@ -9,8 +10,12 @@ export default function FormFactorDetail(props) {
     const [athleteCode, setAthleteCode] = useState('');
     const [athleteName, setAthleteName] = useState('');
     const [formFactor, setFormFactor] = useState({});
+    const [currentUser, setCurrentUser] = useState(undefined);
 
     useEffect(() => {
+        let user = AuthenticationService.getCurrentUser();
+        setCurrentUser(user);
+
         FormFactorService.getFormFactorById(id).then( res => {
             var formFactor = res.data;
             setFormFactor(formFactor);
@@ -49,8 +54,14 @@ export default function FormFactorDetail(props) {
                     </dt>
                     <dd>{formFactor.createAt}</dd>
                 </dl>
-                <Button color="primary" tag={Link} to={`/formFactors/${formFactor.id}/edit`} >Sửa</Button>
-                &nbsp;
+                {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+                   <span>
+                      <Button color="primary" tag={Link} to={`/formFactors/${formFactor.id}/edit`} >Sửa</Button>
+                      &nbsp;
+                   </span>
+                ) : (
+                  ''
+                )}
                 <Button color="info" tag={Link} to="/formFactors">Quay lại</Button>
             </Container>
         </div>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
-import FormFactorService from "./form-service";
+import AuthenticationService from "../../../services/authentication-service";
+import FormFactorService from "../../../services/form-factor-service";
 
 export default class Form extends Component {
 
@@ -8,7 +9,8 @@ export default class Form extends Component {
     super(props);
 
     this.state = {
-      formFactors: []
+      formFactors: [],
+      currentUser: undefined
     };
 
     this.addFormFactor = this.addFormFactor.bind(this);
@@ -26,7 +28,7 @@ export default class Form extends Component {
   }
   
   editFormFactor(id, status) {
-    if (status === '0') {
+    if (status === 0) {
       this.props.history.push(`/formFactors/${id}/edit`);
     }
     else {
@@ -35,7 +37,7 @@ export default class Form extends Component {
   }
 
   deleteFormFactor(id, status) {
-    if (status === '0') {
+    if (status === 0) {
       FormFactorService.deleteFormFactor(id).then( (res) => {
         this.setState({formFactors: this.state.formFactors.filter(formFactor => formFactor.id !== id)});
       });
@@ -46,9 +48,23 @@ export default class Form extends Component {
   }
 
   componentDidMount() {
-    FormFactorService.getFormFactors().then((res) => {
-      this.setState({formFactors: res.data});
-    });
+    let user = AuthenticationService.getCurrentUser();
+    this.setState({currentUser: user});
+    if (user) {
+      if (user.roles.includes("ROLE_COACH")) {
+        FormFactorService.getAllFormFactorsByCoachId(user.id).then((res) => {
+          this.setState({formFactors: res.data});
+        });
+      }
+      else {
+        FormFactorService.getAllFormFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+          this.setState({formFactors: res.data});
+        });
+      }
+    }
+    else {
+      this.props.history.push(`/login`);
+    }
   }
 
   render() {
@@ -60,7 +76,17 @@ export default class Form extends Component {
             <Col md="5">Yếu tố hình thái</Col>
             <Col md="5"></Col>
             <Col md="2">
-              <Button size="sm" color="success" onClick={this.addFormFactor}>Thêm yếu tố hình thái</Button>
+            {this.state.currentUser && this.state.currentUser.roles.includes("ROLE_COACH") ? (
+                <div>
+                  &nbsp;
+                  &nbsp;
+                  &nbsp;
+                  &nbsp;
+                  <Button size="sm" color="success" onClick={this.addFormFactor}>Thêm yếu tố</Button>
+                </div>
+              ) : (
+                ''
+            )}
             </Col>
           </Row>
         </h2>
@@ -87,13 +113,19 @@ export default class Form extends Component {
                 <td>{formFactor.athlete.athleteCode}</td>
                 <td>{formFactor.athlete.athleteName}</td>
                 <td>{formFactor.queteletQuotient}</td>
-                <td>{formFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
+                <td>{formFactor.status === 1 ? "Đã phân loại" : "Chưa phân loại"}</td>
                 <td>{formFactor.createAt}</td>
                 <td>
                   <ButtonGroup>
                     <Button size="sm" color="info" onClick={() => this.viewFormFactor(formFactor.id)}>Xem</Button>
-                    <Button size="sm" color="primary" onClick={() => this.editFormFactor(formFactor.id, formFactor.status)}>Sửa</Button>
-                    <Button size="sm" color="danger" onClick={() => this.deleteFormFactor(formFactor.id, formFactor.status)}>Xóa</Button>
+                    {this.state.currentUser.roles.includes("ROLE_COACH") ? (
+                      <div>
+                        <Button size="sm" color="primary" onClick={() => this.editFormFactor(formFactor.id, formFactor.status)}>Sửa</Button>
+                        <Button size="sm" color="danger" onClick={() => this.deleteFormFactor(formFactor.id, formFactor.status)}>Xóa</Button>
+                      </div>
+                    ) : (
+                      ''
+                    )}
                   </ButtonGroup>
                 </td>
               </tr>

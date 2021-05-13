@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
-import FormFactorService from "./form-service";
-import AthleteService from "../../athlete/athlete-service";
-import CodeGeneration from "../../../utilities/code-generation";
+import FormFactorService from "../../../services/form-factor-service";
+import AthleteService from "../../../services/athlete-service";
+import CodeGeneration from "../../../utils/code-generation";
+import AuthenticationService from "../../../services/authentication-service";
 
 export default class FormFactorUpdate extends Component {
 
@@ -16,7 +17,7 @@ export default class FormFactorUpdate extends Component {
             formFactorCode: '',
             athleteCode: '',
             queteletQuotient: '',
-            status: '0',
+            status: 0,
             createAt: ''
         };
 
@@ -48,9 +49,17 @@ export default class FormFactorUpdate extends Component {
             });
         }
 
-        AthleteService.getAthletes().then((res) => {
-            this.setState({athletes: res.data});
-        });
+        let user = AuthenticationService.getCurrentUser();
+        if (user.roles.includes("ROLE_COACH")) {
+            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+                this.setState({athletes: res.data});
+            });
+        }
+        else {
+            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+                this.setState({athletes: res.data});
+            });
+        }
     }
 
     handleSubmit(e) {
@@ -71,7 +80,7 @@ export default class FormFactorUpdate extends Component {
                 FormFactorService.getFormFactorByFormFactorCode(code).then(res => {
                     let uniqueFormFactor = res.data;
                     if (uniqueFormFactor.formFactorCode === formFactor.formFactorCode) {
-                        if (uniqueFormFactor.status === '1') {
+                        if (uniqueFormFactor.status === 1) {
                             alert(`Vận động viên mã ${uniqueFormFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueFormFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniqueFormFactor.createAt} trước khi thêm để phân loại lại.`);
                             this.props.history.push('/formFactors');
                         }
