@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
-import PhysicalFactorService from "./physical-service";
+import AuthenticationService from "../../../services/authentication-service";
+import PhysicalFactorService from "../../../services/physical-factor-service";
 
 export default function Physical(props) {
 
     const [physicalFactors, setPhysicalFactors] = useState([]);
+    const [currentUser, setCurrentUser] = useState(undefined);
 
     const addPhysicalFactor = () => {
       props.history.push(`/physicalFactors/new`);
@@ -15,16 +17,16 @@ export default function Physical(props) {
     }
   
     const editPhysicalFactor = (id, status) => {
-      if (status === '0') {
+      if (status === 0) {
         props.history.push(`/physicalFactors/${id}/edit`);
       }
       else {
-        alert("Bạn không thể sửa yếu tố thể lực đã phân loại");
+        alert("Bạn không thể sửa yếu tố thể lực đã được phân loại");
       }
     }
   
     const deletePhysicalFactor = (id, status) => {
-      if (status === '0') {
+      if (status === 0) {
         PhysicalFactorService.deletePhysicalFactor(id).then( (res) => {
           setPhysicalFactors(physicalFactors.filter(physicalFactor => physicalFactor.id !== id));
         });
@@ -36,9 +38,23 @@ export default function Physical(props) {
   
 
     useEffect(() => {
-      PhysicalFactorService.getPhysicalFactors().then((res) => {
-        setPhysicalFactors(res.data);
-      });
+      let user = AuthenticationService.getCurrentUser();
+      setCurrentUser(user);
+      if (user) {
+        if (user.roles.includes("ROLE_COACH")) {
+          PhysicalFactorService.getAllPhysicalFactorsByCoachId(user.id).then((res) => {
+            setPhysicalFactors(res.data);
+          });
+        }
+        else {
+          PhysicalFactorService.getAllPhysicalFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+            setPhysicalFactors(res.data);
+          });
+        }
+      }
+      else {
+        props.history.push(`/login`);
+      }
     }, []);
 
 
@@ -50,7 +66,17 @@ export default function Physical(props) {
               <Col md="5">Yếu tố thể lực</Col>
               <Col md="5"></Col>
               <Col md="2">
-                <Button size="sm" color="success" onClick={addPhysicalFactor}>Thêm yếu tố thể lực</Button>
+                {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+                   <div>
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      <Button size="sm" color="success" onClick={addPhysicalFactor}>Thêm yếu tố</Button>
+                   </div>
+                ) : (
+                  ''
+                )}
               </Col>
             </Row>
           </h2>
@@ -99,13 +125,25 @@ export default function Physical(props) {
                   <td>{physicalFactor.runTimeOfLastTwentyMetersInOneHundredMetersRun}</td>
                   <td>{physicalFactor.strengthCoefficient_K}</td>
                   <td>{physicalFactor.thighsRaiseInPlaceForTenSeconds}</td>
-                  <td>{physicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
+                  <td>{physicalFactor.status === 1 ? "Đã phân loại" : "Chưa phân loại"}</td>
                   <td>{physicalFactor.createAt}</td>
                   <td>
                     <ButtonGroup>
                       <Button size="sm" color="info" onClick={() => viewPhysicalFactor(physicalFactor.id)}>Xem</Button>
-                      <Button size="sm" color="primary" onClick={() => editPhysicalFactor(physicalFactor.id, physicalFactor.status)} >Sửa</Button>
-                      <Button size="sm" color="danger" onClick={() => deletePhysicalFactor(physicalFactor.id, physicalFactor.status)} >Xóa</Button>
+                      {currentUser.roles.includes("ROLE_COACH") ? (
+                        <div>
+                          <Button size="sm" color="primary" onClick={() => editPhysicalFactor(physicalFactor.id, physicalFactor.status)} >Sửa</Button>
+                        </div>
+                        ) : (
+                          ''
+                      )}
+                      {currentUser.roles.includes("ROLE_COACH") ? (
+                        <div>
+                          <Button size="sm" color="danger" onClick={() => deletePhysicalFactor(physicalFactor.id, physicalFactor.status)} >Xóa</Button>
+                        </div>
+                      ) : (
+                          ''
+                      )}
                     </ButtonGroup>
                   </td>
                 </tr>

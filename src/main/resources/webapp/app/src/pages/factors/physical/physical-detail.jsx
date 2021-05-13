@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container } from "reactstrap";
-import PhysicalFactorService from "./physical-service";
+import AuthenticationService from "../../../services/authentication-service";
+import PhysicalFactorService from "../../../services/physical-factor-service";
 
 export default function PhysicalFactorDetail(props) {
 
@@ -9,8 +10,12 @@ export default function PhysicalFactorDetail(props) {
     const [athleteCode, setAthleteCode] = useState('');
     const [athleteName, setAthleteName] = useState('');
     const [physicalFactor, setPhysicalFactor] = useState({});
+    const [currentUser, setCurrentUser] = useState(undefined);
 
     useEffect(() => {
+        let user = AuthenticationService.getCurrentUser();
+        setCurrentUser(user);
+
         PhysicalFactorService.getPhysicalFactorById(id).then( res => {
             var physicalFactor = res.data;
             setPhysicalFactor(physicalFactor);
@@ -93,8 +98,14 @@ export default function PhysicalFactorDetail(props) {
                     </dt>
                     <dd>{physicalFactor.createAt}</dd>
                 </dl>
-                <Button color="primary" tag={Link} to={`/physicalFactors/${physicalFactor.id}/edit`} >Sửa</Button>
-                &nbsp;
+                {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+                   <span>
+                      <Button color="primary" tag={Link} to={`/physicalFactors/${physicalFactor.id}/edit`} >Sửa</Button>
+                      &nbsp;
+                   </span>
+                ) : (
+                  ''
+                )}
                 <Button color="info" tag={Link} to="/physicalFactors">Quay lại</Button>
             </Container>
         </div>

@@ -25,7 +25,7 @@ public class PhysicalFactor {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", length = 11, nullable = false)
 	private Long id;
 	
 	@Column(name = "physical_factor_code", length = 255, nullable = false, unique = true)
@@ -63,17 +63,17 @@ public class PhysicalFactor {
 	@Column(name = "ten_steps_jump_in_place")
 	private Double tenStepsJumpInPlace;
 	
-	@Column(name = "run_time_of_last_twenty_meters_in_one_hundred_meters_run")
+	@Column(name = "run_time_of_last_20m_in_100m_run")
 	private Double runTimeOfLastTwentyMetersInOneHundredMetersRun;
 	
 	@Column(name = "strength_coefficient_K")
 	private Double strengthCoefficient_K;
 	
-	@Column(name = "thighs_raise_in_place_for_ten_seconds")
+	@Column(name = "thighs_raise_in_place_for_10s")
 	private Double thighsRaiseInPlaceForTenSeconds;
 	
-	@Column(name = "status")
-	private Character status;
+	@Column(name = "status", length = 1)
+	private Integer status;
 	
 	@JsonFormat(pattern = "MM-yyyy")
 	@Column(name = "create_at", updatable=false)
@@ -200,11 +200,11 @@ public class PhysicalFactor {
 		this.thighsRaiseInPlaceForTenSeconds = thighsRaiseInPlaceForTenSeconds;
 	}
 	
-	public Character getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(Character status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
-import PhysicalFactorService from "./physical-service";
-import AthleteService from "../../athlete/athlete-service";
-import CodeGeneration from "../../../utilities/code-generation";
+import PhysicalFactorService from "../../../services/physical-factor-service";
+import AthleteService from "../../../services/athlete-service";
+import CodeGeneration from "../../../utils/code-generation";
+import AuthenticationService from "../../../services/authentication-service";
 
 export default function PhysicalFactorUpdate(props) {
 
@@ -23,7 +24,7 @@ export default function PhysicalFactorUpdate(props) {
     const [runTimeOfLastTwentyMetersInOneHundredMetersRun, setRunTimeOfLastTwentyMetersInOneHundredMetersRun] = useState('');
     const [strengthCoefficient_K, setStrengthCoefficient_K] = useState('');
     const [thighsRaiseInPlaceForTenSeconds, setThighsRaiseInPlaceForTenSeconds] = useState('');
-    const [status, setStatus] = useState('0');
+    const [status, setStatus] = useState(0);
     const [createAt, setCreateAt] = useState('');
 
     const handleChangeAthleteCode = event => setAthleteCode(event.target.value);
@@ -64,9 +65,17 @@ export default function PhysicalFactorUpdate(props) {
             });
         }
 
-        AthleteService.getAthletes().then((res) => {
-            setAthletes(res.data);
-        });
+        let user = AuthenticationService.getCurrentUser();
+        if (user.roles.includes("ROLE_COACH")) {
+            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+                setAthletes(res.data);
+            });
+        }
+        else {
+            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+                setAthletes(res.data);
+            });
+        }
     },[]);
 
     const handleSubmit = (e) => {
@@ -99,7 +108,7 @@ export default function PhysicalFactorUpdate(props) {
                 PhysicalFactorService.getPhysicalFactorByPhysicalFactorCode(code).then(res => {
                     let uniquePhysicalFactor = res.data;
                     if (uniquePhysicalFactor.physicalFactorCode === physicalFactor.physicalFactorCode) {
-                        if (uniquePhysicalFactor.status === '1') {
+                        if (uniquePhysicalFactor.status === 1) {
                             alert(`Vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePhysicalFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniquePhysicalFactor.createAt} trước khi thêm để phân loại lại.`);
                             props.history.push('/physicalFactors');
                         }

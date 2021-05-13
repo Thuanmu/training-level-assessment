@@ -33,10 +33,28 @@ public class PhysicalFactorController {
 		this.physicalFactorRepository = physicalFactorRepository;
 	}
 
-	// get all physicalFactors order by createAt desc
-    @GetMapping
-    public List <PhysicalFactor> getAllPhysicalFactors() {
-        return physicalFactorRepository.findAllByOrderByCreateAtDesc();
+	// get all physicalFactors by coachId order by createAt desc (for coach user)
+    @GetMapping("/coachUser/{coachId}")
+    public List <PhysicalFactor> getAllPhysicalFactorsByCoachId(@PathVariable Long coachId) {
+        return physicalFactorRepository.findAllByCoachId(coachId);
+    }
+    
+    // get all physicalFactors by athleteCodeUsed order by createAt desc (for athlete user)
+    @GetMapping("/athleteUser/{athleteCodeUsed}")
+    public List <PhysicalFactor> getAllPhysicalFactorsByAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return physicalFactorRepository.findAllByAthleteCodeUsed(athleteCodeUsed);
+    }
+    
+    // get physicalFactors by status and coachId (for coach user)
+    @GetMapping("/status/{coachId}")
+    public List<PhysicalFactor> getPhysicalFactorsByStatusAndCoachId(@PathVariable Long coachId) {
+        return physicalFactorRepository.findByStatusAndCoachId(coachId);
+    }
+    
+    // get physicalFactors by status and athleteCodeUsed (for athlete user)
+    @GetMapping("/status/{athleteCodeUsed}")
+    public List<PhysicalFactor> getPhysicalFactorsByStatusAndAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return physicalFactorRepository.findByStatusAndAthleteCodeUsed(athleteCodeUsed);
     }
     
     // get physicalFactor by id rest api
@@ -53,12 +71,6 @@ public class PhysicalFactorController {
         Optional<PhysicalFactor> physicalFactor = physicalFactorRepository.findByPhysicalFactorCode(physicalFactorCode);
         return physicalFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(null);
-    }
-    
-    // get physicalFactors by status rest api
-    @GetMapping("/status")
-    public List<PhysicalFactor> getPhysicalFactorsByStatus() {
-        return physicalFactorRepository.findByStatus();
     }
     
     // create physicalFactor rest api
