@@ -4,8 +4,20 @@ const PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL = "http://localhost:8080/api/psychoph
 
 export default class PsychophysiologyFactorService {
 
-    static getPsychophysiologyFactors(){
-        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL);
+    static getAllPsychophysiologyFactorsByCoachId(coachId){
+        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/coachUser/' + coachId);
+    }
+
+    static getAllPsychophysiologyFactorsByAthleteCodeUsed(athleteCodeUsed){
+        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+    }
+
+    static getPsychophysiologyFactorsByStatusAndCoachId(coachId) {
+        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/status/' + coachId);
+    }
+
+    static getPsychophysiologyFactorsByStatusAndAthleteCodeUsed(athleteCodeUsed) {
+        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/status/' + athleteCodeUsed);
     }
 
     static createPsychophysiologyFactor(psychophysiologyFactor){
@@ -18,10 +30,6 @@ export default class PsychophysiologyFactorService {
 
     static getPsychophysiologyFactorByPsychophysiologyFactorCode(psychophysiologyFactorCode){
         return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/' + psychophysiologyFactorCode + '/code');
-    }
-
-    static getPsychophysiologyFactorsByStatus() {
-        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/status')
     }
 
     static updatePsychophysiologyFactor(psychophysiologyFactor, psychophysiologyFactorId){

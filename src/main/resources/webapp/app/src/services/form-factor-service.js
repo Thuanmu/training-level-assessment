@@ -2,10 +2,23 @@ import axios from 'axios';
 
 const FORM_FACTOR_API_BASE_URL = "http://localhost:8080/api/formFactors";
 
+
 export default class FormFactorService {
 
-    static getFormFactors(){
-        return axios.get(FORM_FACTOR_API_BASE_URL);
+    static getAllFormFactorsByCoachId(coachId){
+        return axios.get(FORM_FACTOR_API_BASE_URL + '/coachUser/' + coachId);
+    }
+
+    static getAllFormFactorsByAthleteCodeUsed(athleteCodeUsed){
+        return axios.get(FORM_FACTOR_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+    }
+
+    static getFormFactorsByStatusAndCoachId(coachId) {
+        return axios.get(FORM_FACTOR_API_BASE_URL + '/status/' + coachId);
+    }
+
+    static getFormFactorsByStatusAndAthleteCodeUsed(athleteCodeUsed) {
+        return axios.get(FORM_FACTOR_API_BASE_URL + '/status/' + athleteCodeUsed);
     }
 
     static createFormFactor(formFactor){
@@ -18,10 +31,6 @@ export default class FormFactorService {
 
     static getFormFactorByFormFactorCode(formFactorCode){
         return axios.get(FORM_FACTOR_API_BASE_URL + '/' + formFactorCode + '/code');
-    }
-
-    static getFormFactorsByStatus() {
-        return axios.get(FORM_FACTOR_API_BASE_URL + '/status')
     }
 
     static updateFormFactor(formFactor, formFactorId){

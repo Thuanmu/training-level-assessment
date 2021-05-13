@@ -4,8 +4,20 @@ const TECHNICAL_FACTOR_API_BASE_URL = "http://localhost:8080/api/technicalFactor
 
 export default class TechnicalFactorService {
 
-    static getTechnicalFactors(){
-        return axios.get(TECHNICAL_FACTOR_API_BASE_URL);
+    static getAllTechnicalFactorsByCoachId(coachId){
+        return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/coachUser/' + coachId);
+    }
+
+    static getAllTechnicalFactorsByAthleteCodeUsed(athleteCodeUsed){
+        return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+    }
+
+    static getTechnicalFactorsByStatusAndCoachId(coachId) {
+        return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/status/' + coachId);
+    }
+
+    static getTechnicalFactorsByStatusAndAthleteCodeUsed(athleteCodeUsed) {
+        return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/status/' + athleteCodeUsed);
     }
 
     static createTechnicalFactor(technicalFactor){
@@ -19,11 +31,6 @@ export default class TechnicalFactorService {
     static getTechnicalFactorByTechnicalFactorCode(technicalFactorCode){
         return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/' + technicalFactorCode + '/code');
     }
-
-    static getTechnicalFactorsByStatus() {
-        return axios.get(TECHNICAL_FACTOR_API_BASE_URL + '/status')
-    }
-
 
     static updateTechnicalFactor(technicalFactor, technicalFactorId){
         return axios.put(TECHNICAL_FACTOR_API_BASE_URL + '/' + technicalFactorId, technicalFactor);

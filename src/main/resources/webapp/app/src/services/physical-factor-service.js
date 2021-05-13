@@ -4,8 +4,20 @@ const PHYSICAL_FACTOR_API_BASE_URL = "http://localhost:8080/api/physicalFactors"
 
 export default class PhysicalFactorService {
 
-    static getPhysicalFactors(){
-        return axios.get(PHYSICAL_FACTOR_API_BASE_URL);
+    static getAllPhysicalFactorsByCoachId(coachId){
+        return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/coachUser/' + coachId);
+    }
+
+    static getAllPhysicalFactorsByAthleteCodeUsed(athleteCodeUsed){
+        return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+    }
+
+    static getPhysicalFactorsByStatusAndCoachId(coachId) {
+        return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/status/' + coachId);
+    }
+
+    static getPhysicalFactorsByStatusAndAthleteCodeUsed(athleteCodeUsed) {
+        return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/status/' + athleteCodeUsed);
     }
 
     static createPhysicalFactor(physicalFactor){
@@ -18,10 +30,6 @@ export default class PhysicalFactorService {
 
     static getPhysicalFactorByPhysicalFactorCode(physicalFactorCode){
         return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/' + physicalFactorCode + '/code');
-    }
-
-    static getPhysicalFactorsByStatus() {
-        return axios.get(PHYSICAL_FACTOR_API_BASE_URL + '/status')
     }
 
     static updatePhysicalFactor(physicalFactor, physicalFactorId){
