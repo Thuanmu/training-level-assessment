@@ -5,15 +5,20 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 
@@ -24,18 +29,27 @@ public class Athlete {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", length = 11, nullable = false)
 	private Long id;
 	
 	@Column(name = "athlete_code", length = 255, nullable = false, unique = true)
 	private String athleteCode;
-		
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "coach_id", referencedColumnName = "id", nullable = false)
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private User user;
+	
 	@Column(name = "athlete_name", length = 255)
 	private String athleteName;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "date_of_birth")
 	private LocalDate dateOfBirth;
+	
+	@Size(max = 1)
+	@Column(name = "gender", length = 1, nullable = false)
+	private Integer gender;
 	
 	@Column(name = "hometown", length = 50)
 	private String hometown;
@@ -76,6 +90,14 @@ public class Athlete {
 		this.athleteCode = athleteCode;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public String getAthleteName() {
 		return athleteName;
 	}
@@ -90,6 +112,14 @@ public class Athlete {
 
 	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
+	}
+	
+	public Integer getGender() {
+		return gender;
+	}
+
+	public void setGender(Integer gender) {
+		this.gender = gender;
 	}
 
 	public String getHometown() {

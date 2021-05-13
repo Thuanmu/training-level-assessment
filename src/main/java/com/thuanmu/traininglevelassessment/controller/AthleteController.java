@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.thuanmu.traininglevelassessment.entity.Athlete;
@@ -33,10 +34,17 @@ public class AthleteController {
 		this.athleteRepository = athleteRepository;
 	}
 
-	// get all athletes
-    @GetMapping
-    public List<Athlete> getAllAthletes() {
-        return athleteRepository.findAll();
+	// get all athletes by coachId (for coach user)
+    @GetMapping("/coachUser/{coachId}")
+    public List<Athlete> getAllAthletesByCoachId(@PathVariable Long coachId) {
+        return athleteRepository.findAllByCoachId(coachId);
+    }
+    
+    
+    // get all athletes by athleteCodeUsed (for athlete user)
+    @GetMapping("/athleteUser/{athleteCodeUsed}")
+    public List<Athlete> getAllAthletesByAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return athleteRepository.findAllByAthleteCodeUsed(athleteCodeUsed);
     }
     
     // get athlete by id rest api
@@ -57,6 +65,7 @@ public class AthleteController {
     
     // create athlete rest api
     @PostMapping
+//    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<Athlete> createAthlete(@Valid @RequestBody Athlete athlete) throws URISyntaxException {
         log.info("Request to create athlete: {}", athlete);
         Athlete result = athleteRepository.save(athlete);
@@ -66,6 +75,7 @@ public class AthleteController {
     
     // update athlete rest api
     @PutMapping("/{id}")
+//    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<Athlete> updateAthlete(@Valid @RequestBody Athlete athlete) {
         log.info("Request to update athlete: {}", athlete);
         Athlete result = athleteRepository.save(athlete);
@@ -74,6 +84,7 @@ public class AthleteController {
     
     // delete athlete rest api
     @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('COACH')")
     public ResponseEntity<?> deleteAthlete(@PathVariable Long id) {
         log.info("Request to delete athlete: {}", id);
         athleteRepository.deleteById(id);
