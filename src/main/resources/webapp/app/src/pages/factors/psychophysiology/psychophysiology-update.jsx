@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
-import PsychophysiologyFactorService from "./psychophysiology-service";
-import AthleteService from "../../athlete/athlete-service";
-import CodeGeneration from "../../../utilities/code-generation";
+import PsychophysiologyFactorService from "../../../services/psychophysiology-factor-service";
+import AthleteService from "../../../services/athlete-service";
+import CodeGeneration from "../../../utils/code-generation";
+import AuthenticationService from "../../../services/authentication-service";
 
 export default function PsychophysiologyFactorUpdate(props) {
 
@@ -13,14 +14,16 @@ export default function PsychophysiologyFactorUpdate(props) {
     const [athleteCode, setAthleteCode] = useState('');
     const [singleReflectionTime, setSingleReflectionTime] = useState('');
     const [livingCapacityQuotient, setLivingCapacityQuotient] = useState('');
+    const [heartRateAtFiveSecondsAfterOneHundredMetersRun, setHeartRateAtFiveSecondsAfterOneHundredMetersRun] = useState('');
     const [restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun, setRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun] = useState('');
     const [lacticAcidContentAfterOneHundredMetersRun, setLacticAcidContentAfterOneHundredMetersRun] = useState('');
-    const [status, setStatus] = useState('0');
+    const [status, setStatus] = useState(0);
     const [createAt, setCreateAt] = useState('');
 
     const handleChangeAthleteCode = event => setAthleteCode(event.target.value);
     const handleChangeSingleReflectionTime = event => setSingleReflectionTime(event.target.value);
     const handleChangeLivingCapacityQuotient = event => setLivingCapacityQuotient(event.target.value);
+    const handleChangeHeartRateAtFiveSecondsAfterOneHundredMetersRun = event => setHeartRateAtFiveSecondsAfterOneHundredMetersRun(event.target.value);
     const handleChangeRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun = event => setRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun(event.target.value);
     const handleChangeLacticAcidContentAfterOneHundredMetersRun = event => setLacticAcidContentAfterOneHundredMetersRun(event.target.value);
 
@@ -33,6 +36,7 @@ export default function PsychophysiologyFactorUpdate(props) {
                 setAthleteCode(psychophysiologyFactor.athlete.athleteCode);
                 setSingleReflectionTime(psychophysiologyFactor.singleReflectionTime);
                 setLivingCapacityQuotient(psychophysiologyFactor.livingCapacityQuotient);
+                setHeartRateAtFiveSecondsAfterOneHundredMetersRun(psychophysiologyFactor.heartRateAtFiveSecondsAfterOneHundredMetersRun);
                 setRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun(psychophysiologyFactor.restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun);
                 setLacticAcidContentAfterOneHundredMetersRun(psychophysiologyFactor.lacticAcidContentAfterOneHundredMetersRun);
                 setStatus(psychophysiologyFactor.status);
@@ -40,9 +44,17 @@ export default function PsychophysiologyFactorUpdate(props) {
             });
         }
 
-        AthleteService.getAthletes().then((res) => {
-            setAthletes(res.data);
-        });
+        let user = AuthenticationService.getCurrentUser();
+        if (user.roles.includes("ROLE_COACH")) {
+            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+                setAthletes(res.data);
+            });
+        }
+        else {
+            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+                setAthletes(res.data);
+            });
+        }
     },[]);
 
     const handleSubmit = (e) => {
@@ -58,6 +70,7 @@ export default function PsychophysiologyFactorUpdate(props) {
                 athlete: athlete,
                 singleReflectionTime: singleReflectionTime,
                 livingCapacityQuotient: livingCapacityQuotient,
+                heartRateAtFiveSecondsAfterOneHundredMetersRun: heartRateAtFiveSecondsAfterOneHundredMetersRun,
                 restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun: restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun,
                 lacticAcidContentAfterOneHundredMetersRun: lacticAcidContentAfterOneHundredMetersRun,
                 status: status
@@ -67,7 +80,7 @@ export default function PsychophysiologyFactorUpdate(props) {
                 PsychophysiologyFactorService.getPsychophysiologyFactorByPsychophysiologyFactorCode(code).then(res => {
                     let uniquePsychophysiologyFactor = res.data;
                     if (uniquePsychophysiologyFactor.psychophysiologyFactorCode === psychophysiologyFactor.psychophysiologyFactorCode) {
-                        if (uniquePsychophysiologyFactor.status === '1') {
+                        if (uniquePsychophysiologyFactor.status === 1) {
                             alert(`Vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePsychophysiologyFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniquePsychophysiologyFactor.createAt} trước khi thêm để phân loại lại.`);
                             props.history.push('/psychophysiologyFactors');
                         }
@@ -119,6 +132,10 @@ export default function PsychophysiologyFactorUpdate(props) {
                     <FormGroup>
                         <Label for="criteria-living-capacity-quotient">Chỉ số dung tích sống (ml/kg)</Label>
                         <Input type="text" id="living-capacity-quotient" name="criteria" value={livingCapacityQuotient} onChange={handleChangeLivingCapacityQuotient} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="heart-rate-at-five-seconds-after-one-hundred-meters-run">Chỉ số dung tích sống (ml/kg)</Label>
+                        <Input type="text" id="heart-rate-at-five-seconds-after-one-hundred-meters-run" name="criteria" value={heartRateAtFiveSecondsAfterOneHundredMetersRun} onChange={handleChangeHeartRateAtFiveSecondsAfterOneHundredMetersRun} />
                     </FormGroup>
                     <FormGroup>
                         <Label for="criteria-restored-heart-rate-at-thirty-seconds-after-one-hundred-meters-run">Tần số tim hồi phục 30s sau chạy 100m (lần/phút)</Label>

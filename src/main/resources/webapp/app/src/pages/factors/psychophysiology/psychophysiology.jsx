@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
-import PsychophysiologyFactorService from "./psychophysiology-service";
+import AuthenticationService from "../../../services/authentication-service";
+import PsychophysiologyFactorService from "../../../services/psychophysiology-factor-service";
 
 export default function Psychophysiology(props) {
 
   const [psychophysiologyFactors, setPsychophysiologyFactors] = useState([]);
+  const [currentUser, setCurrentUser] = useState(undefined);
 
   const addPsychophysiologyFactor = () => {
     props.history.push(`/psychophysiologyFactors/new`);
@@ -15,7 +17,7 @@ export default function Psychophysiology(props) {
   }
 
   const editPsychophysiologyFactor = (id, status) => {
-    if (status === '0') {
+    if (status === 0) {
       props.history.push(`/psychophysiologyFactors/${id}/edit`);
     }
     else {
@@ -24,7 +26,7 @@ export default function Psychophysiology(props) {
   }
 
   const deletePsychophysiologyFactor = (id, status) => {
-    if (status === '0') {
+    if (status === 0) {
       PsychophysiologyFactorService.deletePsychophysiologyFactor(id).then( (res) => {
         setPsychophysiologyFactors(psychophysiologyFactors.filter(psychophysiologyFactor => psychophysiologyFactor.id !== id));
       });
@@ -35,9 +37,23 @@ export default function Psychophysiology(props) {
   }
 
     useEffect(() => {
-      PsychophysiologyFactorService.getPsychophysiologyFactors().then((res) => {
-        setPsychophysiologyFactors(res.data);
-      });
+      let user = AuthenticationService.getCurrentUser();
+      setCurrentUser(user);
+      if (user) {
+        if (user.roles.includes("ROLE_COACH")) {
+          PsychophysiologyFactorService.getAllPsychophysiologyFactorsByCoachId(user.id).then((res) => {
+            setPsychophysiologyFactors(res.data);
+          });
+        }
+        else {
+          PsychophysiologyFactorService.getAllPsychophysiologyFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+            setPsychophysiologyFactors(res.data);
+          });
+        }
+      }
+      else {
+        props.history.push(`/login`);
+      }
     }, []);
 
     return(
@@ -46,9 +62,19 @@ export default function Psychophysiology(props) {
           <h2>
             <Row>
               <Col md="5">Yếu tố tâm-sinh lý</Col>
-              <Col md="4"></Col>
-              <Col md="3">
-                <Button size="sm" color="success" onClick={addPsychophysiologyFactor}>Thêm yếu tố tâm-sinh lý</Button>
+              <Col md="5"></Col>
+              <Col md="2">
+                {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+                   <div>
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      <Button size="sm" color="success" onClick={addPsychophysiologyFactor}>Thêm yếu tố</Button>
+                   </div>
+                ) : (
+                  ''
+                )}
               </Col>
             </Row>
           </h2>
@@ -63,8 +89,9 @@ export default function Psychophysiology(props) {
                 <th>Tên vận động viên</th>
                 <th>Phản xạ đơn (s)</th>
                 <th>Chỉ số dung tích sống (ml/kg)</th>
+                <th>Tần số tim 5s sau chạy 100m (lần/ph)</th>
                 <th>Tần số tim hồi phục 30s sau chạy 100m (lần/ph)</th>
-                <th>Hàm lượng LA sau chạy 100m (mmol/lít)</th>
+                <th>Hàm lượng axit lactic sau chạy 100m (mmol/lít)</th>
                 <th>Trạng thái</th>
                 <th>Ngày tạo</th>
                 <th>Hành động</th>
@@ -79,15 +106,28 @@ export default function Psychophysiology(props) {
                   <td>{psychophysiologyFactor.athlete.athleteName}</td>
                   <td>{psychophysiologyFactor.singleReflectionTime}</td>
                   <td>{psychophysiologyFactor.livingCapacityQuotient}</td>
+                  <td>{psychophysiologyFactor.heartRateAtFiveSecondsAfterOneHundredMetersRun}</td>
                   <td>{psychophysiologyFactor.restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun}</td>
                   <td>{psychophysiologyFactor.lacticAcidContentAfterOneHundredMetersRun}</td>
-                  <td>{psychophysiologyFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
+                  <td>{psychophysiologyFactor.status === 1 ? "Đã phân loại" : "Chưa phân loại"}</td>
                   <td>{psychophysiologyFactor.createAt}</td>
                   <td>
                     <ButtonGroup>
                       <Button size="sm" color="info" onClick={() => viewPsychophysiologyFactor(psychophysiologyFactor.id)}>Xem</Button>
-                      <Button size="sm" color="primary" onClick={() => editPsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Sửa</Button>
-                      <Button size="sm" color="danger" onClick={() => deletePsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Xóa</Button>
+                      {currentUser.roles.includes("ROLE_COACH") ? (
+                        <div>
+                          <Button size="sm" color="primary" onClick={() => editPsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Sửa</Button>
+                        </div>
+                        ) : (
+                          ''
+                      )}
+                      {currentUser.roles.includes("ROLE_COACH") ? (
+                        <div>
+                          <Button size="sm" color="danger" onClick={() => deletePsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Xóa</Button>
+                        </div>
+                      ) : (
+                          ''
+                      )}
                     </ButtonGroup>
                   </td>
                 </tr>

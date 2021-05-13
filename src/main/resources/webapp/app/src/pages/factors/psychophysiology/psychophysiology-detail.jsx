@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container } from "reactstrap";
-import PsychophysiologyFactorService from "./psychophysiology-service";
+import AuthenticationService from "../../../services/authentication-service";
+import PsychophysiologyFactorService from "../../../services/psychophysiology-factor-service";
 
 export default function PsychophysiologyFactorDetail(props) {
 
@@ -9,8 +10,12 @@ export default function PsychophysiologyFactorDetail(props) {
     const [athleteCode, setAthleteCode] = useState('');
     const [athleteName, setAthleteName] = useState('');
     const [psychophysiologyFactor, setPsychophysiologyFactor] = useState({});
+    const [currentUser, setCurrentUser] = useState(undefined);
 
     useEffect(() => {
+        let user = AuthenticationService.getCurrentUser();
+        setCurrentUser(user);
+
         PsychophysiologyFactorService.getPsychophysiologyFactorById(id).then( res => {
             var psychophysiologyFactor = res.data;
             setPsychophysiologyFactor(psychophysiologyFactor);
@@ -45,6 +50,10 @@ export default function PsychophysiologyFactorDetail(props) {
                     </dt>
                     <dd>{psychophysiologyFactor.livingCapacityQuotient}</dd>
                     <dt>
+                        <span>Tần số tim 5s sau chạy 100m (lần/ph)</span>
+                    </dt>
+                    <dd>{psychophysiologyFactor.heartRateAtFiveSecondsAfterOneHundredMetersRun}</dd>
+                    <dt>
                         <span>Tần số tim hồi phục 30s sau chạy 100m (lần/phút)</span>
                     </dt>
                     <dd>{psychophysiologyFactor.restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun}</dd>
@@ -61,8 +70,14 @@ export default function PsychophysiologyFactorDetail(props) {
                     </dt>
                     <dd>{psychophysiologyFactor.createAt}</dd>
                 </dl>
-                <Button color="primary" tag={Link} to={`/psychophysiologyFactors/${psychophysiologyFactor.id}/edit`} >Sửa</Button>
-                &nbsp;
+                {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+                   <span>
+                      <Button color="primary" tag={Link} to={`/psychophysiologyFactors/${psychophysiologyFactor.id}/edit`} >Sửa</Button>
+                      &nbsp;
+                   </span>
+                ) : (
+                  ''
+                )}
                 <Button color="info" tag={Link} to="/psychophysiologyFactors">Quay lại</Button>
             </Container>
         </div>

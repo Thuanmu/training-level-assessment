@@ -33,10 +33,28 @@ public class PsychophysiologyFactorController {
 		this.psychophysiologyFactorRepository = psychophysiologyFactorRepository;
 	}
 
-	// get all psychophysiologyFactors order by createAt desc
-    @GetMapping
-    public List <PsychophysiologyFactor> getAllPsychophysiologyFactors() {
-        return psychophysiologyFactorRepository.findAllByOrderByCreateAtDesc();
+	// get all psychophysiologyFactors by coachId order by createAt desc (for coach user)
+    @GetMapping("/coachUser/{coachId}")
+    public List <PsychophysiologyFactor> getAllPsychophysiologyFactorsByCoachId(@PathVariable Long coachId) {
+        return psychophysiologyFactorRepository.findAllByCoachId(coachId);
+    }
+    
+    // get all psychophysiologyFactors by athleteCodeUsed order by createAt desc (for athlete user)
+    @GetMapping("/athleteUser/{athleteCodeUsed}")
+    public List <PsychophysiologyFactor> getAllPsychophysiologyFactorsByAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return psychophysiologyFactorRepository.findAllByAthleteCodeUsed(athleteCodeUsed);
+    }
+    
+    // get psychophysiologyFactors by status and coachId (for coach user)
+    @GetMapping("/status/{coachId}")
+    public List<PsychophysiologyFactor> getPsychophysiologyFactorsByStatusAndCoachId(@PathVariable Long coachId) {
+        return psychophysiologyFactorRepository.findByStatusAndCoachId(coachId);
+    }
+    
+    // get psychophysiologyFactors by status and athleteCodeUsed (for athlete user)
+    @GetMapping("/status/{athleteCodeUsed}")
+    public List<PsychophysiologyFactor> getPsychophysiologyFactorsByStatusAndAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return psychophysiologyFactorRepository.findByStatusAndAthleteCodeUsed(athleteCodeUsed);
     }
     
     // get psychophysiologyFactor by id rest api
@@ -53,12 +71,6 @@ public class PsychophysiologyFactorController {
         Optional<PsychophysiologyFactor> psychophysiologyFactor = psychophysiologyFactorRepository.findByPsychophysiologyFactorCode(psychophysiologyFactorCode);
         return psychophysiologyFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(null);
-    }
-    
-    // get psychophysiologyFactors by status rest api
-    @GetMapping("/status")
-    public List<PsychophysiologyFactor> getPsychophysiologyFactorsByStatus() {
-        return psychophysiologyFactorRepository.findByStatus();
     }
     
     // create psychophysiologyFactor rest api
