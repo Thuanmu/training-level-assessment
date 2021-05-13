@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
-import TechnicalFactorService from "./technical-service";
-import AthleteService from "../../athlete/athlete-service";
-import CodeGeneration from "../../../utilities/code-generation";
+import TechnicalFactorService from "../../../services/technical-factor-service";
+import AthleteService from "../../../services/athlete-service";
+import CodeGeneration from "../../../utils/code-generation";
+import AuthenticationService from "../../../services/authentication-service";
 
 export default function TechnicalFactorUpdate(props) {
 
@@ -12,12 +13,15 @@ export default function TechnicalFactorUpdate(props) {
     const [technicalFactorCode, setTechnicalFactorCode] = useState('');
     const [athleteCode, setAthleteCode] = useState('');
     const [performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed, setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed] = useState('');
-    const [status, setStatus] = useState('0');
+    const [groundingTimeWhenReachingHighSpeed, setGroundingTimeWhenReachingHighSpeed] = useState('');
+    const [status, setStatus] = useState(0);
     const [createAt, setCreateAt] = useState('');
 
     const handleChangeAthleteCode = event => setAthleteCode(event.target.value);
     const handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed = event => setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(event.target.value);
-    
+    const handleChangeGroundingTimeWhenReachingHighSpeed = event => setGroundingTimeWhenReachingHighSpeed(event.target.value);
+
+
     useEffect(() => {
         if(id)  {
             TechnicalFactorService.getTechnicalFactorById(id).then( res => {
@@ -26,14 +30,23 @@ export default function TechnicalFactorUpdate(props) {
                 setTechnicalFactorCode(technicalFactor.technicalFactorCode);
                 setAthleteCode(technicalFactor.athlete.athleteCode);
                 setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(technicalFactor.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed);
+                setGroundingTimeWhenReachingHighSpeed(technicalFactor.groundingTimeWhenReachingHighSpeed);
                 setStatus(technicalFactor.status);
                 setCreateAt(technicalFactor.createAt);
             });
         }
 
-        AthleteService.getAthletes().then((res) => {
-            setAthletes(res.data);
-        });
+        let user = AuthenticationService.getCurrentUser();
+        if (user.roles.includes("ROLE_COACH")) {
+            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+                setAthletes(res.data);
+            });
+        }
+        else {
+            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+                setAthletes(res.data);
+            });
+        }
     },[]);
 
     const handleSubmit = (e) => {
@@ -48,6 +61,7 @@ export default function TechnicalFactorUpdate(props) {
                 technicalFactorCode: id ? technicalFactorCode : code,
                 athlete: athlete,
                 performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed: performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed,
+                groundingTimeWhenReachingHighSpeed: groundingTimeWhenReachingHighSpeed,
                 status: status
             };
 
@@ -55,7 +69,7 @@ export default function TechnicalFactorUpdate(props) {
                 TechnicalFactorService.getTechnicalFactorByTechnicalFactorCode(code).then(res => {
                     let uniqueTechnicalFactor = res.data;
                     if (uniqueTechnicalFactor.technicalFactorCode === technicalFactor.technicalFactorCode) {
-                        if (uniqueTechnicalFactor.status === '1') {
+                        if (uniqueTechnicalFactor.status === 1) {
                             alert(`Vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueTechnicalFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniqueTechnicalFactor.createAt} trước khi thêm để phân loại lại.`);
                             props.history.push('/technicalFactors');
                         }
@@ -79,7 +93,7 @@ export default function TechnicalFactorUpdate(props) {
         });
     }
 
-    const title = <h2>{ id ? "Sửa yếu tố kỹ thuật" : "Thêm yếu tố kỹ thuật" }</h2>;
+    const title = <h2>{ id ? "Sửa yếu tố kỹ thuật" : "Thêm yếu tố kỹ thuật"}</h2>;
 
     return(
         <div>
@@ -103,6 +117,10 @@ export default function TechnicalFactorUpdate(props) {
                     <FormGroup>
                         <Label for="performance-difference">Hiệu số thành tích chạy 30m xuất phát thấp với chạy 30m tốc độ cao (s)</Label>
                         <Input type="text" name="performance-difference" id="performance-difference" value={performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed} onChange={handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="grounding-time-when-reaching-high-speed">Thời gian tiếp đất khi đạt tốc độ cao (s)</Label>
+                        <Input type="text" name="grounding-time-when-reaching-high-speed" id="grounding-time-when-reaching-high-speed" value={groundingTimeWhenReachingHighSpeed} onChange={handleChangeGroundingTimeWhenReachingHighSpeed} />
                     </FormGroup>
                     <FormGroup>
                         <Label for="status">Trạng thái</Label>

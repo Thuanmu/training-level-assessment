@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container } from "reactstrap";
-import TechnicalFactorService from "./technical-service";
+import AuthenticationService from "../../../services/authentication-service";
+import TechnicalFactorService from "../../../services/technical-factor-service";
 
 export default function TechnicalFactorDetail(props) {
 
@@ -9,8 +10,12 @@ export default function TechnicalFactorDetail(props) {
     const [athleteCode, setAthleteCode] = useState('');
     const [athleteName, setAthleteName] = useState('');
     const [technicalFactor, setTechnicalFactor] = useState({});
+    const [currentUser, setCurrentUser] = useState(undefined);
 
     useEffect(() => {
+        let user = AuthenticationService.getCurrentUser();
+        setCurrentUser(user);
+
         TechnicalFactorService.getTechnicalFactorById(id).then( res => {
             var technicalFactor = res.data;
             setTechnicalFactor(technicalFactor);
@@ -41,6 +46,10 @@ export default function TechnicalFactorDetail(props) {
                     </dt>
                     <dd>{technicalFactor.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed}</dd>
                     <dt>
+                        <span>Thời gian tiếp đất khi đạt tốc độ cao (s)</span>
+                    </dt>
+                    <dd>{technicalFactor.groundingTimeWhenReachingHighSpeed}</dd>
+                    <dt>
                         <span>Trạng thái</span>
                     </dt>
                     <dd>{technicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</dd>
@@ -49,8 +58,14 @@ export default function TechnicalFactorDetail(props) {
                     </dt>
                     <dd>{technicalFactor.createAt}</dd>
                 </dl>
-                <Button color="primary" tag={Link} to={`/technicalFactors/${technicalFactor.id}/edit`} >Sửa</Button>
-                &nbsp;
+                {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+                   <span>
+                      <Button color="primary" tag={Link} to={`/technicalFactors/${technicalFactor.id}/edit`} >Sửa</Button>
+                      &nbsp;
+                   </span>
+                ) : (
+                  ''
+                )}
                 <Button color="info" tag={Link} to="/technicalFactors">Quay lại</Button>
             </Container>
         </div>

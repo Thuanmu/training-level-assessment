@@ -33,10 +33,28 @@ public class TechnicalFactorController {
 		this.technicalFactorRepository = technicalFactorRepository;
 	}
 
-	// get all technicalFactors order by createAt desc
-    @GetMapping
-    public List <TechnicalFactor> getAllTechnicalFactors() {
-        return technicalFactorRepository.findAllByOrderByCreateAtDesc();
+	// get all technicalFactors by coachId order by createAt desc (for coach user)
+    @GetMapping("/coachUser/{coachId}")
+    public List <TechnicalFactor> getAllTechnicalFactorsByCoachId(@PathVariable Long coachId) {
+        return technicalFactorRepository.findAllByCoachId(coachId);
+    }
+    
+    // get all technicalFactors by athleteCodeUsed order by createAt desc (for athlete user)
+    @GetMapping("/athleteUser/{athleteCodeUsed}")
+    public List <TechnicalFactor> getAllTechnicalFactorsByAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return technicalFactorRepository.findAllByAthleteCodeUsed(athleteCodeUsed);
+    }
+    
+    // get technicalFactors by status and coachId (for coach user)
+    @GetMapping("/status/{coachId}")
+    public List<TechnicalFactor> getTechnicalFactorsByStatusAndCoachId(@PathVariable Long coachId) {
+        return technicalFactorRepository.findByStatusAndCoachId(coachId);
+    }
+    
+    // get technicalFactors by status and athleteCodeUsed (for athlete user)
+    @GetMapping("/status/{athleteCodeUsed}")
+    public List<TechnicalFactor> getTechnicalFactorsByStatusAndAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
+        return technicalFactorRepository.findByStatusAndAthleteCodeUsed(athleteCodeUsed);
     }
     
     // get technicalFactor by id rest api
@@ -53,12 +71,6 @@ public class TechnicalFactorController {
         Optional<TechnicalFactor> technicalFactor = technicalFactorRepository.findByTechnicalFactorCode(technicalFactorCode);
         return technicalFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(null);
-    }
-    
-    // get technicalFactors by status rest api
-    @GetMapping("/status")
-    public List<TechnicalFactor> getTechnicalFactorsByStatus() {
-        return technicalFactorRepository.findByStatus();
     }
     
     // create technicalFactor rest api

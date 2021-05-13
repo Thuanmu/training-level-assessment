@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
-import TechnicalFactorService from "./technical-service";
+import AuthenticationService from "../../../services/authentication-service";
+import TechnicalFactorService from "../../../services/technical-factor-service";
 
 export default function Technical(props) {
 
   const [technicalFactors, setTechnicalFactors] = useState([]);
+  const [currentUser, setCurrentUser] = useState(undefined);
 
   const addTechnicalFactor = () => {
     props.history.push(`/technicalFactors/new`);
@@ -15,7 +17,7 @@ export default function Technical(props) {
   }
 
   const editTechnicalFactor = (id, status) => {
-    if (status === '0') {
+    if (status === 0) {
       props.history.push(`/technicalFactors/${id}/edit`);
     }
     else {
@@ -24,7 +26,7 @@ export default function Technical(props) {
   }
 
   const deleteTechnicalFactor = (id, status) => {
-    if (status === '0') {
+    if (status === 0) {
       TechnicalFactorService.deleteTechnicalFactor(id).then( (res) => {
         setTechnicalFactors(technicalFactors.filter(technicalFactor => technicalFactor.id !== id));
       });
@@ -36,9 +38,23 @@ export default function Technical(props) {
 
 
   useEffect(() => {
-    TechnicalFactorService.getTechnicalFactors().then((res) => {
-      setTechnicalFactors(res.data);
-    });
+    let user = AuthenticationService.getCurrentUser();
+    setCurrentUser(user);
+    if (user) {
+      if (user.roles.includes("ROLE_COACH")) {
+        TechnicalFactorService.getAllTechnicalFactorsByCoachId(user.id).then((res) => {
+          setTechnicalFactors(res.data);
+        });
+      }
+      else {
+        TechnicalFactorService.getAllTechnicalFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+          setTechnicalFactors(res.data);
+        });
+      }
+    }
+    else {
+      props.history.push(`/login`);
+    }
   }, []);
 
 
@@ -50,7 +66,17 @@ export default function Technical(props) {
               <Col md="5">Yếu tố kỹ thuật</Col>
               <Col md="5"></Col>
               <Col md="2">
-                <Button size="sm" color="success" onClick={addTechnicalFactor}>Thêm yếu tố kỹ thuật</Button>
+                {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+                   <div>
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      &nbsp;
+                      <Button size="sm" color="success" onClick={addTechnicalFactor}>Thêm yếu tố</Button>
+                   </div>
+                ) : (
+                  ''
+                )}
               </Col>
             </Row>
           </h2>
@@ -64,6 +90,7 @@ export default function Technical(props) {
                 <th>Mã vận động viên</th>
                 <th>Tên vận động viên</th>
                 <th>Hiệu số thành tích chạy 30m xuất phát thấp với chạy 30m tốc độ cao (s)</th>
+                <th>Thời gian tiếp đất khi đạt tốc độ cao (s)</th>
                 <th>Trạng thái</th>
                 <th>Ngày tạo</th>
                 <th>Hành động</th>
@@ -77,13 +104,26 @@ export default function Technical(props) {
                   <td>{technicalFactor.athlete.athleteCode}</td>
                   <td>{technicalFactor.athlete.athleteName}</td>
                   <td>{technicalFactor.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed}</td>
-                  <td>{technicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</td>
+                  <td>{technicalFactor.groundingTimeWhenReachingHighSpeed}</td>
+                  <td>{technicalFactor.status === 1 ? "Đã phân loại" : "Chưa phân loại"}</td>
                   <td>{technicalFactor.createAt}</td>
                   <td>
                     <ButtonGroup>
                       <Button size="sm" color="info" onClick={() => viewTechnicalFactor(technicalFactor.id)}>Xem</Button>
-                      <Button size="sm" color="primary" onClick={() => editTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Sửa</Button>
-                      <Button size="sm" color="danger" onClick={() => deleteTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Xóa</Button>
+                      {currentUser.roles.includes("ROLE_COACH") ? (
+                        <div>
+                          <Button size="sm" color="primary" onClick={() => editTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Sửa</Button>
+                        </div>
+                        ) : (
+                          ''
+                      )}
+                      {currentUser.roles.includes("ROLE_COACH") ? (
+                        <div>
+                          <Button size="sm" color="danger" onClick={() => deleteTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Xóa</Button>
+                        </div>
+                      ) : (
+                          ''
+                      )}
                     </ButtonGroup>
                   </td>
                 </tr>

@@ -12,10 +12,17 @@ import com.thuanmu.traininglevelassessment.entity.TechnicalFactor;
 @Repository
 public interface TechnicalFactorRepository extends JpaRepository<TechnicalFactor, Long> {
 	
-	List<TechnicalFactor> findAllByOrderByCreateAtDesc();
+	@Query(value = "select t.* from technical_factor t join athlete a on t.athlete_id = a.id where a.coach_id = ?1 order by t.create_at desc", nativeQuery = true)
+	List<TechnicalFactor> findAllByCoachId(Long coachId);
 	
-	@Query(value = "select t.* from technical_factor t where t.status = 0 order by t.athlete_id", nativeQuery = true)
-	List<TechnicalFactor> findByStatus();
+	@Query(value = "select t.* from technical_factor t join athlete a on t.athlete_id = a.id where a.coach_id = (select a.coach_id from athlete a where a.athlete_code = ?1) order by t.create_at desc", nativeQuery = true)
+	List<TechnicalFactor> findAllByAthleteCodeUsed(String athleteCodeUsed);
+	
+	@Query(value = "select t.* from technical_factor t join athlete a on t.athlete_id = a.id where t.status = 0 and a.coach_id = ?1 order by t.athlete_id", nativeQuery = true)
+	List<TechnicalFactor> findByStatusAndCoachId(Long coachId);
+	
+	@Query(value = "select t.* from technical_factor t join athlete a on t.athlete_id = a.id where t.status = 0 and a.coach_id = (select a.coach_id from athlete a where a.athlete_code = ?1) order by t.athlete_id", nativeQuery = true)
+	List<TechnicalFactor> findByStatusAndAthleteCodeUsed(String athleteCodeUsed);
 	
 	Optional<TechnicalFactor> findByTechnicalFactorCode(String technicalFactorCode);
 
