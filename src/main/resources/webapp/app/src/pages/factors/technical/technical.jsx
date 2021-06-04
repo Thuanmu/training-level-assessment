@@ -1,12 +1,30 @@
+import { faEdit, faEye, faPlusSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Pagination from "@material-ui/lab/Pagination";
 import React, { useEffect, useState } from "react";
-import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
+import {Alert, Button, ButtonGroup, Col, Container, Modal, ModalBody, Row, Table} from "reactstrap";
 import AuthenticationService from "../../../services/authentication-service";
 import TechnicalFactorService from "../../../services/technical-factor-service";
+import { Link } from "react-router-dom";
 
 export default function Technical(props) {
 
   const [technicalFactors, setTechnicalFactors] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
+
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(0);
+  const [pageSize, setPageSize] = useState(3);
+
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleOpen = () => setVisible(true);
+  const handleToggle = () => setVisible(!visible);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  }
 
   const addTechnicalFactor = () => {
     props.history.push(`/technicalFactors/new`);
@@ -21,41 +39,62 @@ export default function Technical(props) {
       props.history.push(`/technicalFactors/${id}/edit`);
     }
     else {
-      alert("Bạn không thể sửa yếu tố kỹ thuật đã phân loại");
+      setMessage("Bạn không thể sửa yếu tố kỹ thuật đã phân loại");
+      handleOpen();
+      setTimeout(() => {
+        setVisible(false);
+        props.history.push('/technicalFactors');
+      }, 2000);
     }
   }
-
-  const deleteTechnicalFactor = (id, status) => {
-    if (status === 0) {
-      TechnicalFactorService.deleteTechnicalFactor(id).then( (res) => {
-        setTechnicalFactors(technicalFactors.filter(technicalFactor => technicalFactor.id !== id));
-      });
-    }
-    else {
-      alert("Bạn không thể xóa yếu tố kỹ thuật đã phân loại");
-    }
-  }
-
 
   useEffect(() => {
     let user = AuthenticationService.getCurrentUser();
     setCurrentUser(user);
-    if (user) {
-      if (user.roles.includes("ROLE_COACH")) {
-        TechnicalFactorService.getAllTechnicalFactorsByCoachId(user.id).then((res) => {
-          setTechnicalFactors(res.data);
-        });
-      }
-      else {
-        TechnicalFactorService.getAllTechnicalFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-          setTechnicalFactors(res.data);
-        });
-      }
+    let params = {};
+      if (user) {
+        if (user.roles.includes("ROLE_COACH")) {
+          params = {
+            coachId: user.id,
+            page: page - 1,
+            size: pageSize
+          }
+          TechnicalFactorService.getAllTechnicalFactorsByCoachId(params).then((res) => {
+  
+            const { technicalFactors, totalPages } = res.data;
+
+            setTechnicalFactors(technicalFactors);
+            setCount(totalPages);
+
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        }
+        else {
+          params = {
+            athleteCodeUsed: user.athleteCodeUsed,
+            page: page - 1,
+            size: pageSize
+          }
+          TechnicalFactorService.getAllTechnicalFactorsByAthleteCodeUsed(params).then((res) => {
+            const { technicalFactors, totalPages } = res.data;
+
+            setTechnicalFactors(technicalFactors);
+            setCount(totalPages);
+
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        }
     }
     else {
       props.history.push(`/login`);
     }
-  }, []);
+  }, [page, pageSize, technicalFactors.length]);
 
 
     return(
@@ -67,12 +106,12 @@ export default function Technical(props) {
               <Col md="5"></Col>
               <Col md="2">
                 {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
-                   <div>
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
-                      <Button size="sm" color="success" onClick={addTechnicalFactor}>Thêm yếu tố</Button>
+                   <div className="add-button">
+                      <Button color="success" onClick={addTechnicalFactor}>
+                        <FontAwesomeIcon icon={faPlusSquare}/>
+                        &nbsp;
+                        <span>Thêm yếu tố</span>
+                      </Button>
                    </div>
                 ) : (
                   ''
@@ -81,8 +120,16 @@ export default function Technical(props) {
             </Row>
           </h2>
           &nbsp;
+          <Modal isOpen={visible} toggle={handleToggle}>
+            <ModalBody>
+             <Alert color="danger" isOpen={visible} toggle={handleToggle}>
+               {message}
+             </Alert>
+            </ModalBody>
+          </Modal>
          {technicalFactors.length > 0 ? (
-          <Table responsive hover>
+          <div>
+           <Table responsive hover>
             <thead>
               <tr>
                 <th>#</th>
@@ -99,7 +146,7 @@ export default function Technical(props) {
             <tbody>
               {technicalFactors.map((technicalFactor, i) => (
                 <tr>
-                  <td>{i + 1}</td>
+                  <td>{pageSize * (page - 1) + (i + 1)}</td>
                   <td>{technicalFactor.technicalFactorCode}</td>
                   <td>{technicalFactor.athlete.athleteCode}</td>
                   <td>{technicalFactor.athlete.athleteName}</td>
@@ -109,17 +156,29 @@ export default function Technical(props) {
                   <td>{technicalFactor.createAt}</td>
                   <td>
                     <ButtonGroup>
-                      <Button size="sm" color="info" onClick={() => viewTechnicalFactor(technicalFactor.id)}>Xem</Button>
+                      <Button size="sm" color="info" onClick={() => viewTechnicalFactor(technicalFactor.id)}>
+                        <FontAwesomeIcon icon={faEye}/>
+                        &nbsp;
+                        <span>Xem</span>
+                      </Button>
                       {currentUser.roles.includes("ROLE_COACH") ? (
                         <div>
-                          <Button size="sm" color="primary" onClick={() => editTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Sửa</Button>
+                          <Button size="sm" color="primary" onClick={() => editTechnicalFactor(technicalFactor.id, technicalFactor.status)} >
+                            <FontAwesomeIcon icon={faEdit}/>
+                            &nbsp;
+                            <span>Sửa</span>
+                          </Button>
                         </div>
                         ) : (
                           ''
                       )}
                       {currentUser.roles.includes("ROLE_COACH") ? (
                         <div>
-                          <Button size="sm" color="danger" onClick={() => deleteTechnicalFactor(technicalFactor.id, technicalFactor.status)} >Xóa</Button>
+                          <Button size="sm" color="danger" tag={Link} to={`/technicalFactors/${technicalFactor.id}/delete`} >
+                            <FontAwesomeIcon icon={faTrashAlt}/>
+                            &nbsp;
+                            <span>Xóa</span>
+                          </Button>
                         </div>
                       ) : (
                           ''
@@ -129,9 +188,25 @@ export default function Technical(props) {
                 </tr>
               ))}
             </tbody>
-          </Table>
+           </Table>
+
+           <Pagination
+              className="my-5"
+              count={count}
+              page={page}
+              siblingCount={1}
+              boundaryCount={1}
+              variant="outlined"
+              shape="rounded"
+              showFirstButton
+              showLastButton
+              onChange={handlePageChange}
+           /> 
+          </div>
          ) : (
-          <div>Không tìm thấy yếu tố kỹ thuật nào</div>
+          <div>
+            <Alert color="warning">Không tìm thấy yếu tố kỹ thuật nào.</Alert>
+          </div>
          )}
         </Container>
       </div> 

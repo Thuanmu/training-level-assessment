@@ -1,3 +1,5 @@
+import { faArrowCircleLeft, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container } from "reactstrap";
@@ -52,7 +54,7 @@ export default function TechnicalFactorDetail(props) {
                     <dt>
                         <span>Trạng thái</span>
                     </dt>
-                    <dd>{technicalFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</dd>
+                    <dd>{technicalFactor.status === 1 ? "Đã phân loại" : "Chưa phân loại"}</dd>
                     <dt>
                         <span>Ngày tạo</span>
                     </dt>
@@ -60,13 +62,21 @@ export default function TechnicalFactorDetail(props) {
                 </dl>
                 {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
                    <span>
-                      <Button color="primary" tag={Link} to={`/technicalFactors/${technicalFactor.id}/edit`} >Sửa</Button>
+                      <Button color="primary" tag={Link} to={`/technicalFactors/${technicalFactor.id}/edit`} >
+                        <FontAwesomeIcon icon={faEdit}/>
+                        &nbsp;
+                        <span>Sửa</span>
+                      </Button>
                       &nbsp;
                    </span>
                 ) : (
                   ''
                 )}
-                <Button color="info" tag={Link} to="/technicalFactors">Quay lại</Button>
+                <Button color="secondary" tag={Link} to="/technicalFactors">
+                    <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                    &nbsp;
+                    <span>Quay lại</span>
+                </Button>
             </Container>
         </div>
     );

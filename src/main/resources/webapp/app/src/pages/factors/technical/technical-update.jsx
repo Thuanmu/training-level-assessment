@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
+import {Alert, Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import TechnicalFactorService from "../../../services/technical-factor-service";
 import AthleteService from "../../../services/athlete-service";
 import CodeGeneration from "../../../utils/code-generation";
 import AuthenticationService from "../../../services/authentication-service";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowCircleLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function TechnicalFactorUpdate(props) {
 
@@ -17,12 +19,20 @@ export default function TechnicalFactorUpdate(props) {
     const [status, setStatus] = useState(0);
     const [createAt, setCreateAt] = useState('');
 
+    const [visible, setVisible] = useState(false);
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const handleOpen = () => setVisible(true);
+    const handleToggle = () => setVisible(!visible);
+
     const handleChangeAthleteCode = event => setAthleteCode(event.target.value);
     const handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed = event => setPerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed(event.target.value);
     const handleChangeGroundingTimeWhenReachingHighSpeed = event => setGroundingTimeWhenReachingHighSpeed(event.target.value);
 
 
     useEffect(() => {
+        
         if(id)  {
             TechnicalFactorService.getTechnicalFactorById(id).then( res => {
                 let technicalFactor = res.data;
@@ -37,16 +47,9 @@ export default function TechnicalFactorUpdate(props) {
         }
 
         let user = AuthenticationService.getCurrentUser();
-        if (user.roles.includes("ROLE_COACH")) {
-            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
-                setAthletes(res.data);
-            });
-        }
-        else {
-            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-                setAthletes(res.data);
-            });
-        }
+        AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+            setAthletes(res.data);
+        });
     },[]);
 
     const handleSubmit = (e) => {
@@ -70,35 +73,54 @@ export default function TechnicalFactorUpdate(props) {
                     let uniqueTechnicalFactor = res.data;
                     if (uniqueTechnicalFactor.technicalFactorCode === technicalFactor.technicalFactorCode) {
                         if (uniqueTechnicalFactor.status === 1) {
-                            alert(`Vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueTechnicalFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniqueTechnicalFactor.createAt} trước khi thêm để phân loại lại.`);
-                            props.history.push('/technicalFactors');
+                            setMessage(`Vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueTechnicalFactor.createAt}. Vui lòng thêm yếu tố kỹ thuật cho vận động viên vào tháng sau.`);
                         }
                         else {
-                            alert(`Yếu tố kỹ thuật của vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} trong tháng ${uniqueTechnicalFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố kỹ thuật mã ${uniqueTechnicalFactor.technicalFactorCode} trước khi thêm.`);
-                            props.history.push('/technicalFactors');
+                            setMessage(`Yếu tố kỹ thuật của vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} trong tháng ${uniqueTechnicalFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố kỹ thuật mã ${uniqueTechnicalFactor.technicalFactorCode} trước khi thêm.`);
                         }
                     }
                     else {
-                        TechnicalFactorService.createTechnicalFactor(technicalFactor).then(res => {
-                            props.history.push('/technicalFactors');
-                        });
+                        TechnicalFactorService.createTechnicalFactor(technicalFactor).then(
+                            (response) => {
+                                if (response.data.message === "TechnicalFactor have been added!") {
+                                    setMessage("Yếu tố kỹ thuật đã được thêm!");
+                                }
+                                setSuccess(true);
+                                setTimeout(() => {
+                                    setVisible(false);
+                                    props.history.push('/technicalFactors');
+                                }, 2000);
+                            }
+                        );
                     }
                 });
             } 
             else {
-                TechnicalFactorService.updateTechnicalFactor(technicalFactor, id).then( res => {
-                    props.history.push('/technicalFactors');
-                });
+                TechnicalFactorService.updateTechnicalFactor(technicalFactor, id).then(
+                    (response) => {
+                        if (response.data.message === "TechnicalFactor have been edited!") {
+                            setMessage("Yếu tố kỹ thuật đã được chỉnh sửa!");
+                        }
+                        setSuccess(true);
+                        setTimeout(() => {
+                            setVisible(false);
+                            props.history.push('/technicalFactors');
+                        }, 2000);
+                    }
+                );
             }
         });
+
+        handleOpen();
     }
 
     const title = <h2>{ id ? "Sửa yếu tố kỹ thuật" : "Thêm yếu tố kỹ thuật"}</h2>;
 
     return(
         <div>
-            <Container>
+            <Container className="add-edit-container">
                 {title}
+             {!success && (
                 <Form onSubmit={handleSubmit}>
                     {id ? (
                         <FormGroup>
@@ -116,7 +138,7 @@ export default function TechnicalFactorUpdate(props) {
                     </FormGroup>
                     <FormGroup>
                         <Label for="performance-difference">Hiệu số thành tích chạy 30m xuất phát thấp với chạy 30m tốc độ cao (s)</Label>
-                        <Input type="text" name="performance-difference" id="performance-difference" value={performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed} onChange={handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed} />
+                        <Input type="text" name="performance-difference" id="performance-difference" value={performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed} onChange={handleChangePerformanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed}/>
                     </FormGroup>
                     <FormGroup>
                         <Label for="grounding-time-when-reaching-high-speed">Thời gian tiếp đất khi đạt tốc độ cao (s)</Label>
@@ -133,10 +155,22 @@ export default function TechnicalFactorUpdate(props) {
                         </FormGroup>
                     ) : ''}
                     <FormGroup>
-                        <Button color="primary" type="submit">Lưu</Button>{' '}
-                        <Button color="secondary" tag={Link} to="/technicalFactors">Hủy</Button>
+                        <Button color="primary" type="submit">
+                            <FontAwesomeIcon icon={faSave}/>
+                            &nbsp;
+                            <span>Lưu</span>
+                        </Button>{' '}
+                        <Button color="secondary" tag={Link} to="/technicalFactors">
+                            <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                            &nbsp;
+                            <span>Quay lại</span>
+                        </Button>
                     </FormGroup>
                 </Form>
+             )}
+             <Alert color={success ? "success" : "danger"} isOpen={visible} toggle={handleToggle}>
+                {message}
+             </Alert>
             </Container>
         </div>
     );

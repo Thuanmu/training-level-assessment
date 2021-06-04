@@ -1,7 +1,10 @@
 package com.thuanmu.traininglevelassessment.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -37,13 +41,19 @@ public class TechnicalFactor {
 	@Column(name = "performance_difference")
 	private Double performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed;
 	
-	@Column(name = "status")
-	private Character status;
+	@Column(name = "grounding_time_when_reaching_high_speed")
+	private Double groundingTimeWhenReachingHighSpeed;
 	
-	@JsonFormat(pattern = "MM-yyyy")
+	@Column(name = "status", length = 1)
+	private Integer status;
+	
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
 	private LocalDateTime createAt;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "technicalFactor", cascade = CascadeType.REMOVE)
+	private Set<AthleteClassification> listAthleteClassification = new HashSet<>();
 	
 	public Long getId() {
 		return id;
@@ -78,11 +88,19 @@ public class TechnicalFactor {
 		this.performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed = performanceDifferenceBetweenThirtyMetersRunWithLowStartAndThirtyMetersRunAtHighSpeed;
 	}
 	
-	public Character getStatus() {
+	public Double getGroundingTimeWhenReachingHighSpeed() {
+		return groundingTimeWhenReachingHighSpeed;
+	}
+
+	public void setGroundingTimeWhenReachingHighSpeed(Double groundingTimeWhenReachingHighSpeed) {
+		this.groundingTimeWhenReachingHighSpeed = groundingTimeWhenReachingHighSpeed;
+	}
+
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(Character status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
