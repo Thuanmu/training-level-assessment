@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { Container, DropdownItem, DropdownMenu, DropdownToggle, Label, UncontrolledDropdown } from 'reactstrap';
-import AthleteService from '../athlete/athlete-service.js';
-import AthleteClassificationService from "../classification-function/athlete-classification-service.js";
+import { Alert, Container, DropdownItem, DropdownMenu, DropdownToggle, Label, UncontrolledDropdown } from 'reactstrap';
+import AthleteService from '../../services/athlete-service';
+import AuthenticationService from "../../services/authentication-service";
+import AthleteClassificationService from "../../services/athlete-classification-service";
 
 export default function PhysicalFactorChart(props) {
     
     const [athletes, setAthletes] = useState([]);
-    const [athleteId, setAthleteId] = useState('');
+    const [athleteCode, setAthleteCode] = useState('');
     const [athleteName, setAthleteName] = useState('');
     
     const [timeOfReflectionStarts, setTimeOfReflectionStarts] = useState([]);
@@ -25,10 +26,10 @@ export default function PhysicalFactorChart(props) {
 
     const [labels, setLabels] = useState([]);
 
-    const handleOption = (athleteId, athleteName) => {
-        setAthleteId(athleteId);
+    const handleOption = (athleteCode, athleteName) => {
+        setAthleteCode(athleteCode);
         setAthleteName(athleteName);
-        AthleteClassificationService.getAthleteClassificationByAthleteIdAndLastDateOfMonth(athleteId).then((res) => {
+        AthleteClassificationService.getAthleteClassificationByAthleteCode(athleteCode).then((res) => {
             let athleteClassifications = res.data;
             let timeOfReflectionStarts = [];
             let thirtyMetersRunAtHighSpeeds = [];
@@ -74,39 +75,66 @@ export default function PhysicalFactorChart(props) {
     }
 
     useEffect(() => {
-        AthleteService.getAthletes().then((res) => {
-            setAthletes(res.data);
-            let athletes = res.data;
-            if (athletes.length > 0) {
-                handleOption(athletes[0].id, athletes[0].athleteName);
-            }
-        });
+        let user = AuthenticationService.getCurrentUser();
+        if (user) {
+            if (user.roles.includes("ROLE_COACH")) {
+                AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+                    setAthletes(res.data);
+                    let athletes = res.data;
+                    if (athletes.length > 0) {
+                        handleOption(athletes[0].athleteCode, athletes[0].athleteName);
+                    }
+                });
 
-        AthleteClassificationService.getAthleteClassificationByLastDateOfMonth().then((res) => {
-            let athleteClassifications = res.data;
-            if (athleteClassifications.length > 0) {
-                let monthYears = [];
-                for (let i = 0; i < athleteClassifications.length; i++) {
-                    monthYears[i] = athleteClassifications[i].createAt.substring(3,10);
-                }
-                setLabels(monthYears.reverse());
+                AthleteClassificationService.getAllAthleteClassificationsByCoachId(user.id).then((res) => {
+                    let athleteClassifications = res.data;
+                    if (athleteClassifications.length > 0) {
+                        let monthYears = [];
+                        for (let i = 0; i < athleteClassifications.length; i++) {
+                            monthYears[i] = athleteClassifications[i].createAt.substring(3,10);
+                        }
+                        setLabels(monthYears.reverse());
+                    }
+                });
             }
-        });
+            else {
+                AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+                    setAthletes(res.data);
+                    let athletes = res.data;
+                    if (athletes.length > 0) {
+                        handleOption(athletes[0].athleteCode, athletes[0].athleteName);
+                    }
+                });
+
+                AthleteClassificationService.getAllAthleteClassificationsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
+                    let athleteClassifications = res.data;
+                    if (athleteClassifications.length > 0) {
+                        let monthYears = [];
+                        for (let i = 0; i < athleteClassifications.length; i++) {
+                            monthYears[i] = athleteClassifications[i].createAt.substring(3,10);
+                        }
+                        setLabels(monthYears.reverse());
+                    }
+                });
+            }
+        }
+        else {
+            props.history.push(`/login`);
+        }
     },[]);
 
     return (
         <div>
             <Container>
                 <h2>Biểu đồ yếu tố thể lực</h2>
-                &nbsp;
               {athletes.length > 0 && labels.length > 0 ? (
                 <div>
                  <UncontrolledDropdown inNavbar>
-                    <Label md="5">ID Vận động viên</Label>
-                    <DropdownToggle nav caret>{athleteId}</DropdownToggle>
+                    <Label md="5">Mã vận động viên</Label>
+                    <DropdownToggle nav caret>{athleteCode}</DropdownToggle>
                     <DropdownMenu>
                         {athletes.map((athlete, i) => (
-                            <DropdownItem onClick = {() => handleOption(athlete.id, athlete.athleteName)}>{athlete.id}</DropdownItem>
+                            <DropdownItem onClick = {() => handleOption(athlete.athleteCode, athlete.athleteName)}>{athlete.athleteCode}</DropdownItem>
                         ))}
                     </DropdownMenu>
                  </UncontrolledDropdown>
@@ -201,7 +229,9 @@ export default function PhysicalFactorChart(props) {
                  />
                 </div>
               ) : (
-                 <div>Không tìm thấy biểu đồ yếu tố thể lực nào</div>
+                <div>
+                    <Alert color="warning">Không tìm thấy biểu đồ yếu tố thể lực nào.</Alert>
+                </div>
               )}
             </Container>
         </div>
