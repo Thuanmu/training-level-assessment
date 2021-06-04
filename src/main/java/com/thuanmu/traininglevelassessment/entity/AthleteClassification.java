@@ -24,7 +24,7 @@ public class AthleteClassification {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", length = 50, nullable = false)
+    @Column(name = "id", length = 11, nullable = false)
 	private Long id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -59,15 +59,17 @@ public class AthleteClassification {
 	private String grade;
 	
 	@Column(name = "athlete_rank", length = 50)
-	private String athleteRank;
+	private Integer athleteRank;
 	
 	@Column(name = "athlete_count", length = 50)
-	private Long athleteCount;
+	private Integer athleteCount;
 	
-	@JsonFormat(pattern = "MM-yyyy")
+//	@JsonFormat(pattern = "MM-yyyy")
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
 	private LocalDateTime createAt;
+	
 
 	public Long getId() {
 		return id;
@@ -133,19 +135,19 @@ public class AthleteClassification {
 		this.grade = grade;
 	}
 
-	public String getAthleteRank() {
+	public Integer getAthleteRank() {
 		return athleteRank;
 	}
 
-	public void setAthleteRank(String athleteRank) {
+	public void setAthleteRank(Integer athleteRank) {
 		this.athleteRank = athleteRank;
 	}
 
-	public Long getAthleteCount() {
+	public Integer getAthleteCount() {
 		return athleteCount;
 	}
 
-	public void setAthleteCount(Long athleteCount) {
+	public void setAthleteCount(Integer athleteCount) {
 		this.athleteCount = athleteCount;
 	}
 
