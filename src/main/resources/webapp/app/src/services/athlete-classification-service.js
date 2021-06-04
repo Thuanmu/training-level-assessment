@@ -4,21 +4,29 @@ const ATHLETE_CLASSIFICATION_API_BASE_URL = "http://localhost:8080/api/athleteCl
 
 export default class AthleteClassificationService {
 
-    static getAthleteClassifications(){
-        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL);
+    static getAllAthleteClassificationsByCoachId(coachId){
+        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/coachUser/' + coachId);
+    }
+    
+    static getAllAthleteClassificationsByAthleteCodeUsed(athleteCodeUsed){
+        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
     }
 
-    static getAthleteClassificationByLastDateOfMonth() {
-        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/lastDateOfMonth');
+    static getAthleteClassificationsByMonthAndYearAndCoachId(params){
+        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/coachUser', {params});
     }
 
-    static getAthleteClassificationByAthleteIdAndLastDateOfMonth(athleteId) {
-        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/' + athleteId + '/lastDateOfMonth');
+    static getAthleteClassificationsByMonthAndYearAndAthleteCodeUsed(params){
+        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/athleteUser', {params});
     }
 
-    static getRankingsByMonthAndYear(month, year){
-        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/' + month + '/' + year);
+    static getAthleteClassificationByAthleteCode(athleteCode) {
+        return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/athlete/' + athleteCode);
     }
+
+    // static getAthleteClassificationByLastDateOfMonth() {
+    //     return axios.get(ATHLETE_CLASSIFICATION_API_BASE_URL + '/lastDateOfMonth');
+    // }
 
     static createAthleteClassification(athleteClassification){
         return axios.post(ATHLETE_CLASSIFICATION_API_BASE_URL, athleteClassification);

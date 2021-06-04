@@ -4,20 +4,16 @@ const PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL = "http://localhost:8080/api/psychoph
 
 export default class PsychophysiologyFactorService {
 
-    static getAllPsychophysiologyFactorsByCoachId(coachId){
-        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/coachUser/' + coachId);
+    static getAllPsychophysiologyFactorsByCoachId(params){
+        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/coachUser/', {params});
     }
 
-    static getAllPsychophysiologyFactorsByAthleteCodeUsed(athleteCodeUsed){
-        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+    static getAllPsychophysiologyFactorsByAthleteCodeUsed(params){
+        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/athleteUser/', {params});
     }
 
     static getPsychophysiologyFactorsByStatusAndCoachId(coachId) {
         return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/status/' + coachId);
-    }
-
-    static getPsychophysiologyFactorsByStatusAndAthleteCodeUsed(athleteCodeUsed) {
-        return axios.get(PSYCHOPHYSIOLOGY_FACTOR_API_BASE_URL + '/status/' + athleteCodeUsed);
     }
 
     static createPsychophysiologyFactor(psychophysiologyFactor){

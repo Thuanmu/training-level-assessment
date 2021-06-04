@@ -5,20 +5,16 @@ const FORM_FACTOR_API_BASE_URL = "http://localhost:8080/api/formFactors";
 
 export default class FormFactorService {
 
-    static getAllFormFactorsByCoachId(coachId){
-        return axios.get(FORM_FACTOR_API_BASE_URL + '/coachUser/' + coachId);
+    static getAllFormFactorsByCoachId(params){
+        return axios.get(FORM_FACTOR_API_BASE_URL + '/coachUser/', {params});
     }
 
-    static getAllFormFactorsByAthleteCodeUsed(athleteCodeUsed){
-        return axios.get(FORM_FACTOR_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+    static getAllFormFactorsByAthleteCodeUsed(params){
+        return axios.get(FORM_FACTOR_API_BASE_URL + '/athleteUser/', {params});
     }
 
     static getFormFactorsByStatusAndCoachId(coachId) {
         return axios.get(FORM_FACTOR_API_BASE_URL + '/status/' + coachId);
-    }
-
-    static getFormFactorsByStatusAndAthleteCodeUsed(athleteCodeUsed) {
-        return axios.get(FORM_FACTOR_API_BASE_URL + '/status/' + athleteCodeUsed);
     }
 
     static createFormFactor(formFactor){

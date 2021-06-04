@@ -5,12 +5,24 @@ const ATHLETE_API_BASE_URL = "http://localhost:8080/api/athletes";
 
 export default class AthleteService {
 
+    static getAllAthletes(){
+        return axios.get(ATHLETE_API_BASE_URL);
+    }
+
     static getAllAthletesByCoachId(coachId){
         return axios.get(ATHLETE_API_BASE_URL + '/coachUser/' + coachId);
     }
 
     static getAllAthletesByAthleteCodeUsed(athleteCodeUsed){
         return axios.get(ATHLETE_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+    }
+
+    static getAllAthletesByCoachIdAndPaging(params){
+        return axios.get(ATHLETE_API_BASE_URL + '/coachUser', {params});
+    }
+
+    static getAllAthletesByAthleteCodeUsedAndPaging(params){
+        return axios.get(ATHLETE_API_BASE_URL + '/athleteUser', {params});
     }
     
     static createAthlete(athlete){
