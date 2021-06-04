@@ -2,7 +2,10 @@ package com.thuanmu.traininglevelassessment.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -18,6 +22,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -73,6 +78,21 @@ public class Athlete {
 	@Column(name = "last_modified")
 	@UpdateTimestamp
 	private LocalDateTime lastModified;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "athlete", cascade = CascadeType.REMOVE)
+	private Set<PhysicalFactor> listPhysicalFactor = new HashSet<>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "athlete", cascade = CascadeType.REMOVE)
+	private Set<TechnicalFactor> listTechnicalFactor = new HashSet<>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "athlete", cascade = CascadeType.REMOVE)
+	private Set<PsychophysiologyFactor> listPsychophysiologyFactor = new HashSet<>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "athlete", cascade = CascadeType.REMOVE)
+	private Set<FormFactor> listFormFactor = new HashSet<>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "athlete", cascade = CascadeType.REMOVE)
+	private Set<AthleteClassification> listAthleteClassification = new HashSet<>();
 
 	public Long getId() {
 		return id;
@@ -168,7 +188,16 @@ public class Athlete {
 
 	public void setLastModified(LocalDateTime lastModified) {
 		this.lastModified = lastModified;
-	}	
+	}
+
+//	public Set<PhysicalFactor> getListPhysicalFactor() {
+//		return listPhysicalFactor;
+//	}
+//
+//	public void setListPhysicalFactor(Set<PhysicalFactor> listPhysicalFactor) {
+//		this.listPhysicalFactor = listPhysicalFactor;
+//	}
+	
 }
 
 	

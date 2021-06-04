@@ -4,6 +4,11 @@ import { Button, Container } from "reactstrap";
 import AthleteService from '../../services/athlete-service';
 import AuthenticationService from "../../services/authentication-service";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faEdit, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
+
+
+
 export default function AthleteDetail(props) {
 
     const [athleteId, setAthleteId] = useState(props.match.params.id);
@@ -62,19 +67,27 @@ export default function AthleteDetail(props) {
                     </dt>
                     <dd>{athlete.createAt}</dd>
                     <dt>
-                        <span>Cập nhật lần cuối</span>
+                        <span>Ngày cập nhật</span>
                     </dt>
                     <dd>{athlete.lastModified}</dd>
                 </dl>
                 {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
                    <span>
-                      <Button color="primary" tag={Link} to={`/athletes/${athlete.id}/edit`} >Sửa</Button>
+                      <Button color="primary" tag={Link} to={`/athletes/${athlete.id}/edit`} >
+                          <FontAwesomeIcon icon={faEdit}/>
+                          &nbsp;
+                          <span>Sửa</span>
+                      </Button>
                       &nbsp;
                    </span>
                 ) : (
                     ''
                 )}
-                <Button color="info" tag={Link} to="/athletes">Quay lại</Button>
+                <Button color="secondary" tag={Link} to="/athletes">
+                    <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                    &nbsp;
+                    <span>Quay lại</span>
+                </Button>
             </Container>
         </div>
     );

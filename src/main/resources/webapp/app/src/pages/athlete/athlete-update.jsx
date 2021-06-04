@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {Button, Container, Form, FormGroup, Input, Label, Row} from "reactstrap";
+import {Alert, Button, Container, Form, FormGroup, Input, Label, Row} from "reactstrap";
 import { Link } from 'react-router-dom';
-// import {syncHistoryWithStore, routerReducer} from 'react-router-redux';
 import AthleteService from '../../services/athlete-service';
 import moment from "moment";
 import CodeGeneration from "../../utils/code-generation";
 import AuthenticationService from "../../services/authentication-service";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowCircleLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function AthleteUpdate(props) {
 
@@ -22,9 +23,15 @@ export default function AthleteUpdate(props) {
     const [createAt, setCreateAt] = useState('');
     const [lastModified, setLastModified] = useState('');
 
+    const [visible, setVisible] = useState(false);
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const handleOpen = () => setVisible(true);
+    const handleToggle = () => setVisible(!visible);
+
     const handleAthleteName = event => setAthleteName(event.target.value);
     const handleDateOfBirth = event => setDateOfBirth(event.target.value);
-    // const handleGender = event => setGender(event.target.value);
     const handleGender = value => setGender(value);
     const handleHometown = event => setHometown(event.target.value);
     const handleTotalScoresOfCriterias = event => setTotalScoresOfCriterias(event.target.value);
@@ -49,24 +56,17 @@ export default function AthleteUpdate(props) {
             });
         }
 
-        let user = AuthenticationService.getCurrentUser();
-        if (user.roles.includes("ROLE_COACH")) {
-            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
-                setAthletes(res.data);
-            });
-        }
-        else {
-            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-                setAthletes(res.data);
-            });
-        }
+        AthleteService.getAllAthletes().then((res) => {
+            setAthletes(res.data);
+        });
     },[]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         let user = AuthenticationService.getCurrentUser();
-        let code = CodeGeneration.generateCode('AT', athletes.length > 0 ? athletes[athletes.length - 1].athleteCode.substring(2) : "00001", false);
+        let code = CodeGeneration.generateCode('AT', athletes.length > 0 ? athletes[athletes.length - 1].athleteCode.substring(2) : "00000", false);
+        // document.write(JSON.stringify(athletes));
         let athlete = {
             id: athleteId,
             athleteCode: athleteId ? athleteCode : code,
@@ -77,22 +77,39 @@ export default function AthleteUpdate(props) {
             totalScoresOfCriterias: totalScoresOfCriterias,
             grade: grade,
             athleteRank: athleteRank,
-            createAt: createAt,
-            lastModified: lastModified,
             user: {id : user.id}
         };
     
         if(!athleteId) {
-            AthleteService.createAthlete(athlete).then(res => {
-                props.history.push('/athletes');
-            });
+            AthleteService.createAthlete(athlete).then(
+                (response) => {
+                    if (response.data.message === "Athlete have been added!") {
+                        setMessage("Vận động viên đã được thêm!");
+                    }
+                    setSuccess(true);
+                    setTimeout(() => {
+                        setVisible(false);
+                        props.history.push('/athletes');
+                    }, 2000);
+                }
+            );
         } 
         else {
-            AthleteService.updateAthlete(athlete, athleteId).then( res => {
-                props.history.push('/athletes');
-            });
+            AthleteService.updateAthlete(athlete, athleteId).then(
+                (response) => {
+                    if (response.data.message === "Athlete have been edited!") {
+                        setMessage("Vận động viên đã được chỉnh sửa!");
+                    }
+                    setSuccess(true);
+                    setTimeout(() => {
+                        setVisible(false);
+                        props.history.push('/athletes');
+                    }, 2000);
+                }
+            );
         }
 
+        handleOpen();
     }
 
     
@@ -100,8 +117,9 @@ export default function AthleteUpdate(props) {
             
     return(
         <div>
-            <Container>
+            <Container className="add-edit-container">
                 {title}
+             {!success && (
                 <Form onSubmit={handleSubmit}>
                     {athleteId ? (
                         <FormGroup>
@@ -119,7 +137,7 @@ export default function AthleteUpdate(props) {
                     </FormGroup>
                     <FormGroup tag="fieldset">
                         <Row>
-                            <Label md="1">Giới tính</Label>
+                            <Label md="2">Giới tính</Label>
                         </Row>
                         <FormGroup check inline>
                             <Label check>
@@ -157,16 +175,28 @@ export default function AthleteUpdate(props) {
                                 <Input type="text" name="create-at" id="create-at" value={createAt} readOnly/>
                             </FormGroup>
                             <FormGroup>
-                                <Label for="lastModified">Cập nhật lần cuối</Label>
+                                <Label for="lastModified">Ngày cập nhật</Label>
                                 <Input type="text" name="lastModified" id="lastModified" value={lastModified} readOnly/>
                             </FormGroup>
                         </div>
                     ) : ''}
                     <FormGroup>
-                        <Button color="primary" type="submit">Lưu</Button>{' '}
-                        <Button color="secondary" tag={Link} to="/athletes">Hủy</Button>
+                        <Button color="primary" type="submit">
+                            <FontAwesomeIcon icon={faSave}/>
+                            &nbsp;
+                            <span>Lưu</span>
+                        </Button>{' '}
+                        <Button color="secondary" tag={Link} to="/athletes">
+                            <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                            &nbsp;
+                            <span>Quay lại</span>
+                        </Button>
                     </FormGroup>
                 </Form>
+             )}
+             <Alert color={success ? "success" : "danger"} isOpen={visible} toggle={handleToggle}>
+                {message}
+             </Alert>
             </Container>
         </div>
     );
