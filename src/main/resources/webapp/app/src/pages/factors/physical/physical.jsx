@@ -1,12 +1,30 @@
+import { faEdit, faEye, faPlusSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Pagination from "@material-ui/lab/Pagination";
 import React, { useEffect, useState } from "react";
-import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
+import {Alert, Button, ButtonGroup, Col, Container, Modal, ModalBody, Row, Table} from "reactstrap";
 import AuthenticationService from "../../../services/authentication-service";
 import PhysicalFactorService from "../../../services/physical-factor-service";
+import { Link } from "react-router-dom";
 
 export default function Physical(props) {
 
     const [physicalFactors, setPhysicalFactors] = useState([]);
     const [currentUser, setCurrentUser] = useState(undefined);
+
+    const [page, setPage] = useState(1);
+    const [count, setCount] = useState(0);
+    const [pageSize, setPageSize] = useState(3);
+
+    const [visible, setVisible] = useState(false);
+    const [message, setMessage] = useState('');
+
+    const handleOpen = () => setVisible(true);
+    const handleToggle = () => setVisible(!visible);
+
+    const handlePageChange = (event, value) => {
+      setPage(value);
+    }
 
     const addPhysicalFactor = () => {
       props.history.push(`/physicalFactors/new`);
@@ -21,41 +39,62 @@ export default function Physical(props) {
         props.history.push(`/physicalFactors/${id}/edit`);
       }
       else {
-        alert("Bạn không thể sửa yếu tố thể lực đã được phân loại");
+        setMessage("Bạn không thể sửa yếu tố thể lực đã được phân loại!");
+        handleOpen();
+        setTimeout(() => {
+          setVisible(false);
+          props.history.push('/physicalFactors');
+        }, 2000);
       }
     }
   
-    const deletePhysicalFactor = (id, status) => {
-      if (status === 0) {
-        PhysicalFactorService.deletePhysicalFactor(id).then( (res) => {
-          setPhysicalFactors(physicalFactors.filter(physicalFactor => physicalFactor.id !== id));
-        });
-      }
-      else {
-        alert("Bạn không thể xóa yếu tố thể lực đã phân loại");
-      }
-    }
-  
-
     useEffect(() => {
       let user = AuthenticationService.getCurrentUser();
       setCurrentUser(user);
+      let params = {};
       if (user) {
         if (user.roles.includes("ROLE_COACH")) {
-          PhysicalFactorService.getAllPhysicalFactorsByCoachId(user.id).then((res) => {
-            setPhysicalFactors(res.data);
+          params = {
+            coachId: user.id,
+            page: page - 1,
+            size: pageSize
+          }
+          PhysicalFactorService.getAllPhysicalFactorsByCoachId(params).then((res) => {
+            
+            const { physicalFactors, totalPages } = res.data;
+
+            setPhysicalFactors(physicalFactors);
+            setCount(totalPages);
+
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
           });
         }
         else {
-          PhysicalFactorService.getAllPhysicalFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-            setPhysicalFactors(res.data);
+          params = {
+            athleteCodeUsed: user.athleteCodeUsed,
+            page: page - 1,
+            size: pageSize
+          }
+          PhysicalFactorService.getAllPhysicalFactorsByAthleteCodeUsed(params).then((res) => {
+            const { physicalFactors, totalPages } = res.data;
+
+            setPhysicalFactors(physicalFactors);
+            setCount(totalPages);
+
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
           });
         }
       }
       else {
         props.history.push(`/login`);
       }
-    }, []);
+    }, [page, pageSize, physicalFactors.length]);
 
 
     return(
@@ -67,12 +106,12 @@ export default function Physical(props) {
               <Col md="5"></Col>
               <Col md="2">
                 {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
-                   <div>
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
-                      <Button size="sm" color="success" onClick={addPhysicalFactor}>Thêm yếu tố</Button>
+                   <div className="add-button">
+                      <Button color="success" onClick={addPhysicalFactor}>
+                        <FontAwesomeIcon icon={faPlusSquare}/>
+                        &nbsp;
+                        <span>Thêm yếu tố</span>
+                      </Button>
                    </div>
                 ) : (
                   ''
@@ -81,8 +120,16 @@ export default function Physical(props) {
             </Row>
           </h2>
           &nbsp;
+          <Modal isOpen={visible} toggle={handleToggle}>
+            <ModalBody>
+             <Alert color="danger" isOpen={visible} toggle={handleToggle}>
+               {message}
+             </Alert>
+            </ModalBody>
+          </Modal>
          {physicalFactors.length > 0 ? (
-          <Table responsive hover>
+          <div>
+           <Table responsive hover>
             <thead>
               <tr>
                 <th>#</th>
@@ -109,7 +156,7 @@ export default function Physical(props) {
             <tbody>
               {physicalFactors.map((physicalFactor, i) => (
                 <tr>
-                  <td>{i + 1}</td>
+                  <td>{pageSize * (page - 1) + (i + 1)}</td>
                   <td>{physicalFactor.physicalFactorCode}</td>
                   <td>{physicalFactor.athlete.athleteCode}</td>
                   <td>{physicalFactor.athlete.athleteName}</td>
@@ -129,17 +176,29 @@ export default function Physical(props) {
                   <td>{physicalFactor.createAt}</td>
                   <td>
                     <ButtonGroup>
-                      <Button size="sm" color="info" onClick={() => viewPhysicalFactor(physicalFactor.id)}>Xem</Button>
+                      <Button size="sm" color="info" onClick={() => viewPhysicalFactor(physicalFactor.id)}>
+                        <FontAwesomeIcon icon={faEye}/>
+                        &nbsp;
+                        <span>Xem</span>
+                      </Button>
                       {currentUser.roles.includes("ROLE_COACH") ? (
                         <div>
-                          <Button size="sm" color="primary" onClick={() => editPhysicalFactor(physicalFactor.id, physicalFactor.status)} >Sửa</Button>
+                          <Button size="sm" color="primary" onClick={() => editPhysicalFactor(physicalFactor.id, physicalFactor.status)} >
+                            <FontAwesomeIcon icon={faEdit}/>
+                            &nbsp;
+                            <span>Sửa</span>
+                          </Button>
                         </div>
                         ) : (
                           ''
                       )}
                       {currentUser.roles.includes("ROLE_COACH") ? (
                         <div>
-                          <Button size="sm" color="danger" onClick={() => deletePhysicalFactor(physicalFactor.id, physicalFactor.status)} >Xóa</Button>
+                          <Button size="sm" color="danger" tag={Link} to={`/physicalFactors/${physicalFactor.id}/delete`}>
+                            <FontAwesomeIcon icon={faTrashAlt}/>
+                            &nbsp;
+                            <span>Xóa</span>
+                          </Button>
                         </div>
                       ) : (
                           ''
@@ -149,9 +208,25 @@ export default function Physical(props) {
                 </tr>
               ))}
             </tbody>
-          </Table>
+           </Table>
+
+           <Pagination
+              className="my-5"
+              count={count}
+              page={page}
+              siblingCount={1}
+              boundaryCount={1}
+              variant="outlined"
+              shape="rounded"
+              showFirstButton
+              showLastButton
+              onChange={handlePageChange}
+           /> 
+          </div>
          ) : (
-          <div>Không tìm thấy yếu tố thể lực nào</div>
+          <div>
+            <Alert color="warning">Không tìm thấy yếu tố thể lực nào.</Alert>
+          </div>
          )}
         </Container>
       </div> 

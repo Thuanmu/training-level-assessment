@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
+import {Alert, Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import PhysicalFactorService from "../../../services/physical-factor-service";
 import AthleteService from "../../../services/athlete-service";
 import CodeGeneration from "../../../utils/code-generation";
 import AuthenticationService from "../../../services/authentication-service";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowCircleLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function PhysicalFactorUpdate(props) {
 
@@ -26,6 +28,13 @@ export default function PhysicalFactorUpdate(props) {
     const [thighsRaiseInPlaceForTenSeconds, setThighsRaiseInPlaceForTenSeconds] = useState('');
     const [status, setStatus] = useState(0);
     const [createAt, setCreateAt] = useState('');
+
+    const [visible, setVisible] = useState(false);
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const handleOpen = () => setVisible(true);
+    const handleToggle = () => setVisible(!visible);
 
     const handleChangeAthleteCode = event => setAthleteCode(event.target.value);
     const handleChangeTimeOfReflectionStart = event => setTimeOfReflectionStart(event.target.value);
@@ -66,16 +75,9 @@ export default function PhysicalFactorUpdate(props) {
         }
 
         let user = AuthenticationService.getCurrentUser();
-        if (user.roles.includes("ROLE_COACH")) {
-            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
-                setAthletes(res.data);
-            });
-        }
-        else {
-            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-                setAthletes(res.data);
-            });
-        }
+        AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+            setAthletes(res.data);
+        });
     },[]);
 
     const handleSubmit = (e) => {
@@ -109,35 +111,54 @@ export default function PhysicalFactorUpdate(props) {
                     let uniquePhysicalFactor = res.data;
                     if (uniquePhysicalFactor.physicalFactorCode === physicalFactor.physicalFactorCode) {
                         if (uniquePhysicalFactor.status === 1) {
-                            alert(`Vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePhysicalFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniquePhysicalFactor.createAt} trước khi thêm để phân loại lại.`);
-                            props.history.push('/physicalFactors');
+                            setMessage(`Vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePhysicalFactor.createAt}. Vui lòng thêm yếu tố thể lực cho vận động viên vào tháng sau.`);
                         }
                         else {
-                            alert(`Yếu tố thể lực của vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} trong tháng ${uniquePhysicalFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố thể lực mã ${uniquePhysicalFactor.physicalFactorCode} trước khi thêm.`);
-                            props.history.push('/physicalFactors');
+                            setMessage(`Yếu tố thể lực của vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} trong tháng ${uniquePhysicalFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố thể lực mã ${uniquePhysicalFactor.physicalFactorCode} trước khi thêm.`);
                         }
                     }
                     else {
-                        PhysicalFactorService.createPhysicalFactor(physicalFactor).then(res => {
-                            props.history.push('/physicalFactors');
-                        });
+                        PhysicalFactorService.createPhysicalFactor(physicalFactor).then(
+                            (response) => {
+                                if (response.data.message === "PhysicalFactor have been added!") {
+                                    setMessage("Yếu tố thể lực đã được thêm!");
+                                }
+                                setSuccess(true);
+                                setTimeout(() => {
+                                    setVisible(false);
+                                    props.history.push('/physicalFactors');
+                                }, 2000);
+                            }
+                        );
                     }
                 });
             } 
             else {
-                PhysicalFactorService.updatePhysicalFactor(physicalFactor, id).then( res => {
-                    props.history.push('/physicalFactors');
-                });
+                PhysicalFactorService.updatePhysicalFactor(physicalFactor, id).then(
+                    (response) => {
+                        if (response.data.message === "PhysicalFactor have been edited!") {
+                            setMessage("Yếu tố thể lực đã được chỉnh sửa!");
+                        }
+                        setSuccess(true);
+                        setTimeout(() => {
+                            setVisible(false);
+                            props.history.push('/physicalFactors');
+                        }, 2000);
+                    }
+                );
             }
         });
+
+        handleOpen();
     }
 
     const title = <h2>{ id ? "Sửa yếu tố thể lực" : "Thêm yếu tố thể lực" }</h2>;
 
     return(
         <div>
-            <Container>
+            <Container className="add-edit-container">
                 {title}
+             {!success && (
                 <Form onSubmit={handleSubmit}>
                     {id ? (
                         <FormGroup>
@@ -147,7 +168,8 @@ export default function PhysicalFactorUpdate(props) {
                     ) : ''}
                     <FormGroup>
                         <Label for="athlete-code">Mã vận động viên</Label>
-                        <Input type={id ? "text" : "select"} name="athlete-code" id="athlete-code" value={athleteCode} onChange={handleChangeAthleteCode} readOnly={id ? true : false}>
+                        <Input type={id ? "text" : "select"} name="athlete-code" id="athlete-code" value={athleteCode} onChange={handleChangeAthleteCode}  readOnly={id ? true : false}>
+                            {/* <option>-- Chọn mã vận động viên --</option> */}
                             {athletes.map((athlete, i) => (
                                 <option>{athlete.athleteCode}</option>
                             ))}
@@ -212,10 +234,22 @@ export default function PhysicalFactorUpdate(props) {
                         </FormGroup>
                     ) : ''}
                     <FormGroup>
-                        <Button color="primary" type="submit">Lưu</Button>{' '}
-                        <Button color="secondary" tag={Link} to="/physicalFactors">Hủy</Button>
+                        <Button color="primary" type="submit">
+                            <FontAwesomeIcon icon={faSave}/>
+                            &nbsp;
+                            <span>Lưu</span>
+                        </Button>{' '}
+                        <Button color="secondary" tag={Link} to="/physicalFactors">
+                            <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                            &nbsp;
+                            <span>Quay lại</span>
+                        </Button>
                     </FormGroup>
                 </Form>
+             )}
+             <Alert color={success ? "success" : "danger"} isOpen={visible} toggle={handleToggle}>
+                {message}
+             </Alert>
             </Container>
         </div>
 

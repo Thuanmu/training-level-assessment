@@ -1,7 +1,10 @@
 package com.thuanmu.traininglevelassessment.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -75,10 +79,13 @@ public class PhysicalFactor {
 	@Column(name = "status", length = 1)
 	private Integer status;
 	
-	@JsonFormat(pattern = "MM-yyyy")
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
 	private LocalDateTime createAt;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "physicalFactor", cascade = CascadeType.REMOVE)
+	private Set<AthleteClassification> listAthleteClassification = new HashSet<>();
 	
 	public Long getId() {
 		return id;
