@@ -1,74 +1,103 @@
-import React, { Component } from "react";
-import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
+import { faEdit, faEye, faPlusSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Pagination from "@material-ui/lab/Pagination";
+import React, { useEffect, useState } from "react";
+import {Alert, Button, ButtonGroup, Col, Container, Modal, ModalBody, Row, Table} from "reactstrap";
 import AuthenticationService from "../../../services/authentication-service";
 import FormFactorService from "../../../services/form-factor-service";
+import { Link } from "react-router-dom";
 
-export default class Form extends Component {
 
-  constructor(props) {
-    super(props);
+export default function Form(props) {
 
-    this.state = {
-      formFactors: [],
-      currentUser: undefined
-    };
+  const [formFactors, setFormFactors] = useState([]);
+  const [currentUser, setCurrentUser] = useState(undefined);
 
-    this.addFormFactor = this.addFormFactor.bind(this);
-    this.editFormFactor = this.editFormFactor.bind(this);
-    this.deleteFormFactor = this.deleteFormFactor.bind(this);
-    this.viewFormFactor = this.viewFormFactor.bind(this);
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(0);
+  const [pageSize, setPageSize] = useState(3);
+
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleOpen = () => setVisible(true);
+  const handleToggle = () => setVisible(!visible);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
   }
 
-  addFormFactor() {
-      this.props.history.push('/formFactors/new');
+  const addFormFactor = () => {
+      props.history.push('/formFactors/new');
   }
 
-  viewFormFactor(id) {
-      this.props.history.push(`/formFactors/${id}/detail`);
+  const viewFormFactor = id => {
+      props.history.push(`/formFactors/${id}/detail`);
   }
   
-  editFormFactor(id, status) {
+  const editFormFactor = (id, status) => {
     if (status === 0) {
-      this.props.history.push(`/formFactors/${id}/edit`);
+      props.history.push(`/formFactors/${id}/edit`);
     }
     else {
-      alert("Bạn không thể sửa yếu tố hình thái đã phân loại");
+      setMessage("Bạn không thể sửa yếu tố hình thái đã phân loại");
+      handleOpen();
+      setTimeout(() => {
+        setVisible(false);
+        props.history.push('/formFactors');
+      }, 2000);
     }
   }
 
-  deleteFormFactor(id, status) {
-    if (status === 0) {
-      FormFactorService.deleteFormFactor(id).then( (res) => {
-        this.setState({formFactors: this.state.formFactors.filter(formFactor => formFactor.id !== id)});
-      });
-    }
-    else {
-      alert("Bạn không thể xóa yếu tố hình thái đã phân loại");
-    }
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     let user = AuthenticationService.getCurrentUser();
-    this.setState({currentUser: user});
-    if (user) {
-      if (user.roles.includes("ROLE_COACH")) {
-        FormFactorService.getAllFormFactorsByCoachId(user.id).then((res) => {
-          this.setState({formFactors: res.data});
-        });
+      setCurrentUser(user);
+      let params = {};
+      if (user) {
+        if (user.roles.includes("ROLE_COACH")) {
+          params = {
+            coachId: user.id,
+            page: page - 1,
+            size: pageSize
+          }
+          FormFactorService.getAllFormFactorsByCoachId(params).then((res) => {
+          
+            const { formFactors, totalPages } = res.data;
+  
+            setFormFactors(formFactors);
+            setCount(totalPages);
+  
+            console.log(res.data);
+          })
+          .catch((error) => {
+              console.log(error);
+          });
       }
       else {
-        FormFactorService.getAllFormFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-          this.setState({formFactors: res.data});
-        });
+        params = {
+          athleteCodeUsed: user.athleteCodeUsed,
+          page: page - 1,
+          size: pageSize
+        }
+        FormFactorService.getAllFormFactorsByAthleteCodeUsed(params).then((res) => {
+          const { formFactors, totalPages } = res.data;
+  
+            setFormFactors(formFactors);
+            setCount(totalPages);
+  
+            console.log(res.data);
+          })
+          .catch((error) => {
+              console.log(error);
+          });
       }
     }
     else {
-      this.props.history.push(`/login`);
+      props.history.push(`/login`);
     }
-  }
+  }, [page, pageSize, formFactors.length]);
 
-  render() {
-    return(
+  return(
       <div>
       <Container>
         <h2>
@@ -76,23 +105,29 @@ export default class Form extends Component {
             <Col md="5">Yếu tố hình thái</Col>
             <Col md="5"></Col>
             <Col md="2">
-            {this.state.currentUser && this.state.currentUser.roles.includes("ROLE_COACH") ? (
-                <div>
-                  &nbsp;
-                  &nbsp;
-                  &nbsp;
-                  &nbsp;
-                  <Button size="sm" color="success" onClick={this.addFormFactor}>Thêm yếu tố</Button>
-                </div>
-              ) : (
-                ''
-            )}
+            {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
+              <div className="add-button">
+               <Button color="success" onClick={addFormFactor}>
+                 <FontAwesomeIcon icon={faPlusSquare}/>
+                 &nbsp;
+                 <span>Thêm yếu tố</span>
+               </Button>
+              </div>
+            ) : null}
             </Col>
           </Row>
         </h2>
         &nbsp;
-       {this.state.formFactors.length > 0 ? (
-        <Table responsive hover>
+        <Modal isOpen={visible} toggle={handleToggle}>
+          <ModalBody>
+            <Alert color="danger" isOpen={visible} toggle={handleToggle}>
+              {message}
+            </Alert>
+          </ModalBody>
+        </Modal>
+       {formFactors.length > 0 ? (
+       <div>  
+         <Table responsive hover>
           <thead>
             <tr>
               <th>#</th>
@@ -106,9 +141,9 @@ export default class Form extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.formFactors.map((formFactor, i) => (
+            {formFactors.map((formFactor, i) => (
               <tr>
-                <td>{i + 1}</td>
+                <td>{pageSize * (page - 1) + (i + 1)}</td>
                 <td>{formFactor.formFactorCode}</td>
                 <td>{formFactor.athlete.athleteCode}</td>
                 <td>{formFactor.athlete.athleteName}</td>
@@ -117,27 +152,55 @@ export default class Form extends Component {
                 <td>{formFactor.createAt}</td>
                 <td>
                   <ButtonGroup>
-                    <Button size="sm" color="info" onClick={() => this.viewFormFactor(formFactor.id)}>Xem</Button>
-                    {this.state.currentUser.roles.includes("ROLE_COACH") ? (
+                    <Button size="sm" color="info" onClick={() => viewFormFactor(formFactor.id)}>
+                      <FontAwesomeIcon icon={faEye}/>
+                      &nbsp;
+                      <span>Xem</span>
+                    </Button>
+                    {currentUser.roles.includes("ROLE_COACH") ? (
                       <div>
-                        <Button size="sm" color="primary" onClick={() => this.editFormFactor(formFactor.id, formFactor.status)}>Sửa</Button>
-                        <Button size="sm" color="danger" onClick={() => this.deleteFormFactor(formFactor.id, formFactor.status)}>Xóa</Button>
+                        <Button size="sm" color="primary" onClick={() => editFormFactor(formFactor.id, formFactor.status)}>
+                          <FontAwesomeIcon icon={faEdit}/>
+                          &nbsp;
+                          <span>Sửa</span>
+                        </Button>
                       </div>
-                    ) : (
-                      ''
-                    )}
+                    ) : null}
+                    {currentUser.roles.includes("ROLE_COACH") ? (
+                      <div>
+                       <Button size="sm" color="danger" tag={Link} to={`/formFactors/${formFactor.id}/delete`}>
+                        <FontAwesomeIcon icon={faTrashAlt}/>
+                        &nbsp;
+                        <span>Xóa</span>
+                       </Button>
+                      </div>
+                    ) : null}
                   </ButtonGroup>
                 </td>
               </tr>
             ))}
           </tbody>
-        </Table>
+         </Table>
+
+         <Pagination
+            className="my-5"
+            count={count}
+            page={page}
+            siblingCount={1}
+            boundaryCount={1}
+            variant="outlined"
+            shape="rounded"
+            showFirstButton
+            showLastButton
+            onChange={handlePageChange}
+         /> 
+        </div>
        ) : (
-        <div>Không tìm thấy yếu tố hình thái nào</div>
+        <div>
+          <Alert color="warning">Không tìm thấy yếu tố hình thái nào.</Alert>
+        </div>
        )}
       </Container>
     </div> 
-    );
-  }
-
+  );
 }

@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
+import {Alert, Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import FormFactorService from "../../../services/form-factor-service";
 import AthleteService from "../../../services/athlete-service";
 import CodeGeneration from "../../../utils/code-generation";
 import AuthenticationService from "../../../services/authentication-service";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowCircleLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default class FormFactorUpdate extends Component {
 
@@ -18,10 +20,23 @@ export default class FormFactorUpdate extends Component {
             athleteCode: '',
             queteletQuotient: '',
             status: 0,
-            createAt: ''
+            createAt: '',
+            visible: false,
+            message: '',
+            success: false
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleToggle = this.handleToggle.bind(this);
+    }
+
+    handleOpen = () => {
+        this.setState({visible: true});
+    }
+
+    handleToggle = () => {
+        this.setState({visible: !this.state.visible});
     }
 
     handleChangeId = event => {
@@ -50,20 +65,14 @@ export default class FormFactorUpdate extends Component {
         }
 
         let user = AuthenticationService.getCurrentUser();
-        if (user.roles.includes("ROLE_COACH")) {
-            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
-                this.setState({athletes: res.data});
-            });
-        }
-        else {
-            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-                this.setState({athletes: res.data});
-            });
-        }
+        AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+            this.setState({athletes: res.data});
+        });
     }
 
     handleSubmit(e) {
         e.preventDefault();
+
         let notNullAthleteCode = this.state.athleteCode ? this.state.athleteCode : this.state.athletes[0].athleteCode;
         AthleteService.getAthleteByAthleteCode(notNullAthleteCode).then((res) => {
             let athlete = res.data;
@@ -81,27 +90,45 @@ export default class FormFactorUpdate extends Component {
                     let uniqueFormFactor = res.data;
                     if (uniqueFormFactor.formFactorCode === formFactor.formFactorCode) {
                         if (uniqueFormFactor.status === 1) {
-                            alert(`Vận động viên mã ${uniqueFormFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueFormFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniqueFormFactor.createAt} trước khi thêm để phân loại lại.`);
-                            this.props.history.push('/formFactors');
+                            this.setState({message: `Vận động viên mã ${uniqueFormFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueFormFactor.createAt}. Vui lòng thêm yếu tố hình thái cho vận động viên vào tháng sau.`});
                         }
                         else {
-                            alert(`Yếu tố hình thái của vận động viên mã ${uniqueFormFactor.athlete.athleteCode} trong tháng ${uniqueFormFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố hình thái mã ${uniqueFormFactor.formFactorCode} trước khi thêm.`);
-                            this.props.history.push('/formFactors');
+                            this.setState({message: `Yếu tố hình thái của vận động viên mã ${uniqueFormFactor.athlete.athleteCode} trong tháng ${uniqueFormFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố hình thái mã ${uniqueFormFactor.formFactorCode} trước khi thêm.`});
                         }
                     }
                     else {
-                        FormFactorService.createFormFactor(formFactor).then(res => {
-                            this.props.history.push('/formFactors');
-                        });
+                        FormFactorService.createFormFactor(formFactor).then(
+                            (response) => {
+                                if (response.data.message === "FormFactor have been added!") {
+                                    this.setState({message: "Yếu tố hình thái đã được thêm!"});
+                                }
+                                this.setState({success: true});
+                                setTimeout(() => {
+                                    this.setState({visible: false});
+                                    this.props.history.push('/formFactors');
+                                }, 2000);
+                            }
+                        );
                     }
                 });
             } 
             else {
-                FormFactorService.updateFormFactor(formFactor, this.state.id).then( res => {
-                    this.props.history.push('/formFactors');
-                });
+                FormFactorService.updateFormFactor(formFactor, this.state.id).then(
+                    (response) => {
+                        if (response.data.message === "FormFactor have been edited!") {
+                            this.setState({message: "Yếu tố hình thái đã được chỉnh sửa!"});
+                        }
+                        this.setState({success: true});
+                        setTimeout(() => {
+                            this.setState({visible: false});
+                            this.props.history.push('/formFactors');
+                        }, 2000);
+                    }
+                );
             }
         });
+
+        this.handleOpen();
     }
 
     render() {
@@ -109,8 +136,9 @@ export default class FormFactorUpdate extends Component {
 
         return(
             <div>
-                <Container>
+                <Container className="add-edit-container">
                     {title}
+                 {!this.state.success && (
                     <Form onSubmit={this.handleSubmit}>
                         {this.state.id ? (
                             <FormGroup>
@@ -141,10 +169,22 @@ export default class FormFactorUpdate extends Component {
                             </FormGroup>
                         ) : ''}
                         <FormGroup>
-                            <Button color="primary" type="submit">Lưu</Button>{' '}
-                            <Button color="secondary" tag={Link} to="/formFactors">Hủy</Button>
+                            <Button color="primary" type="submit">
+                                <FontAwesomeIcon icon={faSave}/>
+                                &nbsp;
+                                <span>Lưu</span>
+                            </Button>{' '}
+                            <Button color="secondary" tag={Link} to="/formFactors">
+                                <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                                &nbsp;
+                                <span>Quay lại</span>
+                            </Button>
                         </FormGroup>
                     </Form>
+                 )}
+                 <Alert color={this.state.success ? "success" : "danger"} isOpen={this.state.visible} toggle={this.handleToggle}>
+                    {this.state.message}
+                 </Alert>
                 </Container>
             </div>
         );
