@@ -4,11 +4,13 @@ const AUTHENTICATION_API_BASE_URL = "http://localhost:8080/api/auth/";
 
 export default class AuthenticationService {
 
-    static register(username, email, password) {
+    static register(username, email, password, roles, athleteCodeUsed) {
         return axios.post(AUTHENTICATION_API_BASE_URL + "signup", {
           username,
           email,
           password,
+          roles,
+          athleteCodeUsed
         });
     }
       
