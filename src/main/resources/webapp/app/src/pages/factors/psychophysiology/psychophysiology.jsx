@@ -1,12 +1,30 @@
+import { faEdit, faEye, faPlusSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Pagination from "@material-ui/lab/Pagination";
 import React, { useEffect, useState } from "react";
-import {Button, ButtonGroup, Col, Container, Row, Table} from "reactstrap";
+import {Alert, Button, ButtonGroup, Col, Container, Modal, ModalBody, Row, Table} from "reactstrap";
 import AuthenticationService from "../../../services/authentication-service";
 import PsychophysiologyFactorService from "../../../services/psychophysiology-factor-service";
+import { Link } from "react-router-dom";
 
 export default function Psychophysiology(props) {
 
   const [psychophysiologyFactors, setPsychophysiologyFactors] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
+
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(0);
+  const [pageSize, setPageSize] = useState(3);
+
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleOpen = () => setVisible(true);
+  const handleToggle = () => setVisible(!visible);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  }
 
   const addPsychophysiologyFactor = () => {
     props.history.push(`/psychophysiologyFactors/new`);
@@ -21,40 +39,62 @@ export default function Psychophysiology(props) {
       props.history.push(`/psychophysiologyFactors/${id}/edit`);
     }
     else {
-      alert("Bạn không thể sửa yếu tố tâm-sinh lý đã phân loại");
-    }
-  }
-
-  const deletePsychophysiologyFactor = (id, status) => {
-    if (status === 0) {
-      PsychophysiologyFactorService.deletePsychophysiologyFactor(id).then( (res) => {
-        setPsychophysiologyFactors(psychophysiologyFactors.filter(psychophysiologyFactor => psychophysiologyFactor.id !== id));
-      });
-    }
-    else {
-      alert("Bạn không thể xóa yếu tố tâm-sinh lý đã phân loại");
+      setMessage("Bạn không thể sửa yếu tố tâm-sinh lý đã phân loại");
+      handleOpen();
+      setTimeout(() => {
+        setVisible(false);
+        props.history.push('/psychophysiologyFactors');
+      }, 2000);
     }
   }
 
     useEffect(() => {
       let user = AuthenticationService.getCurrentUser();
       setCurrentUser(user);
+      let params = {};
       if (user) {
         if (user.roles.includes("ROLE_COACH")) {
-          PsychophysiologyFactorService.getAllPsychophysiologyFactorsByCoachId(user.id).then((res) => {
-            setPsychophysiologyFactors(res.data);
+          params = {
+            coachId: user.id,
+            page: page - 1,
+            size: pageSize
+          }
+          PsychophysiologyFactorService.getAllPsychophysiologyFactorsByCoachId(params).then((res) => {
+            
+            const { psychophysiologyFactors, totalPages } = res.data;
+
+            setPsychophysiologyFactors(psychophysiologyFactors);
+            setCount(totalPages);
+
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
           });
         }
         else {
-          PsychophysiologyFactorService.getAllPsychophysiologyFactorsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-            setPsychophysiologyFactors(res.data);
+          params = {
+            athleteCodeUsed: user.athleteCodeUsed,
+            page: page - 1,
+            size: pageSize
+          }
+          PsychophysiologyFactorService.getAllPsychophysiologyFactorsByAthleteCodeUsed(params).then((res) => {
+            const { psychophysiologyFactors, totalPages } = res.data;
+
+            setPsychophysiologyFactors(psychophysiologyFactors);
+            setCount(totalPages);
+
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
           });
         }
       }
       else {
         props.history.push(`/login`);
       }
-    }, []);
+    }, [page, pageSize, psychophysiologyFactors.length]);
 
     return(
         <div>
@@ -65,12 +105,12 @@ export default function Psychophysiology(props) {
               <Col md="5"></Col>
               <Col md="2">
                 {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
-                   <div>
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
-                      &nbsp;
-                      <Button size="sm" color="success" onClick={addPsychophysiologyFactor}>Thêm yếu tố</Button>
+                   <div className="add-button">
+                      <Button color="success" onClick={addPsychophysiologyFactor}>
+                        <FontAwesomeIcon icon={faPlusSquare}/>
+                        &nbsp;
+                        <span>Thêm yếu tố</span>
+                      </Button>
                    </div>
                 ) : (
                   ''
@@ -79,8 +119,16 @@ export default function Psychophysiology(props) {
             </Row>
           </h2>
           &nbsp;
+          <Modal isOpen={visible} toggle={handleToggle}>
+            <ModalBody>
+             <Alert color="danger" isOpen={visible} toggle={handleToggle}>
+               {message}
+             </Alert>
+            </ModalBody>
+          </Modal>
          {psychophysiologyFactors.length > 0 ? (
-          <Table responsive hover>
+          <div>
+           <Table responsive hover>
             <thead>
               <tr>
                 <th>#</th>
@@ -100,7 +148,7 @@ export default function Psychophysiology(props) {
             <tbody>
               {psychophysiologyFactors.map((psychophysiologyFactor, i) => (
                 <tr>
-                  <td>{i + 1}</td>
+                  <td>{pageSize * (page - 1) + (i + 1)}</td>
                   <td>{psychophysiologyFactor.psychophysiologyFactorCode}</td>
                   <td>{psychophysiologyFactor.athlete.athleteCode}</td>
                   <td>{psychophysiologyFactor.athlete.athleteName}</td>
@@ -113,17 +161,29 @@ export default function Psychophysiology(props) {
                   <td>{psychophysiologyFactor.createAt}</td>
                   <td>
                     <ButtonGroup>
-                      <Button size="sm" color="info" onClick={() => viewPsychophysiologyFactor(psychophysiologyFactor.id)}>Xem</Button>
+                      <Button size="sm" color="info" onClick={() => viewPsychophysiologyFactor(psychophysiologyFactor.id)}>
+                        <FontAwesomeIcon icon={faEye}/>
+                        &nbsp;
+                        <span>Xem</span>
+                      </Button>
                       {currentUser.roles.includes("ROLE_COACH") ? (
                         <div>
-                          <Button size="sm" color="primary" onClick={() => editPsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Sửa</Button>
+                          <Button size="sm" color="primary" onClick={() => editPsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >
+                            <FontAwesomeIcon icon={faEdit}/>
+                            &nbsp;
+                            <span>Sửa</span>
+                          </Button>
                         </div>
                         ) : (
                           ''
                       )}
                       {currentUser.roles.includes("ROLE_COACH") ? (
                         <div>
-                          <Button size="sm" color="danger" onClick={() => deletePsychophysiologyFactor(psychophysiologyFactor.id, psychophysiologyFactor.status)} >Xóa</Button>
+                          <Button size="sm" color="danger" tag={Link} to={`/psychophysiologyFactors/${psychophysiologyFactor.id}/delete`} >
+                            <FontAwesomeIcon icon={faTrashAlt}/>
+                            &nbsp;
+                            <span>Xóa</span>
+                          </Button>
                         </div>
                       ) : (
                           ''
@@ -133,9 +193,25 @@ export default function Psychophysiology(props) {
                 </tr>
               ))}
             </tbody>
-          </Table>
+           </Table>
+
+           <Pagination
+              className="my-5"
+              count={count}
+              page={page}
+              siblingCount={1}
+              boundaryCount={1}
+              variant="outlined"
+              shape="rounded"
+              showFirstButton
+              showLastButton
+              onChange={handlePageChange}
+           /> 
+          </div>
          ) : (
-          <div>Không tìm thấy yếu tố tâm-sinh lý nào</div>
+          <div>
+            <Alert color="warning">Không tìm thấy yếu tố tâm-sinh lý nào.</Alert>
+          </div>
          )}
         </Container>
       </div> 

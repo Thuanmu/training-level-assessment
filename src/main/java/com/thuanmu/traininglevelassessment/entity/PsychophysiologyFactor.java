@@ -1,7 +1,10 @@
 package com.thuanmu.traininglevelassessment.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +27,7 @@ public class PsychophysiologyFactor {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", length = 11, nullable = false)
 	private Long id;
 	
 	@Column(name = "psychophysiology_factor_code", length = 255, nullable = false, unique = true)
@@ -40,19 +44,25 @@ public class PsychophysiologyFactor {
 	@Column(name = "living_capacity_quotient")
 	private Double livingCapacityQuotient;
 	
+	@Column(name = "heart_rate_at_5s_after_100m_run")
+	private Double heartRateAtFiveSecondsAfterOneHundredMetersRun;
+	
 	@Column(name = "restored_heart_rate_at_30s_after_100m_run")
 	private Double restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun;
 	
-	@Column(name = "lactic_acid_content_after_one_hundred_meters_run")
+	@Column(name = "lactic_acid_content_after_100m_run")
 	private Double lacticAcidContentAfterOneHundredMetersRun;
 	
-	@Column(name = "status")
-	private Character status;
+	@Column(name = "status", length = 1)
+	private Integer status;
 	
-	@JsonFormat(pattern = "MM-yyyy")
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
 	private LocalDateTime createAt;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "psychophysiologyFactor", cascade = CascadeType.REMOVE)
+	private Set<AthleteClassification> listAthleteClassification = new HashSet<>();
 	
 	public Long getId() {
 		return id;
@@ -93,6 +103,14 @@ public class PsychophysiologyFactor {
 	public void setLivingCapacityQuotient(Double livingCapacityQuotient) {
 		this.livingCapacityQuotient = livingCapacityQuotient;
 	}
+	
+	public Double getHeartRateAtFiveSecondsAfterOneHundredMetersRun() {
+		return heartRateAtFiveSecondsAfterOneHundredMetersRun;
+	}
+
+	public void setHeartRateAtFiveSecondsAfterOneHundredMetersRun(Double heartRateAtFiveSecondsAfterOneHundredMetersRun) {
+		this.heartRateAtFiveSecondsAfterOneHundredMetersRun = heartRateAtFiveSecondsAfterOneHundredMetersRun;
+	}
 
 	public Double getRestoredHeartRateAtThirtySecondsAfterOneHundredMetersRun() {
 		return restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun;
@@ -111,11 +129,11 @@ public class PsychophysiologyFactor {
 		this.lacticAcidContentAfterOneHundredMetersRun = lacticAcidContentAfterOneHundredMetersRun;
 	}
 
-	public Character getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(Character status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 	

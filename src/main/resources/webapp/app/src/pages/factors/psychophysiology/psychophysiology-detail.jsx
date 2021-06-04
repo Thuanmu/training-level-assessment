@@ -1,3 +1,5 @@
+import { faArrowCircleLeft, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container } from "reactstrap";
@@ -54,7 +56,7 @@ export default function PsychophysiologyFactorDetail(props) {
                     </dt>
                     <dd>{psychophysiologyFactor.heartRateAtFiveSecondsAfterOneHundredMetersRun}</dd>
                     <dt>
-                        <span>Tần số tim hồi phục 30s sau chạy 100m (lần/phút)</span>
+                        <span>Tần số tim hồi phục 30s sau chạy 100m (lần/ph)</span>
                     </dt>
                     <dd>{psychophysiologyFactor.restoredHeartRateAtThirtySecondsAfterOneHundredMetersRun}</dd>
                     <dt>
@@ -64,7 +66,7 @@ export default function PsychophysiologyFactorDetail(props) {
                     <dt>
                         <span>Trạng thái</span>
                     </dt>
-                    <dd>{psychophysiologyFactor.status === '1' ? "Đã phân loại" : "Chưa phân loại"}</dd>
+                    <dd>{psychophysiologyFactor.status === 1 ? "Đã phân loại" : "Chưa phân loại"}</dd>
                     <dt>
                         <span>Ngày tạo</span>
                     </dt>
@@ -72,13 +74,21 @@ export default function PsychophysiologyFactorDetail(props) {
                 </dl>
                 {currentUser && currentUser.roles.includes("ROLE_COACH") ? (
                    <span>
-                      <Button color="primary" tag={Link} to={`/psychophysiologyFactors/${psychophysiologyFactor.id}/edit`} >Sửa</Button>
+                      <Button color="primary" tag={Link} to={`/psychophysiologyFactors/${psychophysiologyFactor.id}/edit`} >
+                        <FontAwesomeIcon icon={faEdit}/>
+                        &nbsp;
+                        <span>Sửa</span>
+                      </Button>
                       &nbsp;
                    </span>
                 ) : (
                   ''
                 )}
-                <Button color="info" tag={Link} to="/psychophysiologyFactors">Quay lại</Button>
+                <Button color="secondary" tag={Link} to="/psychophysiologyFactors">
+                    <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                    &nbsp;
+                    <span>Quay lại</span>
+                </Button>
             </Container>
         </div>
     );

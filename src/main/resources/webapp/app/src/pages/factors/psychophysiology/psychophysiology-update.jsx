@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
+import {Alert, Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import { Link } from 'react-router-dom';
 import PsychophysiologyFactorService from "../../../services/psychophysiology-factor-service";
 import AthleteService from "../../../services/athlete-service";
 import CodeGeneration from "../../../utils/code-generation";
 import AuthenticationService from "../../../services/authentication-service";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowCircleLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function PsychophysiologyFactorUpdate(props) {
 
@@ -19,6 +21,13 @@ export default function PsychophysiologyFactorUpdate(props) {
     const [lacticAcidContentAfterOneHundredMetersRun, setLacticAcidContentAfterOneHundredMetersRun] = useState('');
     const [status, setStatus] = useState(0);
     const [createAt, setCreateAt] = useState('');
+
+    const [visible, setVisible] = useState(false);
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const handleOpen = () => setVisible(true);
+    const handleToggle = () => setVisible(!visible);
 
     const handleChangeAthleteCode = event => setAthleteCode(event.target.value);
     const handleChangeSingleReflectionTime = event => setSingleReflectionTime(event.target.value);
@@ -45,16 +54,9 @@ export default function PsychophysiologyFactorUpdate(props) {
         }
 
         let user = AuthenticationService.getCurrentUser();
-        if (user.roles.includes("ROLE_COACH")) {
-            AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
-                setAthletes(res.data);
-            });
-        }
-        else {
-            AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-                setAthletes(res.data);
-            });
-        }
+        AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
+            setAthletes(res.data);
+        });
     },[]);
 
     const handleSubmit = (e) => {
@@ -81,35 +83,54 @@ export default function PsychophysiologyFactorUpdate(props) {
                     let uniquePsychophysiologyFactor = res.data;
                     if (uniquePsychophysiologyFactor.psychophysiologyFactorCode === psychophysiologyFactor.psychophysiologyFactorCode) {
                         if (uniquePsychophysiologyFactor.status === 1) {
-                            alert(`Vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePsychophysiologyFactor.createAt}. Vui lòng xóa bảng xếp hạng tháng ${uniquePsychophysiologyFactor.createAt} trước khi thêm để phân loại lại.`);
-                            props.history.push('/psychophysiologyFactors');
+                            setMessage(`Vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePsychophysiologyFactor.createAt}. Vui lòng thêm yếu tố tâm-sinh lý cho vận động viên vào tháng sau.`);
                         }
                         else {
-                            alert(`Yếu tố tâm-sinh lý của vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} trong tháng ${uniquePsychophysiologyFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố tâm-sinh lý mã ${uniquePsychophysiologyFactor.psychophysiologyFactorCode} trước khi thêm.`);
-                            props.history.push('/psychophysiologyFactors');
+                            setMessage(`Yếu tố tâm-sinh lý của vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} trong tháng ${uniquePsychophysiologyFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố tâm-sinh lý mã ${uniquePsychophysiologyFactor.psychophysiologyFactorCode} trước khi thêm.`);
                         }
                     }
                     else {
-                        PsychophysiologyFactorService.createPsychophysiologyFactor(psychophysiologyFactor).then(res => {
-                            props.history.push('/psychophysiologyFactors');
-                        });
+                        PsychophysiologyFactorService.createPsychophysiologyFactor(psychophysiologyFactor).then(
+                            (response) => {
+                                if (response.data.message === "PsychophysiologyFactor have been added!") {
+                                    setMessage("Yếu tố tâm-sinh lý đã được thêm!");
+                                }
+                                setSuccess(true);
+                                setTimeout(() => {
+                                    setVisible(false);
+                                    props.history.push('/psychophysiologyFactors');
+                                }, 2000);
+                            }
+                        );
                     }
                 });
             } 
             else {
-                PsychophysiologyFactorService.updatePsychophysiologyFactor(psychophysiologyFactor, id).then( res => {
-                    props.history.push('/psychophysiologyFactors');
-                });
+                PsychophysiologyFactorService.updatePsychophysiologyFactor(
+                    (response) => {
+                        if (response.data.message === "PsychophysiologyFactor have been edited!") {
+                            setMessage("Yếu tố tâm-sinh lý đã được chỉnh sửa!");
+                        }
+                        setSuccess(true);
+                        setTimeout(() => {
+                            setVisible(false);
+                            props.history.push('/psychophysiologyFactors');
+                        }, 2000);
+                    }
+                );
             }
         });
+
+        handleOpen();
     }
 
     const title = <h2>{ id ? "Sửa yếu tố tâm-sinh lý" : "Thêm yếu tố tâm-sinh lý" }</h2>;
 
     return(
         <div>
-            <Container>
+            <Container className="add-edit-container">
                 {title}
+             {!success && (
                 <Form onSubmit={handleSubmit}>
                     {id ? (
                         <FormGroup>
@@ -134,7 +155,7 @@ export default function PsychophysiologyFactorUpdate(props) {
                         <Input type="text" id="living-capacity-quotient" name="criteria" value={livingCapacityQuotient} onChange={handleChangeLivingCapacityQuotient} />
                     </FormGroup>
                     <FormGroup>
-                        <Label for="heart-rate-at-five-seconds-after-one-hundred-meters-run">Chỉ số dung tích sống (ml/kg)</Label>
+                        <Label for="heart-rate-at-five-seconds-after-one-hundred-meters-run">Tần số tim 5s sau chạy 100m (lần/ph)</Label>
                         <Input type="text" id="heart-rate-at-five-seconds-after-one-hundred-meters-run" name="criteria" value={heartRateAtFiveSecondsAfterOneHundredMetersRun} onChange={handleChangeHeartRateAtFiveSecondsAfterOneHundredMetersRun} />
                     </FormGroup>
                     <FormGroup>
@@ -156,10 +177,22 @@ export default function PsychophysiologyFactorUpdate(props) {
                         </FormGroup>
                     ) : ''}
                     <FormGroup>
-                        <Button color="primary" type="submit">Lưu</Button>{' '}
-                        <Button color="secondary" tag={Link} to="/psychophysiologyFactors">Hủy</Button>
+                        <Button color="primary" type="submit">
+                            <FontAwesomeIcon icon={faSave}/>
+                            &nbsp;
+                            <span>Lưu</span>
+                        </Button>{' '}
+                        <Button color="secondary" tag={Link} to="/psychophysiologyFactors">
+                            <FontAwesomeIcon icon={faArrowCircleLeft}/>
+                            &nbsp;
+                            <span>Quay lại</span>
+                        </Button>
                     </FormGroup>
                 </Form>
+             )}
+             <Alert color={success ? "success" : "danger"} isOpen={visible} toggle={handleToggle}>
+                {message}
+             </Alert>
             </Container>
         </div>
 
