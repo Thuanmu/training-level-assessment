@@ -1,0 +1,20 @@
+.footer {
+    /* top: 100%; */
+    background-color:gray;
+    text-align: center;
+    padding: 25px;
+    /* padding: 1rem; */
+    color: white;
+    /* position:sticky; */
+    width: 100%;
+    bottom: 0;
+    margin-top: 40%;
+}
+
+.footer a {
+    color:white;
+}
+
+.footer a:hover {
+    color:yellow;
+}

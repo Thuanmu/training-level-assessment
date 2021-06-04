@@ -57,8 +57,56 @@
 
 
 .container, .container-fluid {
-  margin-top: 70px;
-}  
+  margin-top: 90px;
+  /* margin-bottom: 40%; */
+}
+
+#login-container, #signUp-container {
+  width: 30rem;
+}
+
+/* #login-container Input, #signUp-container Input {
+  width: 25rem;
+}
+
+#login-container .alert, #signUp-container .alert {
+  width: 25rem;
+}
+
+#login-container button, #signUp-container button {
+  width: 440px;
+} */
+
+#login-container h2, #signUp-container h2 {
+  text-align: center;
+}
+
+/* #signUp-container h2 {
+  margin-bottom: 30px;
+} */
+
+div.add-edit-container {
+  width: 50%;
+}
+
+/* .add-edit-container h2 {
+  margin-bottom: 20px;
+} */
+
+.container h2 {
+  margin-bottom: 20px;
+}
+
+.add-button {
+  float: right;
+}
+
+/* pagination */
+.my-5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .profile-img-card {
   width: 96px;
