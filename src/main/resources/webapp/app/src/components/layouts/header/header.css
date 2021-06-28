@@ -1,14 +1,26 @@
 
 .brand-title {
-    color: red;
+    color: lawngreen;
     font-size: 24px;
+    font-weight: bold;
     /* text-decoration: none; */
 }
 
 .nav {
     color: white;
+    font-weight: bold;
+    /* transition:all;
+    position:relative;
+    white-space: nowrap;
+    display: block;
+    line-height: 1.33;
+    text-decoration: none; */
 }
   
 .nav:hover {
-    color: lime;
+    color: deepskyblue;
+}
+
+#home-list {
+    font-size: 20px;
 }

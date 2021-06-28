@@ -63,34 +63,27 @@
 
 #login-container, #signUp-container {
   width: 30rem;
+  position:relative;
+  padding: 2em 2em 2em;
+  border: 1px solid #d8d8d8;
+  border-radius: 2%;
+  /* background-color:rgba(243, 243, 243, 0.918); */
 }
-
-/* #login-container Input, #signUp-container Input {
-  width: 25rem;
-}
-
-#login-container .alert, #signUp-container .alert {
-  width: 25rem;
-}
-
-#login-container button, #signUp-container button {
-  width: 440px;
-} */
 
 #login-container h2, #signUp-container h2 {
   text-align: center;
 }
 
-/* #signUp-container h2 {
-  margin-bottom: 30px;
-} */
+.login-suggestion {
+  text-align: center;
+}
 
 div.add-edit-container {
   width: 50%;
 }
 
-/* .add-edit-container h2 {
-  margin-bottom: 20px;
+/* #login-button {
+  font-weight: bold;
 } */
 
 .container h2 {
@@ -108,12 +101,3 @@ div.add-edit-container {
   justify-content: center;
 }
 
-.profile-img-card {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
-  display: block;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-}
