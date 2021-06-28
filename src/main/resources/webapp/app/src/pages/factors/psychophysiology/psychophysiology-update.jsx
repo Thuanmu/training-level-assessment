@@ -83,19 +83,20 @@ export default function PsychophysiologyFactorUpdate(props) {
                     let uniquePsychophysiologyFactor = res.data;
                     if (uniquePsychophysiologyFactor.psychophysiologyFactorCode === psychophysiologyFactor.psychophysiologyFactorCode) {
                         if (uniquePsychophysiologyFactor.status === 1) {
-                            setMessage(`Vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePsychophysiologyFactor.createAt}. Vui lòng thêm yếu tố tâm-sinh lý cho vận động viên vào tháng sau.`);
+                            setMessage(`Vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePsychophysiologyFactor.createAt.substring(3,10)}. Vui lòng thêm yếu tố tâm-sinh lý cho vận động viên vào tháng sau.`);
                         }
                         else {
-                            setMessage(`Yếu tố tâm-sinh lý của vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} trong tháng ${uniquePsychophysiologyFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố tâm-sinh lý mã ${uniquePsychophysiologyFactor.psychophysiologyFactorCode} trước khi thêm.`);
+                            setMessage(`Yếu tố tâm-sinh lý của vận động viên mã ${uniquePsychophysiologyFactor.athlete.athleteCode} trong tháng ${uniquePsychophysiologyFactor.createAt.substring(3,10)} đã tồn tại. Vui lòng xóa yếu tố tâm-sinh lý mã ${uniquePsychophysiologyFactor.psychophysiologyFactorCode} trước khi thêm.`);
                         }
                     }
                     else {
                         PsychophysiologyFactorService.createPsychophysiologyFactor(psychophysiologyFactor).then(
                             (response) => {
                                 if (response.data.message === "PsychophysiologyFactor have been added!") {
+                                    setSuccess(true);
                                     setMessage("Yếu tố tâm-sinh lý đã được thêm!");
                                 }
-                                setSuccess(true);
+                                
                                 setTimeout(() => {
                                     setVisible(false);
                                     props.history.push('/psychophysiologyFactors');
@@ -106,12 +107,13 @@ export default function PsychophysiologyFactorUpdate(props) {
                 });
             } 
             else {
-                PsychophysiologyFactorService.updatePsychophysiologyFactor(
+                PsychophysiologyFactorService.updatePsychophysiologyFactor(psychophysiologyFactor, id).then(
                     (response) => {
                         if (response.data.message === "PsychophysiologyFactor have been edited!") {
+                            setSuccess(true);
                             setMessage("Yếu tố tâm-sinh lý đã được chỉnh sửa!");
                         }
-                        setSuccess(true);
+                        
                         setTimeout(() => {
                             setVisible(false);
                             props.history.push('/psychophysiologyFactors');

@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.thuanmu.traininglevelassessment.entity.PsychophysiologyFactor;
@@ -40,7 +41,15 @@ public class PsychophysiologyFactorController {
 		this.psychophysiologyFactorRepository = psychophysiologyFactorRepository;
 	}
 
-	// get all psychophysiologyFactors by coachId order by createAt desc (for coach user)
+	
+	/**
+     * Get all psychophysiologyFactors by coach id, page number and sorted by creation date in descending order (for coach user).
+     *
+     * @param coachId	the id of the coach.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of psychophysiologyFactors.
+     */
 	@GetMapping("/coachUser")
     public ResponseEntity<Map<String, Object>> getAllPsychophysiologyFactorsByCoachId(
     		@RequestParam(required = false) Long coachId,
@@ -68,7 +77,17 @@ public class PsychophysiologyFactorController {
     	    }
     }
     
-    // get all psychophysiologyFactors by athleteCodeUsed order by createAt desc (for athlete user)
+	
+	/**
+     * Get all psychophysiologyFactors by athlete code used, page number and sorted by creation date 
+     * in descending order (for athlete user). The athlete user can view all the psychophysiologyFactors of 
+     * the athletes that his/her coach manages.
+     *
+     * @param athleteCodeUsed	athlete code of the athlete is used for athlete user.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of psychophysiologyFactors.
+     */
     @GetMapping("/athleteUser")
     public ResponseEntity<Map<String, Object>> getAllPsychophysiologyFactorsByAthleteCodeUsed(
     		@RequestParam(required = false) String athleteCodeUsed,
@@ -96,19 +115,26 @@ public class PsychophysiologyFactorController {
     	    }
     }
     
-    // get psychophysiologyFactors by status and coachId (for coach user)
+    
+    /**
+     * Get all psychophysiologyFactors by status = 0 (unclassified) and coach id (for coach user). This method is used when 
+     * the coach classifies athletes.
+     *
+     * @param coachId	the id of the coach.
+     * @return	a list of all psychophysiologyFactors by status = 0 (unclassified) and coach id (for coach user).
+     */
     @GetMapping("/status/{coachId}")
     public List<PsychophysiologyFactor> getPsychophysiologyFactorsByStatusAndCoachId(@PathVariable Long coachId) {
         return psychophysiologyFactorRepository.findByStatusAndCoachId(coachId);
     }
     
-//    // get psychophysiologyFactors by status and athleteCodeUsed (for athlete user)
-//    @GetMapping("/status/{athleteCodeUsed}")
-//    public List<PsychophysiologyFactor> getPsychophysiologyFactorsByStatusAndAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
-//        return psychophysiologyFactorRepository.findByStatusAndAthleteCodeUsed(athleteCodeUsed);
-//    }
     
-    // get psychophysiologyFactor by id rest api
+    /**
+     * Get a psychophysiologyFactor by id.
+     *
+     * @param id	the id of the psychophysiologyFactor.
+     * @return	a psychophysiologyFactor by id.
+     */
     @GetMapping("/{id}")
     ResponseEntity<?> getPsychophysiologyFactor(@PathVariable Long id) {
         Optional<PsychophysiologyFactor> psychophysiologyFactor = psychophysiologyFactorRepository.findById(id);
@@ -116,7 +142,13 @@ public class PsychophysiologyFactorController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
-    // get psychophysiologyFactor by psychophysiologyFactorCode rest api
+    
+    /**
+     * Get a psychophysiologyFactor by psychophysiologyFactor code.
+     *
+     * @param psychophysiologyFactorCode	the psychophysiologyFactor code of the psychophysiologyFactor.
+     * @return	a psychophysiologyFactor by psychophysiologyFactor code.
+     */
     @GetMapping("/{psychophysiologyFactorCode}/code")
     ResponseEntity<?> getPsychophysiologyFactorByPsychophysiologyFactorCode(@PathVariable String psychophysiologyFactorCode) {
         Optional<PsychophysiologyFactor> psychophysiologyFactor = psychophysiologyFactorRepository.findByPsychophysiologyFactorCode(psychophysiologyFactorCode);
@@ -124,8 +156,15 @@ public class PsychophysiologyFactorController {
                 .orElse(null);
     }
     
-    // create psychophysiologyFactor rest api
+    
+    /**
+     * Create a psychophysiologyFactor.
+     *
+     * @param psychophysiologyFactor	the psychophysiologyFactor to save to the database.
+     * @return	a message.
+     */
     @PostMapping
+    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<?> createPsychophysiologyFactor(@Valid @RequestBody PsychophysiologyFactor psychophysiologyFactor) throws URISyntaxException {
         log.info("Request to create psychophysiologyFactor: {}", psychophysiologyFactor);
         PsychophysiologyFactor result = psychophysiologyFactorRepository.save(psychophysiologyFactor);
@@ -133,16 +172,30 @@ public class PsychophysiologyFactorController {
         		.body(new MessageResponse("PsychophysiologyFactor have been added!"));
     }
     
-    // update psychophysiologyFactor rest api
+    
+    /**
+     * Update a psychophysiologyFactor.
+     *
+     * @param psychophysiologyFactor	the psychophysiologyFactor to update to the database.
+     * @return	a message.
+     */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<?> updatePsychophysiologyFactor(@Valid @RequestBody PsychophysiologyFactor psychophysiologyFactor) {
         log.info("Request to update psychophysiologyFactor: {}", psychophysiologyFactor);
         psychophysiologyFactorRepository.save(psychophysiologyFactor);
-        return ResponseEntity.ok(new MessageResponse("PsychophysiologyFactor have been edited!"));
+        return ResponseEntity.ok().body(new MessageResponse("PsychophysiologyFactor have been edited!"));
     }
     
-    // delete psychophysiologyFactor rest api
+    
+    /**
+     * Delete a psychophysiologyFactor by id.
+     *
+     * @param id	the id of the psychophysiologyFactor.
+     * @return	a message.
+     */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('COACH')")
     public ResponseEntity<?> deletePsychophysiologyFactor(@PathVariable Long id) {
         log.info("Request to delete psychophysiologyFactor: {}", id);
         psychophysiologyFactorRepository.deleteById(id);

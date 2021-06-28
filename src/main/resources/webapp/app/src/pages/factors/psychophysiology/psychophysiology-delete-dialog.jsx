@@ -33,9 +33,10 @@ export const PsychophysiologyFactorDeleteDialog = (props) => {
       PsychophysiologyFactorService.deletePsychophysiologyFactor(id).then(
         (response) => {
           if (response.data.message === "PsychophysiologyFactor has been deleted!") {
+            setSuccess(true);
             setMessage("Yếu tố tâm-sinh lý đã được xóa!");
           }
-          setSuccess(true);
+          
           setTimeout(() => {
             setVisible(false);
             handleClose();
