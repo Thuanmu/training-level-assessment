@@ -3,7 +3,7 @@ export default class AthleteClassificationFunction{
     static getAverageValueOfOneCriteria(athletesList, criteriaIndex) {
 		var sum = 0;
 		let athletesCount = athletesList.length;
-		for (var i = 0; i < athletesCount; i++) {
+		for (let i = 0; i < athletesCount; i++) {
 			sum += parseFloat(athletesList[i].criteriasList[criteriaIndex]);
 		}
 		
@@ -14,7 +14,7 @@ export default class AthleteClassificationFunction{
 		var averageValue = AthleteClassificationFunction.getAverageValueOfOneCriteria(athletesList, criteriaIndex);
 		var sum = 0;
 		let athletesCount = athletesList.length;
-		for (var i = 0; i < athletesCount; i++) {
+		for (let i = 0; i < athletesCount; i++) {
 			sum += Math.pow(parseFloat(athletesList[i].criteriasList[criteriaIndex]) - averageValue, 2);
 		}
 		
@@ -28,9 +28,16 @@ export default class AthleteClassificationFunction{
         }
 
         const NUMBER_OF_SELECTED_CRITERIA = 18;
-		for (var i = 0; i < NUMBER_OF_SELECTED_CRITERIA; i++) {
-			for (var j = 0; j < athletesList.length; j++) {
-                var Z = (parseFloat((athletesList[j].criteriasList[i])) - AthleteClassificationFunction.getAverageValueOfOneCriteria(athletesList, i)) / AthleteClassificationFunction.getStandardDeviationOfOneCriteria(athletesList, i);
+		for (let i = 0; i < NUMBER_OF_SELECTED_CRITERIA; i++) {
+			for (let j = 0; j < athletesList.length; j++) {
+				let Z;
+                if (i === 0 || i === 1 || i === 2 || i === 3 || i === 4 || i === 5 || i === 9 || i === 11 || i === 12) {
+					Z = (parseFloat((athletesList[j].criteriasList[i])) - AthleteClassificationFunction.getAverageValueOfOneCriteria(athletesList, i)) / (-AthleteClassificationFunction.getStandardDeviationOfOneCriteria(athletesList, i));
+				}
+				else {
+					Z = (parseFloat((athletesList[j].criteriasList[i])) - AthleteClassificationFunction.getAverageValueOfOneCriteria(athletesList, i)) / AthleteClassificationFunction.getStandardDeviationOfOneCriteria(athletesList, i);
+				}
+
 				var C = 5 + 2 * Z;
                 athletesList[j].totalScoresOfCriterias += C;
                 athletesList[j].totalScoresOfCriterias = +athletesList[j].totalScoresOfCriterias.toFixed(2);
@@ -59,8 +66,8 @@ export default class AthleteClassificationFunction{
         for (let i = 0; i < athletesList.length; i++) {
             totalScoresOfCriteriasList.push(athletesList[i].totalScoresOfCriterias);
         }
-        totalScoresOfCriteriasList.sort();
-		totalScoresOfCriteriasList.reverse();
+        totalScoresOfCriteriasList.sort(function(a, b) {return b - a});
+		// document.write(JSON.stringify(totalScoresOfCriteriasList));
 		
 		let rank = 1;
         for (let i = 0; i < totalScoresOfCriteriasList.length; i++) {

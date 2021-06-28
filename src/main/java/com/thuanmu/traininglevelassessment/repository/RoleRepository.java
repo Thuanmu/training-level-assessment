@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import com.thuanmu.traininglevelassessment.entity.ERole;
 import com.thuanmu.traininglevelassessment.entity.Role;
 
+/**
+ * Spring Data JPA repository for the Role entity.
+ */
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 	Optional<Role> findByName(ERole name);
