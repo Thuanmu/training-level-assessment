@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.thuanmu.traininglevelassessment.entity.Athlete;
@@ -39,7 +40,15 @@ public class FormFactorController {
 		this.formFactorRepository = formFactorRepository;
 	}
 	
-    // get all formFactors by coachId order by createAt desc (for coach user)
+	
+	/**
+     * Get all formFactors by coach id, page number and sorted by creation date in descending order (for coach user).
+     *
+     * @param coachId	the id of the coach.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of formFactors.
+     */
     @GetMapping("/coachUser")
     public ResponseEntity<Map<String, Object>> getAllFormFactorsByCoachId(
     		@RequestParam(required = false) Long coachId,
@@ -67,7 +76,16 @@ public class FormFactorController {
     	    }
     }
     
-    // get all formFactors by athleteCodeUsed order by createAt desc (for athlete user)
+    
+    /**
+     * Get all formFactors by athlete code used, page number and sorted by creation date in descending order (for athlete user).
+     * The athlete user can view all the formFactors of the athletes that his/her coach manages.
+     *
+     * @param athleteCodeUsed	athlete code of the athlete is used for athlete user.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of formFactors.
+     */
     @GetMapping("/athleteUser")
     public ResponseEntity<Map<String, Object>> getAllFormFactorsByAthleteCodeUsed(
     		@RequestParam(required = false) String athleteCodeUsed,
@@ -95,19 +113,26 @@ public class FormFactorController {
     	    }
     }
     
-    // get formFactors by status and coachId (for coach user)
+    
+    /**
+     * Get all formFactors by status = 0 (unclassified) and coach id (for coach user). This method is used when the coach 
+     * classifies athletes.
+     *
+     * @param coachId	the id of the coach.
+     * @return	a list of all formFactors by status = 0 (unclassified) and coach id (for coach user).
+     */
     @GetMapping("/status/{coachId}")
     public List<FormFactor> getFormFactorsByStatusAndCoachId(@PathVariable Long coachId) {
         return formFactorRepository.findByStatusAndCoachId(coachId);
     }
     
-//    // get formFactors by status and athleteCodeUsed (for athlete user)
-//    @GetMapping("/status/{athleteCodeUsed}")
-//    public List<FormFactor> getFormFactorsByStatusAndAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
-//        return formFactorRepository.findByStatusAndAthleteCodeUsed(athleteCodeUsed);
-//    }
     
-    // get formFactor by formFactorCode rest api
+    /**
+     * Get a formFactor by formFactor code.
+     *
+     * @param formFactorCode	the formFactor code of the formFactor.
+     * @return	a formFactor by formFactor code.
+     */
     @GetMapping("/{formFactorCode}/code")
     ResponseEntity<?> getFormFactorByFormFactorCode(@PathVariable String formFactorCode) {
         Optional<FormFactor> formFactor = formFactorRepository.findByFormFactorCode(formFactorCode);
@@ -115,16 +140,29 @@ public class FormFactorController {
                 .orElse(null);
     }
     
-    // get formFactor by id rest api
+    
+    /**
+     * Get a formFactor by id.
+     *
+     * @param id	the id of the formFactor.
+     * @return	a formFactor by id.
+     */
     @GetMapping("/{id}")
     ResponseEntity<?> getFormFactor(@PathVariable Long id) {
         Optional<FormFactor> formFactor = formFactorRepository.findById(id);
         return formFactor.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-        
-    // create formFactor rest api
+    
+    
+    /**
+     * Create a formFactor.
+     *
+     * @param formFactor	the formFactor to save to the database.
+     * @return	a message.
+     */
     @PostMapping
+    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<?> createFormFactor(@Valid @RequestBody FormFactor formFactor) throws URISyntaxException {
         log.info("Request to create formFactor: {}", formFactor);
         FormFactor result = formFactorRepository.save(formFactor);
@@ -132,16 +170,30 @@ public class FormFactorController {
         		.body(new MessageResponse("FormFactor have been added!"));
     }
     
-    // update formFactor rest api
+    
+    /**
+     * Update a formFactor.
+     *
+     * @param formFactor	the formFactor to update to the database.
+     * @return	a message.
+     */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<?> updateFormFactor(@Valid @RequestBody FormFactor formFactor) {
         log.info("Request to update formFactor: {}", formFactor);
         formFactorRepository.save(formFactor);
         return ResponseEntity.ok().body(new MessageResponse("FormFactor have been edited!"));
     }
     
-    // delete formFactor rest api
+    
+    /**
+     * Delete a formFactor by id.
+     *
+     * @param id	the id of the formFactor.
+     * @return	a message.
+     */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('COACH')")
     public ResponseEntity<?> deleteFormFactor(@PathVariable Long id) {
         log.info("Request to delete formFactor: {}", id);
         formFactorRepository.deleteById(id);

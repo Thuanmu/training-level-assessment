@@ -21,6 +21,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * A FormFactor.
+ */
 @Entity
 @Table(name = "form_factor")
 public class FormFactor {

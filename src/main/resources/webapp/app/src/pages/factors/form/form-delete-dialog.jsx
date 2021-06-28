@@ -32,9 +32,10 @@ export const FormFactorDeleteDialog = (props) => {
     if (formFactor.status === 0) {
       FormFactorService.deleteFormFactor(id).then((response) => {
         if (response.data.message === "FormFactor has been deleted!") {
+          setSuccess(true);
           setMessage("Yếu tố hình thái đã được xóa!");
         }
-        setSuccess(true);
+        
         setTimeout(() => {
           setVisible(false);
           handleClose();

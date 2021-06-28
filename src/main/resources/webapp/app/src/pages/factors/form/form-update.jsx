@@ -90,19 +90,20 @@ export default class FormFactorUpdate extends Component {
                     let uniqueFormFactor = res.data;
                     if (uniqueFormFactor.formFactorCode === formFactor.formFactorCode) {
                         if (uniqueFormFactor.status === 1) {
-                            this.setState({message: `Vận động viên mã ${uniqueFormFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueFormFactor.createAt}. Vui lòng thêm yếu tố hình thái cho vận động viên vào tháng sau.`});
+                            this.setState({message: `Vận động viên mã ${uniqueFormFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueFormFactor.createAt.substring(3,10)}. Vui lòng thêm yếu tố hình thái cho vận động viên vào tháng sau.`});
                         }
                         else {
-                            this.setState({message: `Yếu tố hình thái của vận động viên mã ${uniqueFormFactor.athlete.athleteCode} trong tháng ${uniqueFormFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố hình thái mã ${uniqueFormFactor.formFactorCode} trước khi thêm.`});
+                            this.setState({message: `Yếu tố hình thái của vận động viên mã ${uniqueFormFactor.athlete.athleteCode} trong tháng ${uniqueFormFactor.createAt.substring(3,10)} đã tồn tại. Vui lòng xóa yếu tố hình thái mã ${uniqueFormFactor.formFactorCode} trước khi thêm.`});
                         }
                     }
                     else {
                         FormFactorService.createFormFactor(formFactor).then(
                             (response) => {
                                 if (response.data.message === "FormFactor have been added!") {
+                                    this.setState({success: true});
                                     this.setState({message: "Yếu tố hình thái đã được thêm!"});
                                 }
-                                this.setState({success: true});
+                                
                                 setTimeout(() => {
                                     this.setState({visible: false});
                                     this.props.history.push('/formFactors');
