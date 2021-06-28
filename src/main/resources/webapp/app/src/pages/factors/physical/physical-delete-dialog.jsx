@@ -33,9 +33,10 @@ export const PhysicalFactorDeleteDialog = (props) => {
       PhysicalFactorService.deletePhysicalFactor(id).then((response) => {
 
         if (response.data.message === "PhysicalFactor has been deleted!") {
+          setSuccess(true);
           setMessage("Yếu tố thể lực đã được xóa!");
         }
-        setSuccess(true);
+        
         setTimeout(() => {
           setVisible(false);
           handleClose();

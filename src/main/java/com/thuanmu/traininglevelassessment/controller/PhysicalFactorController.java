@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.thuanmu.traininglevelassessment.entity.PhysicalFactor;
@@ -40,7 +41,15 @@ public class PhysicalFactorController {
 		this.physicalFactorRepository = physicalFactorRepository;
 	}
 
-	// get all physicalFactors by coachId order by createAt desc (for coach user)
+	
+	/**
+     * Get all physicalFactors by coach id, page number and sorted by creation date in descending order (for coach user).
+     *
+     * @param coachId	the id of the coach.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of physicalFactors.
+     */
 	@GetMapping("/coachUser")
     public ResponseEntity<Map<String, Object>> getAllPhysicalFactorsByCoachId(
     		@RequestParam(required = false) Long coachId,
@@ -68,7 +77,17 @@ public class PhysicalFactorController {
     	    }
     }
     
-    // get all physicalFactors by athleteCodeUsed order by createAt desc (for athlete user)
+	
+	/**
+     * Get all physicalFactors by athlete code used, page number and sorted by creation date 
+     * in descending order (for athlete user). The athlete user can view all the formFactors of 
+     * the athletes that his/her coach manages.
+     *
+     * @param athleteCodeUsed	athlete code of the athlete is used for athlete user.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of physicalFactors.
+     */
     @GetMapping("/athleteUser")
     public ResponseEntity<Map<String, Object>> getAllPhysicalFactorsByAthleteCodeUsed(
     		@RequestParam(required = false) String athleteCodeUsed,
@@ -96,19 +115,26 @@ public class PhysicalFactorController {
     	    }
     }
     
-    // get physicalFactors by status and coachId (for coach user)
+    
+    /**
+     * Get all physicalFactors by status = 0 (unclassified) and coach id (for coach user). This method is used when the coach 
+     * classifies athletes.
+     *
+     * @param coachId	the id of the coach.
+     * @return	a list of all physicalFactors by status = 0 (unclassified) and coach id (for coach user).
+     */
     @GetMapping("/status/{coachId}")
     public List<PhysicalFactor> getPhysicalFactorsByStatusAndCoachId(@PathVariable Long coachId) {
         return physicalFactorRepository.findByStatusAndCoachId(coachId);
     }
     
-//    // get physicalFactors by status and athleteCodeUsed (for athlete user)
-//    @GetMapping("/status/{athleteCodeUsed}")
-//    public List<PhysicalFactor> getPhysicalFactorsByStatusAndAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
-//        return physicalFactorRepository.findByStatusAndAthleteCodeUsed(athleteCodeUsed);
-//    }
     
-    // get physicalFactor by id rest api
+    /**
+     * Get a physicalFactor by id.
+     *
+     * @param id	the id of the physicalFactor.
+     * @return	a physicalFactor by id.
+     */
     @GetMapping("/{id}")
     ResponseEntity<?> getPhysicalFactor(@PathVariable Long id) {
         Optional<PhysicalFactor> physicalFactor = physicalFactorRepository.findById(id);
@@ -116,7 +142,13 @@ public class PhysicalFactorController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
-    // get physicalFactor by physicalFactorCode rest api
+    
+    /**
+     * Get a physicalFactor by physicalFactor code.
+     *
+     * @param physicalFactorCode	the physicalFactor code of the physicalFactor.
+     * @return	a physicalFactor by physicalFactor code.
+     */
     @GetMapping("/{physicalFactorCode}/code")
     ResponseEntity<?> getPhysicalFactorByPhysicalFactorCode(@PathVariable String physicalFactorCode) {
         Optional<PhysicalFactor> physicalFactor = physicalFactorRepository.findByPhysicalFactorCode(physicalFactorCode);
@@ -124,8 +156,15 @@ public class PhysicalFactorController {
                 .orElse(null);
     }
     
-    // create physicalFactor rest api
+    
+    /**
+     * Create a physicalFactor.
+     *
+     * @param physicalFactor	the physicalFactor to save to the database.
+     * @return	a message.
+     */
     @PostMapping
+    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<?> createPhysicalFactor(@Valid @RequestBody PhysicalFactor physicalFactor) throws URISyntaxException {
         log.info("Request to create physicalFactor: {}", physicalFactor);
         PhysicalFactor result = physicalFactorRepository.save(physicalFactor);
@@ -133,16 +172,30 @@ public class PhysicalFactorController {
         		.body(new MessageResponse("PhysicalFactor have been added!"));
     }
     
-    // update physicalFactor rest api
+    
+    /**
+     * Update a physicalFactor.
+     *
+     * @param physicalFactor	the physicalFactor to update to the database.
+     * @return	a message.
+     */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('COACH')")
     ResponseEntity<?> updatePhysicalFactor(@Valid @RequestBody PhysicalFactor physicalFactor) {
         log.info("Request to update physicalFactor: {}", physicalFactor);
         physicalFactorRepository.save(physicalFactor);
         return ResponseEntity.ok().body(new MessageResponse("PhysicalFactor have been edited!"));
     }
     
-    // delete physicalFactor rest api
+    
+    /**
+     * Delete a physicalFactor by id.
+     *
+     * @param id	the id of the physicalFactor.
+     * @return	a message.
+     */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('COACH')")
     public ResponseEntity<?> deletePhysicalFactor(@PathVariable Long id) {
         log.info("Request to delete physicalFactor: {}", id);
         physicalFactorRepository.deleteById(id);

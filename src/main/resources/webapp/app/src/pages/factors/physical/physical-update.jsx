@@ -111,19 +111,20 @@ export default function PhysicalFactorUpdate(props) {
                     let uniquePhysicalFactor = res.data;
                     if (uniquePhysicalFactor.physicalFactorCode === physicalFactor.physicalFactorCode) {
                         if (uniquePhysicalFactor.status === 1) {
-                            setMessage(`Vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePhysicalFactor.createAt}. Vui lòng thêm yếu tố thể lực cho vận động viên vào tháng sau.`);
+                            setMessage(`Vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniquePhysicalFactor.createAt.substring(3,10)}. Vui lòng thêm yếu tố thể lực cho vận động viên vào tháng sau.`);
                         }
                         else {
-                            setMessage(`Yếu tố thể lực của vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} trong tháng ${uniquePhysicalFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố thể lực mã ${uniquePhysicalFactor.physicalFactorCode} trước khi thêm.`);
+                            setMessage(`Yếu tố thể lực của vận động viên mã ${uniquePhysicalFactor.athlete.athleteCode} trong tháng ${uniquePhysicalFactor.createAt.substring(3,10)} đã tồn tại. Vui lòng xóa yếu tố thể lực mã ${uniquePhysicalFactor.physicalFactorCode} trước khi thêm.`);
                         }
                     }
                     else {
                         PhysicalFactorService.createPhysicalFactor(physicalFactor).then(
                             (response) => {
                                 if (response.data.message === "PhysicalFactor have been added!") {
+                                    setSuccess(true);
                                     setMessage("Yếu tố thể lực đã được thêm!");
                                 }
-                                setSuccess(true);
+                                
                                 setTimeout(() => {
                                     setVisible(false);
                                     props.history.push('/physicalFactors');
@@ -137,9 +138,10 @@ export default function PhysicalFactorUpdate(props) {
                 PhysicalFactorService.updatePhysicalFactor(physicalFactor, id).then(
                     (response) => {
                         if (response.data.message === "PhysicalFactor have been edited!") {
+                            setSuccess(true);
                             setMessage("Yếu tố thể lực đã được chỉnh sửa!");
                         }
-                        setSuccess(true);
+                        
                         setTimeout(() => {
                             setVisible(false);
                             props.history.push('/physicalFactors');

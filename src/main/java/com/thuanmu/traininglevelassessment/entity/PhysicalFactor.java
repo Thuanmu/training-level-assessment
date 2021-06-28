@@ -22,7 +22,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
+/**
+ * A PhysicalFactor.
+ */
 @Entity
 @Table(name = "physical_factor")
 public class PhysicalFactor {
