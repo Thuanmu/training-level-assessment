@@ -78,13 +78,20 @@ export default function PhysicalFactorChart(props) {
         let user = AuthenticationService.getCurrentUser();
         if (user) {
             if (user.roles.includes("ROLE_COACH")) {
-                AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
-                    setAthletes(res.data);
-                    let athletes = res.data;
-                    if (athletes.length > 0) {
-                        handleOption(athletes[0].athleteCode, athletes[0].athleteName);
+                AthleteService.getAllAthletesByCoachId(user.id).then(
+                    (res) => {
+                        setAthletes(res.data);
+                        let athletes = res.data;
+                        if (athletes.length > 0) {
+                            handleOption(athletes[0].athleteCode, athletes[0].athleteName);
+                        }
+                    },
+                    (error) => {
+                        if (error.response.status === 401) {
+                            localStorage.removeItem("user");
+                        }
                     }
-                });
+                );
 
                 AthleteClassificationService.getAllAthleteClassificationsByCoachId(user.id).then((res) => {
                     let athleteClassifications = res.data;
@@ -98,13 +105,20 @@ export default function PhysicalFactorChart(props) {
                 });
             }
             else {
-                AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
-                    setAthletes(res.data);
-                    let athletes = res.data;
-                    if (athletes.length > 0) {
-                        handleOption(athletes[0].athleteCode, athletes[0].athleteName);
+                AthleteService.getAllAthletesByAthleteCodeUsed(user.athleteCodeUsed).then(
+                    (res) => {
+                        setAthletes(res.data);
+                        let athletes = res.data;
+                        if (athletes.length > 0) {
+                            handleOption(athletes[0].athleteCode, athletes[0].athleteName);
+                        }
+                    },
+                    (error) => {
+                        if (error.response.status === 401) {
+                            localStorage.removeItem("user");
+                        }
                     }
-                });
+                );
 
                 AthleteClassificationService.getAllAthleteClassificationsByAthleteCodeUsed(user.athleteCodeUsed).then((res) => {
                     let athleteClassifications = res.data;
