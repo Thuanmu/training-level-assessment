@@ -34,9 +34,10 @@ export const AthleteDeleteDialog = (props) => {
     AthleteService.deleteAthlete(athleteId).then(
       (response) => {
         if (response.data.message === "Athlete has been deleted!") {
+          setSuccess(true);
           setMessage("Vận động viên đã được xóa!");
         }
-        setSuccess(true);
+        
         // NotificationManager.success(response.data.message, null, 3000);
         setTimeout(() => {
           setVisible(false);

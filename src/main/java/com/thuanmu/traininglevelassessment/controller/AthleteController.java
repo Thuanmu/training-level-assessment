@@ -58,25 +58,40 @@ public class AthleteController {
 		this.athleteRepository = athleteRepository;
 	}
 	
-	// get all athletes sorted by athleteCode
+	/**
+     * Get all athletes in the database and sorted by athlete code. This method is used when the coach creates a new athlete 
+     * and the system will generate a new athlete code based on this list of athletes.
+     *
+     * @return	a list of all athletes in the database and sorted by athlete code.
+     */
     @GetMapping
     public List<Athlete> getAllAthletes() {
         return athleteRepository.findAllByOrderByAthleteCode();
     }
     
-    // get all athletes by coachId (for coach user)
+    
+    /**
+     * Get all athletes by coach id (for coach user). This method is used when the coach creates the factors 
+     * or classifies athletes
+     *
+     * @param coachId	the id of the coach.
+     * @return	a list of athletes by coach id.
+     */
     @GetMapping("/coachUser/{coachId}")
     public List<Athlete> getAllAthletesByCoachId(@PathVariable Long coachId) {
         return athleteRepository.findAllByCoachId(coachId);
     }
     
-    // get all athletes by athleteCodeUsed (for athlete user)
-    @GetMapping("/athleteUser/{athleteCodeUsed}")
-    public List<Athlete> getAllAthletesByAthleteCodeUsed(@PathVariable String athleteCodeUsed) {
-        return athleteRepository.findAllByAthleteCodeUsed(athleteCodeUsed);
-    }
-
-	// get all athletes by coachId and paging (for coach user)
+    
+    /**
+     * Get all athletes by coach id and page number (for coach user).
+     *
+     * @param coachId	the id of the coach.
+     * @param athleteName	name of athlete.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of athletes.
+     */
     @GetMapping("/coachUser")
     public ResponseEntity<Map<String, Object>> getAllAthletesByCoachIdAndPaging(
     		@RequestParam(required = false) Long coachId,
@@ -101,8 +116,8 @@ public class AthleteController {
 
     	      Map<String, Object> response = new HashMap<>();
     	      response.put("athletes", athletes);
-    	      response.put("currentPage", pageAthletes.getNumber());
-    	      response.put("totalItems", pageAthletes.getTotalElements());
+//    	      response.put("currentPage", pageAthletes.getNumber());
+//    	      response.put("totalItems", pageAthletes.getTotalElements());
     	      response.put("totalPages", pageAthletes.getTotalPages());
 
     	      return new ResponseEntity<>(response, HttpStatus.OK);
@@ -112,7 +127,17 @@ public class AthleteController {
     	    }
     }
     
-    // get all athletes by athleteCodeUsed and paging (for athlete user)
+    
+    /**
+     * Get all athletes by athlete code used and page number (for athlete user). The athlete user
+     * can view all the athletes that his/her coach manages.
+     *
+     * @param athleteCodeUsed	athlete code of the athlete is used for athlete user.
+     * @param athleteName	name of athlete.
+     * @param page	the index of the current page (index 0 corresponds to page number 1).
+     * @param size	number of elements of a page.
+     * @return	a response containing the information of a page of athletes.
+     */
     @GetMapping("/athleteUser")
     public ResponseEntity<Map<String, Object>> getAllAthletesByAthleteCodeUsedAndPaging(
     		@RequestParam(required = false) String athleteCodeUsed,
@@ -137,8 +162,6 @@ public class AthleteController {
 
     	      Map<String, Object> response = new HashMap<>();
     	      response.put("athletes", athletes);
-    	      response.put("currentPage", pageAthletes.getNumber());
-    	      response.put("totalItems", pageAthletes.getTotalElements());
     	      response.put("totalPages", pageAthletes.getTotalPages());
 
     	      return new ResponseEntity<>(response, HttpStatus.OK);
@@ -148,7 +171,13 @@ public class AthleteController {
     	    }
     }
     
-    // get athlete by id rest api
+    
+    /**
+     * Get an athlete by id.
+     *
+     * @param id	the id of the athlete.
+     * @return	an athlete by id.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getAthlete(@PathVariable Long id) {
         Optional<Athlete> athlete = athleteRepository.findById(id);
@@ -156,7 +185,13 @@ public class AthleteController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
-    // get athlete by athleteCode rest api
+    
+    /**
+     * Get an athlete by athlete code.
+     *
+     * @param athleteCode	the athlete code of the athlete.
+     * @return	an athlete by athlete code.
+     */
     @GetMapping("/{athleteCode}/code")
     public ResponseEntity<?> getAthleteByAthleteCode(@PathVariable String athleteCode) {
         Optional<Athlete> athlete = athleteRepository.findByAthleteCode(athleteCode);
@@ -164,9 +199,15 @@ public class AthleteController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
-    // create athlete rest api
+    
+    /**
+     * Create an athlete.
+     *
+     * @param athlete	the athlete to save to the database.
+     * @return	a message.
+     */
     @PostMapping
-//    @PreAuthorize("hasRole('COACH')")
+    @PreAuthorize("hasRole('COACH')")
     public ResponseEntity<?> createAthlete(@Valid @RequestBody Athlete athlete) throws URISyntaxException {
         log.info("Request to create athlete: {}", athlete);
         
@@ -175,9 +216,15 @@ public class AthleteController {
                 .body(new MessageResponse("Athlete have been added!"));
     }
     
-    // update athlete rest api
+    
+    /**
+     * Update an athlete.
+     *
+     * @param athlete	the athlete to update to the database.
+     * @return	a message.
+     */
     @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('COACH')")
+    @PreAuthorize("hasRole('COACH')")
     public ResponseEntity<?> updateAthlete(@Valid @RequestBody Athlete athlete) {
         log.info("Request to update athlete: {}", athlete);
         
@@ -185,9 +232,15 @@ public class AthleteController {
         return ResponseEntity.ok().body(new MessageResponse("Athlete have been edited!"));
     }
     
-    // delete athlete rest api
+    
+    /**
+     * Delete an athlete by id.
+     *
+     * @param id	the id of the athlete.
+     * @return	a message.
+     */
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('COACH')")
+    @PreAuthorize("hasRole('COACH')")
     public ResponseEntity<?> deleteAthlete(@PathVariable Long id) {
         log.info("Request to delete athlete: {}", id);
         

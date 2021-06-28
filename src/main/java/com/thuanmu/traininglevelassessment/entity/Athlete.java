@@ -26,7 +26,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
-
+/**
+ * A Athlete.
+ */
 @Entity
 @Table(name = "athlete")
 public class Athlete {

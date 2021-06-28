@@ -16,7 +16,7 @@ export default function Athlete(props) {
 
     const [page, setPage] = useState(1);
     const [count, setCount] = useState(0);
-    const [pageSize, setPageSize] = useState(3);
+    const [pageSize, setPageSize] = useState(5);
 
     const handleChangeSearchAthleteName = (event) => {
         setSearchAthleteName(event.target.value);
@@ -61,6 +61,9 @@ export default function Athlete(props) {
                 })
                 .catch((error) => {
                     console.log(error);
+                    if (error.response.status === 401) {
+                        localStorage.removeItem("user");
+                    }
                 });
             }
             else {
@@ -80,6 +83,9 @@ export default function Athlete(props) {
                 })
                 .catch((error) => {
                     console.log(error);
+                    if (error.response.status === 401) {
+                        localStorage.removeItem("user");
+                    }
                 });
             }
         }

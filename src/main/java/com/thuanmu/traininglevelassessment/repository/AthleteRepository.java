@@ -11,22 +11,16 @@ import org.springframework.stereotype.Repository;
 
 import com.thuanmu.traininglevelassessment.entity.Athlete;
 
+/**
+ * Spring Data JPA repository for the Athlete entity.
+ */
 @Repository
 public interface AthleteRepository extends JpaRepository<Athlete, Long> {
-	
-//	@Query(value = "select a.* from athlete a where a.coach_id = ?1", nativeQuery = true)
-//	Page<Athlete> findAllByCoachId(Long coachId, Pageable pageable);
-//	
-//	@Query(value = "select a.* from athlete a where a.coach_id = (select a.coach_id from athlete a where a.athlete_code = ?1)", nativeQuery = true)
-//	Page<Athlete> findAllByAthleteCodeUsed(String athleteCodeUsed, Pageable pageable);
 	
 	List<Athlete> findAllByOrderByAthleteCode();
 	
 	@Query("select a from Athlete a where a.user.id = ?1")
 	List<Athlete> findAllByCoachId(Long coachId);
-	
-	@Query("select a from Athlete a where a.user.id = (select a.user.id from Athlete a where a.athleteCode = ?1)")
-	List<Athlete> findAllByAthleteCodeUsed(String athleteCodeUsed);
 	
 	@Query("select a from Athlete a where a.user.id = ?1")
 	Page<Athlete> findAllByCoachIdAndPaging(Long coachId, Pageable pageable);
