@@ -21,6 +21,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * A TechnicalFactor.
+ */
 @Entity
 @Table(name = "technical_factor")
 public class TechnicalFactor {

@@ -73,19 +73,20 @@ export default function TechnicalFactorUpdate(props) {
                     let uniqueTechnicalFactor = res.data;
                     if (uniqueTechnicalFactor.technicalFactorCode === technicalFactor.technicalFactorCode) {
                         if (uniqueTechnicalFactor.status === 1) {
-                            setMessage(`Vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueTechnicalFactor.createAt}. Vui lòng thêm yếu tố kỹ thuật cho vận động viên vào tháng sau.`);
+                            setMessage(`Vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} đã được phân loại trong tháng ${uniqueTechnicalFactor.createAt.substring(3,10)}. Vui lòng thêm yếu tố kỹ thuật cho vận động viên vào tháng sau.`);
                         }
                         else {
-                            setMessage(`Yếu tố kỹ thuật của vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} trong tháng ${uniqueTechnicalFactor.createAt} đã tồn tại. Vui lòng xóa yếu tố kỹ thuật mã ${uniqueTechnicalFactor.technicalFactorCode} trước khi thêm.`);
+                            setMessage(`Yếu tố kỹ thuật của vận động viên mã ${uniqueTechnicalFactor.athlete.athleteCode} trong tháng ${uniqueTechnicalFactor.createAt.substring(3,10)} đã tồn tại. Vui lòng xóa yếu tố kỹ thuật mã ${uniqueTechnicalFactor.technicalFactorCode} trước khi thêm.`);
                         }
                     }
                     else {
                         TechnicalFactorService.createTechnicalFactor(technicalFactor).then(
                             (response) => {
                                 if (response.data.message === "TechnicalFactor have been added!") {
+                                    setSuccess(true);
                                     setMessage("Yếu tố kỹ thuật đã được thêm!");
                                 }
-                                setSuccess(true);
+                                
                                 setTimeout(() => {
                                     setVisible(false);
                                     props.history.push('/technicalFactors');
@@ -99,9 +100,10 @@ export default function TechnicalFactorUpdate(props) {
                 TechnicalFactorService.updateTechnicalFactor(technicalFactor, id).then(
                     (response) => {
                         if (response.data.message === "TechnicalFactor have been edited!") {
+                            setSuccess(true);
                             setMessage("Yếu tố kỹ thuật đã được chỉnh sửa!");
                         }
-                        setSuccess(true);
+                        
                         setTimeout(() => {
                             setVisible(false);
                             props.history.push('/technicalFactors');

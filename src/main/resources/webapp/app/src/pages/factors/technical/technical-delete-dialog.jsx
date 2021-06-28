@@ -32,9 +32,10 @@ export const TechnicalFactorDeleteDialog = (props) => {
     if (technicalFactor.status === 0) {
       TechnicalFactorService.deleteTechnicalFactor(id).then((response) => {
         if (response.data.message === "TechnicalFactor has been deleted!") {
+          setSuccess(true);
           setMessage("Yếu tố kỹ thuật đã được xóa!");
         }
-        setSuccess(true);
+        
         setTimeout(() => {
           setVisible(false);
           handleClose();
