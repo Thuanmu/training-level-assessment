@@ -3,6 +3,7 @@ package com.thuanmu.traininglevelassessment.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -19,6 +20,12 @@ import com.thuanmu.traininglevelassessment.security.jwt.AuthEntryPointJwt;
 import com.thuanmu.traininglevelassessment.security.jwt.AuthTokenFilter;
 import com.thuanmu.traininglevelassessment.security.services.UserDetailsServiceImpl;
 
+
+/**
+ * 
+ * Extend and customize the default configuration
+ *
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -54,12 +61,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-	    web
-	        .ignoring()
-	        .antMatchers("/**");
-	}
+//	@Override
+//	public void configure(WebSecurity web) throws Exception {
+//	    web.ignoring();
+//	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -67,10 +72,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			.authorizeRequests()
-			.antMatchers("/api/**").permitAll()
-			.anyRequest().authenticated();
+			.antMatchers("/api/auth/**").permitAll()
+			.antMatchers("/api/**").authenticated();
+//			.anyRequest().authenticated();
+			
 
-//		.antMatchers("/api/athletes/**").hasAuthority("COACH")
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 }

@@ -1,5 +1,10 @@
 package com.thuanmu.traininglevelassessment.payload.response;
 
+
+/**
+ * A response in the form of a message.
+ *
+ */
 public class MessageResponse {
 	private String message;
 

@@ -74,13 +74,13 @@ export default function Login(props) {
             error.message ||
             error.toString();
 
-          if (resMessage === "Request failed with status code 500") {
+          if (resMessage === "Request failed with status code 401") {
             setMessage("Tài khoản hoặc mật khẩu không đúng!");
           }
           if (resMessage === "Error: User has been locked!") {
             setMessage("Tài khoản này đã bị khóa!");
           }
-          // setMessage(resMessage);
+    
           setLoading(false);
         }
       );
@@ -93,57 +93,28 @@ export default function Login(props) {
     <div>
       <Container id="login-container">
         <h2>Đăng nhập</h2>
-        {/* <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        /> */}
         <Form onSubmit={handleLogin} ref={form}>
           {!success && (
             <div>
               <div className="form-group">
                 <Label>Tên tài khoản</Label>
-                {/* <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>@</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                type="text"
-                className="form-control"
-                name="username"
-                value={username}
-                onChange={handleChangeUsername}
-                validations={[required]}
-              />
-            </InputGroup> */}
                 <Input
                   type="text"
                   className="form-control"
                   name="username"
                   value={username}
                   onChange={handleChangeUsername}
+                  placeholder="Nhập tên tài khoản của bạn"
                   validations={[required]}
                 />
               </div>
               <div className="form-group">
                 <Label>Mật khẩu</Label>
-                {/* <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>@</InputGroupText>
-              </InputGroupAddon>
-              <Input
-              type="password"
-              className="form-control"
-              name="password"
-              value={password}
-              onChange={handleChangePassword}
-              validations={[required]}
-              />
-            </InputGroup> */}
                 <Input
                   type="password"
                   className="form-control"
                   name="password"
+                  placeholder="Nhập mật khẩu của bạn"
                   value={password}
                   onChange={handleChangePassword}
                   validations={[required]}
@@ -159,9 +130,13 @@ export default function Login(props) {
                     // <span className="spinner-border spinner-border-sm"></span>
                     <Spinner size="sm" color="light" />
                   )}
-                  <span>Đăng nhập</span>
+                  <span id="login-button">Đăng nhập</span>
                 </button>
+              </div>
+              <div className="login-suggestion">
+                <span>Chưa có tài khoản?</span>
                 &nbsp;
+                <a href="/register">Đăng ký</a>
               </div>
             </div>
           )}

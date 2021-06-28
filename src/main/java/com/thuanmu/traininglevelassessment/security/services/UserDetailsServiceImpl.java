@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thuanmu.traininglevelassessment.entity.User;
 import com.thuanmu.traininglevelassessment.repository.UserRepository;
 
+/**
+ * Authenticate a user from the database.
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 	@Autowired

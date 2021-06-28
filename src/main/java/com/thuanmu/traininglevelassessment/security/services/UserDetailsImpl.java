@@ -12,6 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.thuanmu.traininglevelassessment.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+
+/**
+ * Contains necessary information to build an Authentication object.
+ *
+ */
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
 

@@ -3,7 +3,11 @@ package com.thuanmu.traininglevelassessment.payload.request;
 import java.util.Set;
 
 import javax.validation.constraints.*;
- 
+
+/**
+ * A SignupRequest.
+ *
+ */
 public class SignupRequest {
     @NotBlank
     @Size(min = 3, max = 20)

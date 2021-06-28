@@ -6,6 +6,7 @@ import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 import AuthenticationService from "../../../services/authentication-service";
 import { Container, Label, Spinner } from "reactstrap";
+import { useEffect } from "react";
 
 export default function Register(props) {
   const form = useRef();
@@ -14,6 +15,7 @@ export default function Register(props) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
   const [roles, setRoles] = useState([]);
   const [athleteCodeUsed, setAthleteCodeUsed] = useState("");
   const [success, setSuccess] = useState(false);
@@ -47,21 +49,6 @@ export default function Register(props) {
     }
   };
 
-  // validateEmail(email){
-  //   const pattern = /[a-zA-Z0-9]+[\.]?([a-zA-Z0-9]+)?[\@][a-z]{3,9}[\.][a-z]{2,5}/g;
-  //   const result = pattern.test(email);
-  //   if(result===true){
-  //     this.setState({
-  //       emailError:false,
-  //       email:email
-  //     })
-  //   } else{
-  //     this.setState({
-  //       emailError:true
-  //     })
-  //   }
-  // }
-
   const validateUsername = (value) => {
     if (value.length < 3 || value.length > 20) {
       return (
@@ -73,7 +60,9 @@ export default function Register(props) {
   };
 
   const validatePassword = (value) => {
+    
     if (value.length < 6 || value.length > 40) {
+    
       return (
         <div className="alert alert-danger" role="alert">
           Mật khẩu phải có độ dài từ 6 đến 40 ký tự.
@@ -134,21 +123,16 @@ export default function Register(props) {
     <div>
       <Container id="signUp-container">
         <h2>Đăng ký</h2>
-        {/* <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        /> */}
         <Form onSubmit={handleRegister} ref={form}>
           {!success && (
             <div>
               <div className="form-group">
                 <Label>Tên tài khoản</Label>
                 <Input
-                  invalid
                   type="text"
                   className="form-control"
                   name="username"
+                  placeholder="Nhập tên tài khoản của bạn"
                   value={username}
                   onChange={handleChangeUsername}
                   validations={[required, validateUsername]}
@@ -160,6 +144,7 @@ export default function Register(props) {
                   type="text"
                   className="form-control"
                   name="email"
+                  placeholder="Nhập email của bạn"
                   value={email}
                   onChange={handleChangeEmail}
                   validations={[required, validateEmail]}
@@ -171,6 +156,7 @@ export default function Register(props) {
                   type="password"
                   className="form-control"
                   name="password"
+                  placeholder="Nhập mật khẩu"
                   value={password}
                   onChange={handleChangePassword}
                   validations={[required, validatePassword]}
@@ -206,7 +192,6 @@ export default function Register(props) {
               <div className="form-group">
                 <button className="btn btn-primary btn-block">Đăng ký</button>
                 {/* <Spinner size="sm" type="grow" color="secondary" /> */}
-                &nbsp;
               </div>
             </div>
           )}

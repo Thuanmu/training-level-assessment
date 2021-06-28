@@ -2,6 +2,10 @@ package com.thuanmu.traininglevelassessment.payload.request;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * A LoginRequest.
+ *
+ */
 public class LoginRequest {
 	@NotBlank
 	private String username;

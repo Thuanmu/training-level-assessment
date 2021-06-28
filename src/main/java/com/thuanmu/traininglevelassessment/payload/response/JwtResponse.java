@@ -2,6 +2,10 @@ package com.thuanmu.traininglevelassessment.payload.response;
 
 import java.util.List;
 
+/**
+ * A JwtResponse is returned after successful login.
+ *
+ */
 public class JwtResponse {
 	private String token;
 	private String type = "Bearer";

@@ -19,6 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.thuanmu.traininglevelassessment.security.services.UserDetailsServiceImpl;
 
+
+/**
+ * Filters incoming requests and installs a Spring Security principal if a header corresponding to a valid user is
+ * found.
+ */
 public class AuthTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtUtils jwtUtils;

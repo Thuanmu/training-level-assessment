@@ -53,6 +53,13 @@ public class AuthController {
 	@Autowired
 	JwtUtils jwtUtils;
 
+	
+	/**
+	 * Log in to the system.
+	 * 
+	 * @param loginRequest	an object containing information about the login request.
+	 * @return	a JwtResponse.
+	 */
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -67,12 +74,6 @@ public class AuthController {
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 		
-//		String StrUser =  (userRepository.findByUsername(loginRequest.getUsername())).toString();
-//		if (StrUser == null) {
-//			return ResponseEntity
-//					.badRequest()
-//					.body(new MessageResponse("User Not Found with username: " + loginRequest.getUsername()));
-//		}
 		
 		Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
 		String athleteCodeUsed = null;
@@ -103,6 +104,13 @@ public class AuthController {
 												 ));
 	}
 
+	
+	/**
+	 * Register a new account.
+	 * 
+	 * @param signUpRequest		an object containing information about the registration request.
+	 * @return	a message.
+	 */
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
