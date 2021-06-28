@@ -1,5 +1,6 @@
 package com.thuanmu.traininglevelassessment.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -18,6 +19,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * A AthleteClassification.
+ */
 @Entity
 @Table(name = "athlete_classification")
 public class AthleteClassification {
@@ -65,10 +69,10 @@ public class AthleteClassification {
 	private Integer athleteCount;
 	
 //	@JsonFormat(pattern = "MM-yyyy")
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "create_at", updatable=false)
 	@CreationTimestamp
-	private LocalDateTime createAt;
+	private LocalDate createAt;
 	
 
 	public Long getId() {
@@ -151,11 +155,11 @@ public class AthleteClassification {
 		this.athleteCount = athleteCount;
 	}
 
-	public LocalDateTime getCreateAt() {
+	public LocalDate getCreateAt() {
 		return createAt;
 	}
 
-	public void setCreateAt(LocalDateTime createAt) {
+	public void setCreateAt(LocalDate createAt) {
 		this.createAt = createAt;
 	}
 }

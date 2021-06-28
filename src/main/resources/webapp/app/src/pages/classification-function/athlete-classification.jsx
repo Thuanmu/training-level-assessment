@@ -34,6 +34,12 @@ export default function AthleteClassification(props) {
             if (user.roles.includes("ROLE_COACH")) {
               AthleteService.getAllAthletesByCoachId(user.id).then((res) => {
                 setAthletes(res.data);
+              })
+              .catch((error) => {
+                console.log(error);
+                if (error.response.status === 401) {
+                    localStorage.removeItem("user");
+                }
               });
 
               PhysicalFactorService.getPhysicalFactorsByStatusAndCoachId(user.id).then((res) => {
@@ -139,9 +145,9 @@ export default function AthleteClassification(props) {
           AthleteClassificationService.createAthleteClassification(athleteClassification).then(
             (response) => {
               if (response.data.message === "You have classified successful athletes!") {
+                setSuccess(true);
                 setMessage("Bạn đã phân loại các vận động viên thành công!");
               }
-              setSuccess(true);
             }
           );
 
