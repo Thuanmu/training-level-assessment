@@ -51,7 +51,14 @@ private final Logger log = LoggerFactory.getLogger(UserController.class);
 		this.userRepository = userRepository;
 	}
 	
-	// get all users
+	
+	/**
+	 * Get all users.
+	 * 
+	 * @param page	the index of the current page (index 0 corresponds to page number 1).
+	 * @param size	number of elements of a page.
+	 * @return	a response containing the information of a page of users.
+	 */
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllUsers(
     		@RequestParam(defaultValue = "0") int page,
@@ -78,7 +85,13 @@ private final Logger log = LoggerFactory.getLogger(UserController.class);
     	    }
     }
     
-    // get user by id rest api
+    
+    /**
+     * Get a user by id.
+     *
+     * @param id	the id of the user.
+     * @return	a user by id.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
         Optional<User> user = userRepository.findById(id);
@@ -86,9 +99,14 @@ private final Logger log = LoggerFactory.getLogger(UserController.class);
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
-    // create user rest api
+    
+    /**
+     * Create a user.
+     *
+     * @param user	the user to save to the database.
+     * @return	a message.
+     */
     @PostMapping
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) throws URISyntaxException {
         log.info("Request to create user: {}", user);
         
@@ -134,18 +152,29 @@ private final Logger log = LoggerFactory.getLogger(UserController.class);
         		.body(new MessageResponse("User have been added!"));
     }
     
-    // update user rest api
+    
+    /**
+     * Update a user.
+     *
+     * @param user	the user to update to the database.
+     * @return	a message.
+     */
     @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUser(@Valid @RequestBody User user) {
         log.info("Request to update user: {}", user);
         userRepository.save(user);
         return ResponseEntity.ok().body(new MessageResponse("User have been edited!"));
     }
     
-    // delete user rest api
+    
+    /**
+     * Delete a user by id.
+     *
+     * @param id	the id of the user.
+     * @return	a message.
+     */
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         log.info("Request to delete user: {}", id);
         userRepository.deleteById(id);

@@ -32,9 +32,10 @@ export const UserDeleteDialog = (props) => {
     handleOpen();
     UserService.deleteUser(id).then((response) => {
       if (response.data.message === "User has been deleted!") {
+        setSuccess(true);
         setMessage("Người dùng đã được xóa!");
       }
-      setSuccess(true);
+      
       setTimeout(() => {
         setVisible(false);
         handleClose();

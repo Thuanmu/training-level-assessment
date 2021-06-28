@@ -1,6 +1,5 @@
 package com.thuanmu.traininglevelassessment.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import com.thuanmu.traininglevelassessment.entity.User;
 
+/**
+ * Spring Data JPA repository for the User entity.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 	

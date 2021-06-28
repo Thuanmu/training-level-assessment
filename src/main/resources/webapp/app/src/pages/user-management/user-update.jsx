@@ -157,9 +157,9 @@ export default function UserUpdate(props) {
             UserService.updateUser(user, userId).then(
                 (response) => {
                     if (response.data.message === "User have been edited!") {
+                        setSuccess(true);
                         setMessage("Người dùng đã được chỉnh sửa!");
                     }
-                    setSuccess(true);
                     setTimeout(() => {
                         setVisible(false);
                         props.history.push('/users');

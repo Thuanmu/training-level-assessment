@@ -15,6 +15,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+/**
+ * A User.
+ */
 @Entity
 @Table(	name = "user", 
 		uniqueConstraints = { 
@@ -200,14 +203,6 @@ public class User {
 		this.roles = roles;
 	}
 	
-//	public Set<Athlete> getListAthlete() {
-//		return listAthlete;
-//	}
-//
-//	public void setListAthlete(Set<Athlete> listAthlete) {
-//		this.listAthlete = listAthlete;
-//	}
-
 	public Integer getStatus() {
 		return status;
 	}

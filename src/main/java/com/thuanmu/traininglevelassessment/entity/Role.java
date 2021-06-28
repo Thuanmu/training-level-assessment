@@ -2,6 +2,9 @@ package com.thuanmu.traininglevelassessment.entity;
 
 import javax.persistence.*;
 
+/**
+ * A Role.
+ */
 @Entity
 @Table(name = "role")
 public class Role {
