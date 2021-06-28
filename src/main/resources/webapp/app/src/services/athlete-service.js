@@ -6,23 +6,23 @@ const ATHLETE_API_BASE_URL = "http://localhost:8080/api/athletes";
 export default class AthleteService {
 
     static getAllAthletes(){
-        return axios.get(ATHLETE_API_BASE_URL);
+        return axios.get(ATHLETE_API_BASE_URL, { headers: AuthenticationService.getHeader() });
     }
 
     static getAllAthletesByCoachId(coachId){
-        return axios.get(ATHLETE_API_BASE_URL + '/coachUser/' + coachId);
+        return axios.get(ATHLETE_API_BASE_URL + '/coachUser/' + coachId, { headers: AuthenticationService.getHeader() });
     }
 
     static getAllAthletesByAthleteCodeUsed(athleteCodeUsed){
-        return axios.get(ATHLETE_API_BASE_URL + '/athleteUser/' + athleteCodeUsed);
+        return axios.get(ATHLETE_API_BASE_URL + '/athleteUser/' + athleteCodeUsed, { headers: AuthenticationService.getHeader() });
     }
 
     static getAllAthletesByCoachIdAndPaging(params){
-        return axios.get(ATHLETE_API_BASE_URL + '/coachUser', {params});
+        return axios.get(ATHLETE_API_BASE_URL + '/coachUser', {params, headers: AuthenticationService.getHeader()});
     }
 
     static getAllAthletesByAthleteCodeUsedAndPaging(params){
-        return axios.get(ATHLETE_API_BASE_URL + '/athleteUser', {params});
+        return axios.get(ATHLETE_API_BASE_URL + '/athleteUser', {params, headers: AuthenticationService.getHeader()});
     }
     
     static createAthlete(athlete){
