@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Badge, Button, Container, Form, FormGroup, Input, Label, Row} from "reactstrap";
+import {Alert, Badge, Button, Container, Form, FormGroup, Input, Label, Row} from "reactstrap";
 import { Link } from 'react-router-dom';
 import UserService from "../../../services/user-service";
 import AuthenticationService from "../../../services/authentication-service";
@@ -25,6 +25,13 @@ export default function ProfileUpdate(props) {
     const [createAt, setCreateAt] = useState('');
     const [lastModified, setLastModified] = useState('');
     const [currentUser, setCurrentUser] = useState(undefined);
+
+    const [visible, setVisible] = useState(false);
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const handleOpen = () => setVisible(true);
+    const handleToggle = () => setVisible(!visible);
 
 
     const handleChangeFullName = event => setFullName(event.target.value);
@@ -80,9 +87,21 @@ export default function ProfileUpdate(props) {
             workplace: workplace,
         };
 
-        UserService.updateUser(user, userId).then( res => {
-            props.history.push(`/profile/${userId}/edit`);
-        });
+        UserService.updateUser(user, userId).then(
+
+            (response) => {
+                if (response.data.message === "User have been edited!") {
+                    setSuccess(true);
+                    setMessage("Hồ sơ cá nhân đã được chỉnh sửa!");
+                }
+                setTimeout(() => {
+                    setVisible(false);
+                    props.history.push(`/profile/${userId}`);
+                }, 2000);
+            }
+        );
+
+        handleOpen();
     }
 
     
@@ -92,7 +111,8 @@ export default function ProfileUpdate(props) {
         <div>
             <Container className="add-edit-container">
                 {title}
-                <Form onSubmit={handleSubmit}>
+                {!success && (
+                  <Form onSubmit={handleSubmit}>
                     {userId ? (
                         <FormGroup>
                             <Label for="id">ID người dùng</Label>
@@ -189,7 +209,11 @@ export default function ProfileUpdate(props) {
                             <span>Quay lại</span>
                         </Button>
                     </FormGroup>
-                </Form>
+                  </Form>   
+                )}
+                <Alert color={success ? "success" : "danger"} isOpen={visible} toggle={handleToggle}>
+                    {message}
+                </Alert>
             </Container>
         </div>
     );
