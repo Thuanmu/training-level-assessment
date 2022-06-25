@@ -16,9 +16,9 @@
  ![image](https://user-images.githubusercontent.com/43351896/175769163-53dd5974-08d3-4289-8ef8-51eb8f29c0db.png)
 
 Bước 6: Run Web (run code ReactJS)
-+ Mở cmd gõ: cd ..\training-level-assessment\src\main\resources\webapp\app
-+ Run : npm install
-+ Run : npm start
++ Mở cmd trong project gõ: cd src\main\resources\webapp\app
++ Gõ : npm install
++ Gõ : npm start
  
 Như thế này là success
 
